@@ -8,9 +8,9 @@ public class StudySession
     public int Score { get; set; }
 }
 
-public class StudySessionDTO
+public record class StudySessionDTO
 {
-    public int Id { get; set; }
-    public DateTime Date { get; set; }
-    public int Score { get; set; }
+    public int Id { get; init; }
+    public DateTime Date { get; init; }
+    public int Score { get; init; }
 }

@@ -8,9 +8,9 @@ public class Flashcard
     public string Back { get; set; }
 }
 
-public class FlashcardDTO
+public record class FlashcardDTO
 {
-    public int Id { get; set; }
-    public string Front { get; set; }
-    public string Back { get; set; }
+    public int Id { get; init; }
+    public string Front { get; init; }
+    public string Back { get; init; }
 }
