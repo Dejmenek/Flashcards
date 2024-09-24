@@ -114,28 +114,6 @@ public class StacksRepository : IStacksRepository
         }
     }
 
-    public bool StackExistsWithId(int stackId)
-    {
-        using (var connection = new SqlConnection(_connectionString))
-        {
-            string sql = @"IF EXISTS (
-                                  SELECT 1 FROM Stacks WHERE Id = @Id
-                               )
-                               BEGIN
-                                  SELECT 1;
-                               END
-                               ELSE
-                               BEGIN
-                                  SELECT 0;
-                               END;";
-
-            return connection.QuerySingle<bool>(sql, new
-            {
-                Id = stackId
-            });
-        }
-    }
-
     public bool HasStack()
     {
         using (var connection = new SqlConnection(_connectionString))

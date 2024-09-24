@@ -13,7 +13,6 @@ internal interface IStacksRepository
     void AddStack(string name);
     IEnumerable<Stack> GetAllStacks();
     bool StackExistsWithName(string name);
-    bool StackExistsWithId(int stackId);
     bool HasStack();
     bool HasStackAnyFlashcards(int stackId);
 }
