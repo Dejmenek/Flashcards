@@ -14,8 +14,7 @@ public class FlashcardsRepository : IFlashcardsRepository
     {
         using (var connection = new SqlConnection(_connectionString))
         {
-            string sql = @"INSERT INTO Flashcards (StackId, Front, Back) VALUES
-                               (@StackId, @Front, @Back)";
+            string sql = SqlScripts.AddFlashcard;
 
             connection.Execute(sql, new
             {
@@ -30,8 +29,7 @@ public class FlashcardsRepository : IFlashcardsRepository
     {
         using (var connection = new SqlConnection(_connectionString))
         {
-            string sql = @"DELETE FROM Flashcards
-                               WHERE Id = @Id";
+            string sql = SqlScripts.DeleteFlashcard;
 
             connection.Execute(sql, new
             {
@@ -44,7 +42,7 @@ public class FlashcardsRepository : IFlashcardsRepository
     {
         using (var connection = new SqlConnection(_connectionString))
         {
-            string sql = @"SELECT * FROM Flashcards";
+            string sql = SqlScripts.GetFlashcards;
 
             return connection.Query<Flashcard>(sql);
         }
@@ -54,9 +52,7 @@ public class FlashcardsRepository : IFlashcardsRepository
     {
         using (var connection = new SqlConnection(_connectionString))
         {
-            string sql = @"UPDATE Flashcards
-                               SET Front = @Front, Back = @Back
-                               WHERE Id = @Id";
+            string sql = SqlScripts.UpdateFlashcard;
 
             connection.Execute(sql, new
             {

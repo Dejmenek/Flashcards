@@ -1,0 +1,10 @@
+IF EXISTS (
+    SELECT 1 FROM Stacks WHERE Name = @Name
+)
+BEGIN
+    SELECT 1;
+END
+ELSE
+BEGIN
+    SELECT 0;
+END;

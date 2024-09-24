@@ -13,8 +13,7 @@ public class StacksRepository : IStacksRepository
     {
         using (var connection = new SqlConnection(_connectionString))
         {
-            string sql = @"INSERT INTO Stacks (Name) VALUES
-                               (@Name)";
+            string sql = SqlScripts.AddStack;
 
             connection.Execute(sql, new
             {
@@ -27,8 +26,7 @@ public class StacksRepository : IStacksRepository
     {
         using (var connection = new SqlConnection(_connectionString))
         {
-            string sql = @"DELETE FROM Flashcards
-                               WHERE Id = @Id AND StackId = @StackId";
+            string sql = SqlScripts.DeleteFlashcardFromStack;
 
             connection.Execute(sql, new
             {
@@ -42,7 +40,7 @@ public class StacksRepository : IStacksRepository
     {
         using (var connection = new SqlConnection(_connectionString))
         {
-            string sql = @"SELECT * FROM Flashcards WHERE StackId = @StackId";
+            string sql = SqlScripts.GetFlashcardsByStackId;
 
             return connection.Query<Flashcard>(sql, new
             {
@@ -55,9 +53,7 @@ public class StacksRepository : IStacksRepository
     {
         using (var connection = new SqlConnection(_connectionString))
         {
-            string sql = @"UPDATE Flashcards
-                               SET Front = @Front, Back = @Back
-                               WHERE Id = @Id AND StackId = @StackId";
+            string sql = SqlScripts.UpdateFlashcardInStack;
 
             connection.Execute(sql, new
             {
@@ -73,8 +69,7 @@ public class StacksRepository : IStacksRepository
     {
         using (var connection = new SqlConnection(_connectionString))
         {
-            string sql = @"DELETE FROM Stacks
-                               WHERE Id = @Id";
+            string sql = SqlScripts.DeleteStack;
 
             connection.Execute(sql, new
             {
@@ -87,7 +82,7 @@ public class StacksRepository : IStacksRepository
     {
         using (var connection = new SqlConnection(_connectionString))
         {
-            string sql = @"SELECT * FROM Stacks";
+            string sql = SqlScripts.GetStacks;
 
             return connection.Query<Stack>(sql);
         }
@@ -97,7 +92,7 @@ public class StacksRepository : IStacksRepository
     {
         using (var connection = new SqlConnection(_connectionString))
         {
-            string sql = @"SELECT * FROM Stacks WHERE Name = @Name";
+            string sql = SqlScripts.GetStack;
 
             return connection.QuerySingle<Stack>(sql, new
             {
@@ -110,16 +105,7 @@ public class StacksRepository : IStacksRepository
     {
         using (var connection = new SqlConnection(_connectionString))
         {
-            string sql = @"IF EXISTS (
-                                  SELECT 1 FROM Stacks WHERE Name = @Name
-                               )
-                               BEGIN
-                                  SELECT 1;
-                               END
-                               ELSE
-                               BEGIN
-                                  SELECT 0;
-                               END;";
+            string sql = SqlScripts.StackExistsWithName;
 
             return connection.QuerySingle<bool>(sql, new
             {
@@ -154,16 +140,7 @@ public class StacksRepository : IStacksRepository
     {
         using (var connection = new SqlConnection(_connectionString))
         {
-            string sql = @"IF EXISTS (
-                                  SELECT 1 FROM Stacks
-                               )
-                               BEGIN
-                                  SELECT 1;
-                               END
-                               ELSE
-                               BEGIN
-                                  SELECT 0;
-                               END;";
+            string sql = SqlScripts.HasStack;
 
             return connection.QuerySingle<bool>(sql);
         }
@@ -173,16 +150,7 @@ public class StacksRepository : IStacksRepository
     {
         using (var connection = new SqlConnection(_connectionString))
         {
-            string sql = @"IF EXISTS (
-                                  SELECT 1 FROM Stacks s JOIN Flashcards f ON s.Id = f.StackId WHERE s.Id = @Id
-                               )
-                               BEGIN
-                                  SELECT 1;
-                               END
-                               ELSE
-                               BEGIN
-                                  SELECT 0;
-                               END;";
+            string sql = SqlScripts.HasStackAnyFlashcards;
 
             return connection.QuerySingle<bool>(sql, new
             {
@@ -195,7 +163,7 @@ public class StacksRepository : IStacksRepository
     {
         using (var connection = new SqlConnection(_connectionString))
         {
-            string sql = @"SELECT COUNT(Id) FROM Flashcards WHERE StackId = @StackId";
+            string sql = SqlScripts.GetFlashcardsCountInStack;
 
             return connection.QuerySingle<int>(sql, new
             {

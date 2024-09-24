@@ -1,0 +1,10 @@
+IF EXISTS (
+    SELECT 1 FROM StudySessions
+)
+BEGIN
+    SELECT 1;
+END
+ELSE
+BEGIN
+    SELECT 0;
+END;
