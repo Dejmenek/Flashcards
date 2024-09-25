@@ -1,9 +1,9 @@
-﻿using Flashcards.Dejmenek.Controllers;
-using Flashcards.Dejmenek.DataAccess;
-using Flashcards.Dejmenek.DataAccess.Repositories;
-using Flashcards.Dejmenek.Enums;
-using Flashcards.Dejmenek.Helpers;
-using Flashcards.Dejmenek.Services;
+﻿using Flashcards.Controllers;
+using Flashcards.DataAccess;
+using Flashcards.DataAccess.Repositories;
+using Flashcards.Enums;
+using Flashcards.Helpers;
+using Flashcards.Services;
 using Spectre.Console;
 
 internal class Program

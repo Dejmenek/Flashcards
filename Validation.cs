@@ -1,7 +1,7 @@
 ﻿using Spectre.Console;
 using System.Globalization;
 
-namespace Flashcards.Dejmenek;
+namespace Flashcards;
 
 public class Validation
 {

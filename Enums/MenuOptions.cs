@@ -1,4 +1,4 @@
-﻿namespace Flashcards.Dejmenek.Enums;
+﻿namespace Flashcards.Enums;
 
 public enum MenuOptions
 {

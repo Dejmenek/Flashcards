@@ -1,6 +1,6 @@
-﻿using Flashcards.Dejmenek.Models;
+﻿using Flashcards.Models;
 
-namespace Flashcards.Dejmenek.Helpers;
+namespace Flashcards.Helpers;
 
 public static class Mapper
 {

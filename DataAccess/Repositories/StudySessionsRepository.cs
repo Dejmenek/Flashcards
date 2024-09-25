@@ -1,10 +1,10 @@
 ﻿using Dapper;
-using Flashcards.Dejmenek.DataAccess.Interfaces;
-using Flashcards.Dejmenek.Models;
+using Flashcards.DataAccess.Interfaces;
+using Flashcards.Models;
 using System.Configuration;
 using System.Data.SqlClient;
 
-namespace Flashcards.Dejmenek.DataAccess.Repositories;
+namespace Flashcards.DataAccess.Repositories;
 
 public class StudySessionsRepository : IStudySessionsRepository
 {

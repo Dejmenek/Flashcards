@@ -1,4 +1,4 @@
-﻿namespace Flashcards.Dejmenek.Models;
+﻿namespace Flashcards.Models;
 
 public class Stack
 {

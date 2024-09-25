@@ -1,8 +1,8 @@
-﻿using Flashcards.Dejmenek.Enums;
-using Flashcards.Dejmenek.Models;
+﻿using Flashcards.Enums;
+using Flashcards.Models;
 using Spectre.Console;
 
-namespace Flashcards.Dejmenek.Services;
+namespace Flashcards.Services;
 
 public class UserInteractionService
 {

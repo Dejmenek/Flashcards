@@ -1,10 +1,10 @@
-﻿using Flashcards.Dejmenek.DataAccess.Repositories;
-using Flashcards.Dejmenek.Helpers;
-using Flashcards.Dejmenek.Models;
-using Flashcards.Dejmenek.Services;
+﻿using Flashcards.DataAccess.Repositories;
+using Flashcards.Helpers;
+using Flashcards.Models;
+using Flashcards.Services;
 using Spectre.Console;
 
-namespace Flashcards.Dejmenek.Controllers;
+namespace Flashcards.Controllers;
 
 public class StudySessionsController
 {

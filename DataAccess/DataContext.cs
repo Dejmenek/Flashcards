@@ -2,7 +2,7 @@
 using System.Configuration;
 using System.Data.SqlClient;
 
-namespace Flashcards.Dejmenek.DataAccess;
+namespace Flashcards.DataAccess;
 
 public static class DataContext
 {

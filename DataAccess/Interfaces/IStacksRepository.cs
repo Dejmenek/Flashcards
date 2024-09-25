@@ -1,6 +1,6 @@
-﻿using Flashcards.Dejmenek.Models;
+﻿using Flashcards.Models;
 
-namespace Flashcards.Dejmenek.DataAccess.Interfaces;
+namespace Flashcards.DataAccess.Interfaces;
 
 internal interface IStacksRepository
 {

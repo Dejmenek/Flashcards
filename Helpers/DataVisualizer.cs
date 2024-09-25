@@ -1,7 +1,7 @@
-﻿using Flashcards.Dejmenek.Models;
+﻿using Flashcards.Models;
 using Spectre.Console;
 
-namespace Flashcards.Dejmenek.Helpers;
+namespace Flashcards.Helpers;
 
 public static class DataVisualizer
 {
