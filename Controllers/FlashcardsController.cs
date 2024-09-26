@@ -1,83 +1,34 @@
-﻿using Flashcards.DataAccess.Repositories;
-using Flashcards.Helpers;
-using Flashcards.Models;
+﻿using Flashcards.Models;
 using Flashcards.Services;
-using Spectre.Console;
 
 namespace Flashcards.Controllers;
 
 public class FlashcardsController
 {
-    private readonly FlashcardsRepository _flashcardsRepository;
-    private readonly UserInteractionService _userInteractionService;
-    private readonly StacksRepository _stacksRepository;
+    private readonly FlashcardsService _flashcardsService;
 
-    public FlashcardsController(FlashcardsRepository flashcardsRepository, UserInteractionService userInteractionService, StacksRepository stacksRepository)
+    public FlashcardsController(FlashcardsService flashcardsService)
     {
-        _flashcardsRepository = flashcardsRepository;
-        _userInteractionService = userInteractionService;
-        _stacksRepository = stacksRepository;
+        _flashcardsService = flashcardsService;
     }
 
     public void AddFlashcard()
     {
-        var stacks = _stacksRepository.GetAllStacks();
-
-        if (!_stacksRepository.HasStack())
-        {
-            AnsiConsole.MarkupLine("No stacks found. Add new stack before creating new flashcard!");
-            return;
-        }
-
-        List<StackDTO> stackDtos = new List<StackDTO>();
-
-        foreach (var stack in stacks)
-        {
-            stackDtos.Add(Mapper.ToStackDTO(stack));
-        }
-
-        string chosenStackName = _userInteractionService.GetStack(stackDtos);
-
-        int chosenStackId = stacks.Single(s => s.Name == chosenStackName).Id;
-        string front = _userInteractionService.GetFlashcardFront();
-        string back = _userInteractionService.GetFlashcardBack();
-
-        _flashcardsRepository.AddFlashcard(chosenStackId, front, back);
+        _flashcardsService.AddFlashcard();
     }
 
     public void DeleteFlashcard()
     {
-        List<FlashcardDTO> flashcards = GetAllFlashcards();
-
-        string chosenFlashcardFront = _userInteractionService.GetFlashcard(flashcards);
-        int chosenFlashcardId = flashcards.Single(f => f.Front == chosenFlashcardFront).Id;
-
-        _flashcardsRepository.DeleteFlashcard(chosenFlashcardId);
+        _flashcardsService.DeleteFlashcard();
     }
 
     public List<FlashcardDTO> GetAllFlashcards()
     {
-        List<FlashcardDTO> flashcardDtos = new List<FlashcardDTO>();
-        var flashcards = _flashcardsRepository.GetAllFlashcards();
-
-        foreach (var flashcard in flashcards)
-        {
-            flashcardDtos.Add(Mapper.ToFlashcardDTO(flashcard));
-        }
-
-        return flashcardDtos;
+        return _flashcardsService.GetAllFlashcards();
     }
 
     public void UpdateFlashcard()
     {
-        List<FlashcardDTO> flashcards = GetAllFlashcards();
-
-        string chosenFlashcardFront = _userInteractionService.GetFlashcard(flashcards);
-        int chosenFlashcardId = flashcards.Single(f => f.Front == chosenFlashcardFront).Id;
-
-        string front = _userInteractionService.GetFlashcardFront();
-        string back = _userInteractionService.GetFlashcardBack();
-
-        _flashcardsRepository.UpdateFlashcard(chosenFlashcardId, front, back);
+        _flashcardsService.UpdateFlashcard();
     }
 }

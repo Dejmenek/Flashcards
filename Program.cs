@@ -16,7 +16,8 @@ internal class Program
         var userInteractionService = new UserInteractionService();
         var flashcardsRepository = new FlashcardsRepository();
         var stacksRepository = new StacksRepository();
-        var flashcardsController = new FlashcardsController(flashcardsRepository, userInteractionService, stacksRepository);
+        var flashcardsService = new FlashcardsService(flashcardsRepository, userInteractionService, stacksRepository);
+        var flashcardsController = new FlashcardsController(flashcardsService);
         var stacksController = new StacksController(stacksRepository, userInteractionService, flashcardsRepository);
         var studySessionsRepository = new StudySessionsRepository();
         var studySessionsService = new StudySessionsService(studySessionsRepository, userInteractionService);
