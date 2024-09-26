@@ -19,7 +19,8 @@ internal class Program
         var flashcardsController = new FlashcardsController(flashcardsRepository, userInteractionService, stacksRepository);
         var stacksController = new StacksController(stacksRepository, userInteractionService, flashcardsRepository);
         var studySessionsRepository = new StudySessionsRepository();
-        var studySessionsController = new StudySessionsController(studySessionsRepository, userInteractionService);
+        var studySessionsService = new StudySessionsService(studySessionsRepository, userInteractionService);
+        var studySessionsController = new StudySessionsController(studySessionsService);
 
         while (!exitMenuOptions)
         {
