@@ -18,7 +18,8 @@ internal class Program
         var stacksRepository = new StacksRepository();
         var flashcardsService = new FlashcardsService(flashcardsRepository, userInteractionService, stacksRepository);
         var flashcardsController = new FlashcardsController(flashcardsService);
-        var stacksController = new StacksController(stacksRepository, userInteractionService, flashcardsRepository);
+        var stacksService = new StacksService(stacksRepository, userInteractionService, flashcardsRepository);
+        var stacksController = new StacksController(stacksService);
         var studySessionsRepository = new StudySessionsRepository();
         var studySessionsService = new StudySessionsService(studySessionsRepository, userInteractionService);
         var studySessionsController = new StudySessionsController(studySessionsService);
@@ -68,7 +69,7 @@ internal class Program
 
         while (!exitManageStacks)
         {
-            var userManageStackOption = userInteractionService.GetManageStackOption(stacksController.CurrentStack.Name);
+            var userManageStackOption = userInteractionService.GetManageStackOption(stacksController.GetCurrentStack().Name);
 
             switch (userManageStackOption)
             {
@@ -170,7 +171,7 @@ internal class Program
         stacksController.GetStack();
 
         var studySessionFlashcards = stacksController.GetFlashcardsByStackId();
-        studySessionsController.RunStudySession(studySessionFlashcards, stacksController.CurrentStack.Id);
+        studySessionsController.RunStudySession(studySessionFlashcards, stacksController.GetCurrentStack().Id);
 
         userInteractionService.GetUserInputToContinue();
         Console.Clear();

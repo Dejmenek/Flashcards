@@ -1,118 +1,64 @@
-﻿using Flashcards.DataAccess.Repositories;
-using Flashcards.Helpers;
-using Flashcards.Models;
+﻿using Flashcards.Models;
 using Flashcards.Services;
-using Spectre.Console;
 
 namespace Flashcards.Controllers;
 
 public class StacksController
 {
-    private readonly StacksRepository _stacksRepository;
-    private readonly UserInteractionService _userInteractionService;
-    private readonly FlashcardsRepository _flashcardsRepository;
-    public Stack? CurrentStack { get; private set; }
+    private readonly StacksService _stacksService;
 
-    public StacksController(StacksRepository stacksRepository, UserInteractionService userInteractionService, FlashcardsRepository flashcardsRepository)
+    public StacksController(StacksService stacksService)
     {
-        _stacksRepository = stacksRepository;
-        _userInteractionService = userInteractionService;
-        _flashcardsRepository = flashcardsRepository;
+        _stacksService = stacksService;
     }
 
     public void AddStack()
     {
-        string name = _userInteractionService.GetStackName();
-
-        while (_stacksRepository.StackExistsWithName(name))
-        {
-            AnsiConsole.MarkupLine($"There is already a stack named {name}. Please try a different name.");
-            name = _userInteractionService.GetStackName();
-        }
-
-        _stacksRepository.AddStack(name);
+        _stacksService.AddStack();
     }
 
     public void AddFlashcardToStack()
     {
-        string front = _userInteractionService.GetFlashcardFront();
-        string back = _userInteractionService.GetFlashcardBack();
-
-        _flashcardsRepository.AddFlashcard(CurrentStack.Id, front, back);
+        _stacksService.AddFlashcardToStack();
     }
 
     public void DeleteStack()
     {
-        _stacksRepository.DeleteStack(CurrentStack.Id);
+        _stacksService.DeleteStack();
     }
 
     public void DeleteFlashcardFromStack()
     {
-        List<FlashcardDTO> flashcards = GetFlashcardsByStackId();
-
-        string chosenFlashcardFront = _userInteractionService.GetFlashcard(flashcards);
-        int chosenFlashcardId = flashcards.Single(f => f.Front == chosenFlashcardFront).Id;
-
-        _stacksRepository.DeleteFlashcardFromStack(chosenFlashcardId, CurrentStack.Id);
+        _stacksService.DeleteFlashcardFromStack();
     }
 
     public void UpdateFlashcardInStack()
     {
-        List<FlashcardDTO> flashcards = GetFlashcardsByStackId();
-
-        string chosenFlashcardFront = _userInteractionService.GetFlashcard(flashcards);
-        int chosenFlashcardId = flashcards.Single(f => f.Front == chosenFlashcardFront).Id;
-        string front = _userInteractionService.GetFlashcardFront();
-        string back = _userInteractionService.GetFlashcardBack();
-
-        _stacksRepository.UpdateFlashcardInStack(chosenFlashcardId, CurrentStack.Id, front, back);
+        _stacksService.UpdateFlashcardInStack();
     }
 
     public List<FlashcardDTO> GetFlashcardsByStackId()
     {
-        if (!_stacksRepository.HasStackAnyFlashcards(CurrentStack.Id))
-        {
-            return [];
-        }
-
-        List<FlashcardDTO> flashcardDtos = new List<FlashcardDTO>();
-        var flashcards = _stacksRepository.GetFlashcardsByStackId(CurrentStack.Id);
-
-        foreach (var flashcard in flashcards)
-        {
-            flashcardDtos.Add(Mapper.ToFlashcardDTO(flashcard));
-        }
-
-        return flashcardDtos;
+        return _stacksService.GetFlashcardsByStackId();
     }
 
     public int GetFlashcardsCountInStack()
     {
-        return _stacksRepository.GetFlashcardsCountInStack(CurrentStack.Id);
+        return _stacksService.GetFlashcardsCountInStack();
     }
 
     public List<StackDTO> GetAllStacks()
     {
-        if (!_stacksRepository.HasStack())
-        {
-            return [];
-        }
-
-        List<StackDTO> stackDtos = new List<StackDTO>();
-        var stacks = _stacksRepository.GetAllStacks();
-
-        foreach (var stack in stacks)
-        {
-            stackDtos.Add(Mapper.ToStackDTO(stack));
-        }
-
-        return stackDtos;
+        return _stacksService.GetAllStacks();
     }
 
     public void GetStack()
     {
-        string name = _userInteractionService.GetStack(GetAllStacks());
+        _stacksService.GetStack();
+    }
 
-        CurrentStack = _stacksRepository.GetStack(name);
+    public Stack GetCurrentStack()
+    {
+        return _stacksService.CurrentStack;
     }
 }
