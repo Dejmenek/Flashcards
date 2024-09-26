@@ -69,14 +69,13 @@ internal class Program
 
         while (!exitManageStacks)
         {
+            Console.Clear();
             var userManageStackOption = userInteractionService.GetManageStackOption(stacksController.GetCurrentStack().Name);
 
             switch (userManageStackOption)
             {
                 case ManageStackOptions.ChangeStack:
                     stacksController.GetStack();
-
-                    Console.Clear();
                     break;
 
                 case ManageStackOptions.ViewAllFlashcardsInStack:
@@ -84,32 +83,24 @@ internal class Program
                     DataVisualizer.ShowFlashcards(flashcardsInStack);
 
                     userInteractionService.GetUserInputToContinue();
-                    Console.Clear();
                     break;
 
                 case ManageStackOptions.ViewAmountOfFlashcardsInStack:
                     AnsiConsole.MarkupLine($"This stack has {stacksController.GetFlashcardsCountInStack()} flashcards.");
 
                     userInteractionService.GetUserInputToContinue();
-                    Console.Clear();
                     break;
 
                 case ManageStackOptions.CreateFlashcardInStack:
                     stacksController.AddFlashcardToStack();
-
-                    Console.Clear();
                     break;
 
                 case ManageStackOptions.EditFlashcardInStack:
                     stacksController.UpdateFlashcardInStack();
-
-                    Console.Clear();
                     break;
 
                 case ManageStackOptions.DeleteFlashcardFromStack:
                     stacksController.DeleteFlashcardFromStack();
-
-                    Console.Clear();
                     break;
 
                 case ManageStackOptions.DeleteStack:
@@ -119,14 +110,11 @@ internal class Program
 
                 case ManageStackOptions.AddStack:
                     stacksController.AddStack();
-
-                    Console.Clear();
                     exitManageStacks = true;
                     break;
 
                 case ManageStackOptions.Exit:
                     exitManageStacks = true;
-                    Console.Clear();
                     break;
             }
         }
