@@ -49,22 +49,20 @@ public class StacksService
     {
         List<FlashcardDTO> flashcards = GetFlashcardsByStackId();
 
-        string chosenFlashcardFront = _userInteractionService.GetFlashcard(flashcards);
-        int chosenFlashcardId = flashcards.Single(f => f.Front == chosenFlashcardFront).Id;
+        FlashcardDTO chosenFlashcard = _userInteractionService.GetFlashcard(flashcards);
 
-        _stacksRepository.DeleteFlashcardFromStack(chosenFlashcardId, CurrentStack.Id);
+        _stacksRepository.DeleteFlashcardFromStack(chosenFlashcard.Id, CurrentStack.Id);
     }
 
     public void UpdateFlashcardInStack()
     {
         List<FlashcardDTO> flashcards = GetFlashcardsByStackId();
 
-        string chosenFlashcardFront = _userInteractionService.GetFlashcard(flashcards);
-        int chosenFlashcardId = flashcards.Single(f => f.Front == chosenFlashcardFront).Id;
+        FlashcardDTO chosenFlashcard = _userInteractionService.GetFlashcard(flashcards);
         string front = _userInteractionService.GetFlashcardFront();
         string back = _userInteractionService.GetFlashcardBack();
 
-        _stacksRepository.UpdateFlashcardInStack(chosenFlashcardId, CurrentStack.Id, front, back);
+        _stacksRepository.UpdateFlashcardInStack(chosenFlashcard.Id, CurrentStack.Id, front, back);
     }
 
     public List<FlashcardDTO> GetFlashcardsByStackId()

@@ -53,12 +53,13 @@ public class UserInteractionService
             );
     }
 
-    public string GetFlashcard(List<FlashcardDTO> flashcards)
+    public FlashcardDTO GetFlashcard(List<FlashcardDTO> flashcards)
     {
         return AnsiConsole.Prompt(
-            new SelectionPrompt<string>()
+            new SelectionPrompt<FlashcardDTO>()
                 .Title("Choose your flashcard")
-                .AddChoices(flashcards.Select(f => f.Front))
+                .UseConverter(flashcard => flashcard.Front)
+                .AddChoices(flashcards)
             );
     }
 

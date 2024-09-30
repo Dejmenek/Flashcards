@@ -48,10 +48,9 @@ public class FlashcardsService
     {
         List<FlashcardDTO> flashcards = GetAllFlashcards();
 
-        string chosenFlashcardFront = _userInteractionService.GetFlashcard(flashcards);
-        int chosenFlashcardId = flashcards.Single(f => f.Front == chosenFlashcardFront).Id;
+        FlashcardDTO chosenFlashcard = _userInteractionService.GetFlashcard(flashcards);
 
-        _flashcardsRepository.DeleteFlashcard(chosenFlashcardId);
+        _flashcardsRepository.DeleteFlashcard(chosenFlashcard.Id);
     }
 
     public List<FlashcardDTO> GetAllFlashcards()
@@ -71,12 +70,11 @@ public class FlashcardsService
     {
         List<FlashcardDTO> flashcards = GetAllFlashcards();
 
-        string chosenFlashcardFront = _userInteractionService.GetFlashcard(flashcards);
-        int chosenFlashcardId = flashcards.Single(f => f.Front == chosenFlashcardFront).Id;
+        FlashcardDTO chosenFlashcard = _userInteractionService.GetFlashcard(flashcards);
 
         string front = _userInteractionService.GetFlashcardFront();
         string back = _userInteractionService.GetFlashcardBack();
 
-        _flashcardsRepository.UpdateFlashcard(chosenFlashcardId, front, back);
+        _flashcardsRepository.UpdateFlashcard(chosenFlashcard.Id, front, back);
     }
 }
