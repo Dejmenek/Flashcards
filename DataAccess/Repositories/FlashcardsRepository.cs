@@ -1,14 +1,19 @@
 ﻿using Dapper;
 using Flashcards.DataAccess.Interfaces;
 using Flashcards.Models;
-using System.Configuration;
+using Microsoft.Extensions.Configuration;
 using System.Data.SqlClient;
 
 namespace Flashcards.DataAccess.Repositories;
 
 public class FlashcardsRepository : IFlashcardsRepository
 {
-    private static readonly string _connectionString = ConfigurationManager.ConnectionStrings["LocalDbConnection"].ConnectionString;
+    private readonly string _connectionString;
+
+    public FlashcardsRepository(IConfiguration config)
+    {
+        _connectionString = config.GetConnectionString("LearnifyDb")!;
+    }
 
     public void AddFlashcard(int stackId, string front, string back)
     {

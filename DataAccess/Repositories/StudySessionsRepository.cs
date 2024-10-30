@@ -1,14 +1,19 @@
 ﻿using Dapper;
 using Flashcards.DataAccess.Interfaces;
 using Flashcards.Models;
-using System.Configuration;
+using Microsoft.Extensions.Configuration;
 using System.Data.SqlClient;
 
 namespace Flashcards.DataAccess.Repositories;
 
 public class StudySessionsRepository : IStudySessionsRepository
 {
-    private static readonly string _connectionString = ConfigurationManager.ConnectionStrings["LocalDbConnection"].ConnectionString;
+    private readonly string _connectionString;
+
+    public StudySessionsRepository(IConfiguration config)
+    {
+        _connectionString = config.GetConnectionString("LearnifyDb")!;
+    }
 
     public void AddStudySession(int stackId, DateTime date, int score)
     {

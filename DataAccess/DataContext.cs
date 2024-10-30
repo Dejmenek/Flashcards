@@ -1,20 +1,25 @@
 ﻿using Dapper;
-using System.Configuration;
+using Microsoft.Extensions.Configuration;
 using System.Data.SqlClient;
 
 namespace Flashcards.DataAccess;
 
-public static class DataContext
+public class DataContext
 {
-    private static readonly string _connectionString = ConfigurationManager.ConnectionStrings["LocalDbConnection"].ConnectionString;
+    private readonly string _connectionString;
 
-    public static void CreateDatabase()
+    public DataContext(IConfiguration config)
+    {
+        _connectionString = config.GetConnectionString("LearnifyDb")!;
+    }
+
+    public void CreateDatabase()
     {
         CreateTables();
         SeedStacks();
         SeedFlashcards();
     }
-    private static void CreateTables()
+    private void CreateTables()
     {
         using (var connection = new SqlConnection(_connectionString))
         {
@@ -24,7 +29,7 @@ public static class DataContext
         }
     }
 
-    private static void SeedStacks()
+    private void SeedStacks()
     {
         using (var connection = new SqlConnection(_connectionString))
         {
@@ -34,7 +39,7 @@ public static class DataContext
         }
     }
 
-    private static void SeedFlashcards()
+    private void SeedFlashcards()
     {
         using (var connection = new SqlConnection(_connectionString))
         {
