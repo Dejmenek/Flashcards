@@ -32,22 +32,21 @@ It allows users to create stacks, add flashcards with questions and answers, see
 
 ## Examples
 - Main Menu  
-![image](https://github.com/Dejmenek/CodeReviews.Console.Flashcards/assets/83865666/ac35eb3c-b3c6-4d05-a7b0-0ffc1503f672)
+![image](https://github.com/user-attachments/assets/7757b64f-a45c-4001-899d-5753178781a0)
 - Manage Stacks  
-![image](https://github.com/Dejmenek/CodeReviews.Console.Flashcards/assets/83865666/4cc43681-a5d2-4652-bb89-3bede0de3f6d)  
-![image](https://github.com/Dejmenek/CodeReviews.Console.Flashcards/assets/83865666/e1e224b8-5e59-4c65-a0ab-d0b915c9dd91)  
+![image](https://github.com/user-attachments/assets/446c9474-fab7-41dd-8e5e-fa1e78e7e0d0)  
+![image](https://github.com/user-attachments/assets/a5be447b-28e6-4663-af36-cbd199ae8ff2)  
 - Manage Flashcards  
-![image](https://github.com/Dejmenek/CodeReviews.Console.Flashcards/assets/83865666/edbb1d2f-5821-4e76-bdf7-b7619d85cb33)
+![image](https://github.com/user-attachments/assets/cb7c62ac-3191-4061-870f-fb2a7d9ec245)  
 - Study Session  
-![image](https://github.com/Dejmenek/CodeReviews.Console.Flashcards/assets/83865666/936a147e-1319-4d7a-8920-d40265d912ad)
+![image](https://github.com/user-attachments/assets/459497ca-21bb-45c5-b4cb-4c1dcab611e4)  
 - View Study Sessions  
-![image](https://github.com/Dejmenek/CodeReviews.Console.Flashcards/assets/83865666/242a87ac-25bf-47b9-9525-e38aefec4381)
+![image](https://github.com/user-attachments/assets/22e3de25-f6e3-4b16-8132-27b183eae03f)  
 - View monthly study session reports per stack:
 	- Average Score  
- ![image](https://github.com/Dejmenek/CodeReviews.Console.Flashcards/assets/83865666/cf33c691-c65a-4a79-8408-1b166b7dbe47)
+![image](https://github.com/user-attachments/assets/0bb9a83d-108a-43b4-895b-10ac0bb2426a)  
 	- Number of sessions  
- ![image](https://github.com/Dejmenek/CodeReviews.Console.Flashcards/assets/83865666/033a3263-02c1-4d3b-9a9c-8adc9bd1395a)
-
+![image](https://github.com/user-attachments/assets/2079e36c-5288-4701-b76e-7f459995f102)
 
 ## Instalation and Setup
 1. Clone or download this project repository.
