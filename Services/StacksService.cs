@@ -1,18 +1,19 @@
-﻿using Flashcards.DataAccess.Repositories;
+﻿using Flashcards.DataAccess.Interfaces;
 using Flashcards.Helpers;
 using Flashcards.Models;
+using Flashcards.Services.Interfaces;
 using Spectre.Console;
 
 namespace Flashcards.Services;
 
-public class StacksService
+public class StacksService : IStacksService
 {
-    private readonly StacksRepository _stacksRepository;
+    private readonly IStacksRepository _stacksRepository;
+    private readonly IFlashcardsRepository _flashcardsRepository;
     private readonly UserInteractionService _userInteractionService;
-    private readonly FlashcardsRepository _flashcardsRepository;
     public Stack? CurrentStack { get; private set; }
 
-    public StacksService(StacksRepository stacksRepository, UserInteractionService userInteractionService, FlashcardsRepository flashcardsRepository)
+    public StacksService(IStacksRepository stacksRepository, UserInteractionService userInteractionService, IFlashcardsRepository flashcardsRepository)
     {
         _stacksRepository = stacksRepository;
         _userInteractionService = userInteractionService;
@@ -108,8 +109,20 @@ public class StacksService
 
     public void GetStack()
     {
-        string name = _userInteractionService.GetStack(GetAllStacks());
+        List<StackDTO> stacks = GetAllStacks();
+
+        if (stacks.Count == 0)
+        {
+            return;
+        }
+
+        string name = _userInteractionService.GetStack(stacks);
 
         CurrentStack = _stacksRepository.GetStack(name);
+    }
+
+    public Stack GetCurrentStack()
+    {
+        return CurrentStack!;
     }
 }

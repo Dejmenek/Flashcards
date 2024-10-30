@@ -1,17 +1,18 @@
-﻿using Flashcards.DataAccess.Repositories;
+﻿using Flashcards.DataAccess.Interfaces;
 using Flashcards.Helpers;
 using Flashcards.Models;
+using Flashcards.Services.Interfaces;
 using Spectre.Console;
 
 namespace Flashcards.Services;
 
-public class StudySessionsService
+public class StudySessionsService : IStudySessionsService
 {
-    private readonly StudySessionsRepository _studySessionsRepository;
+    private readonly IStudySessionsRepository _studySessionsRepository;
     private readonly UserInteractionService _userInteractionService;
     public int Score { get; private set; }
 
-    public StudySessionsService(StudySessionsRepository studySessionsRepository, UserInteractionService userInteractionService)
+    public StudySessionsService(IStudySessionsRepository studySessionsRepository, UserInteractionService userInteractionService)
     {
         _studySessionsRepository = studySessionsRepository;
         _userInteractionService = userInteractionService;

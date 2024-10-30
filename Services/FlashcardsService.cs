@@ -1,17 +1,18 @@
-﻿using Flashcards.DataAccess.Repositories;
+﻿using Flashcards.DataAccess.Interfaces;
 using Flashcards.Helpers;
 using Flashcards.Models;
+using Flashcards.Services.Interfaces;
 using Spectre.Console;
 
 namespace Flashcards.Services;
 
-public class FlashcardsService
+public class FlashcardsService : IFlashcardsService
 {
-    private readonly FlashcardsRepository _flashcardsRepository;
+    private readonly IFlashcardsRepository _flashcardsRepository;
+    private readonly IStacksRepository _stacksRepository;
     private readonly UserInteractionService _userInteractionService;
-    private readonly StacksRepository _stacksRepository;
 
-    public FlashcardsService(FlashcardsRepository flashcardsRepository, UserInteractionService userInteractionService, StacksRepository stacksRepository)
+    public FlashcardsService(IFlashcardsRepository flashcardsRepository, UserInteractionService userInteractionService, IStacksRepository stacksRepository)
     {
         _flashcardsRepository = flashcardsRepository;
         _userInteractionService = userInteractionService;
