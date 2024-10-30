@@ -1,13 +1,13 @@
 ﻿using Flashcards.Models;
-using Flashcards.Services;
+using Flashcards.Services.Interfaces;
 
 namespace Flashcards.Controllers;
 
 public class StacksController
 {
-    private readonly StacksService _stacksService;
+    private readonly IStacksService _stacksService;
 
-    public StacksController(StacksService stacksService)
+    public StacksController(IStacksService stacksService)
     {
         _stacksService = stacksService;
     }
@@ -59,6 +59,6 @@ public class StacksController
 
     public Stack GetCurrentStack()
     {
-        return _stacksService.CurrentStack;
+        return _stacksService.GetCurrentStack();
     }
 }

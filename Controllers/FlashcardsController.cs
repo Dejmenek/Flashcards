@@ -1,13 +1,13 @@
 ﻿using Flashcards.Models;
-using Flashcards.Services;
+using Flashcards.Services.Interfaces;
 
 namespace Flashcards.Controllers;
 
 public class FlashcardsController
 {
-    private readonly FlashcardsService _flashcardsService;
+    private readonly IFlashcardsService _flashcardsService;
 
-    public FlashcardsController(FlashcardsService flashcardsService)
+    public FlashcardsController(IFlashcardsService flashcardsService)
     {
         _flashcardsService = flashcardsService;
     }

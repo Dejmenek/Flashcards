@@ -1,13 +1,13 @@
 ﻿using Flashcards.Models;
-using Flashcards.Services;
+using Flashcards.Services.Interfaces;
 
 namespace Flashcards.Controllers;
 
 public class StudySessionsController
 {
-    private readonly StudySessionsService _studySessionsService;
+    private readonly IStudySessionsService _studySessionsService;
 
-    public StudySessionsController(StudySessionsService studySessionsService)
+    public StudySessionsController(IStudySessionsService studySessionsService)
     {
         _studySessionsService = studySessionsService;
     }
