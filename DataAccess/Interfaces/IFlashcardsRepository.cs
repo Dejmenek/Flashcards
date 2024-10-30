@@ -2,7 +2,7 @@
 
 namespace Flashcards.DataAccess.Interfaces;
 
-internal interface IFlashcardsRepository
+public interface IFlashcardsRepository
 {
     void AddFlashcard(int stackId, string front, string back);
     void DeleteFlashcard(int flashcardId);

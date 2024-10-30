@@ -2,7 +2,7 @@
 
 namespace Flashcards.DataAccess.Interfaces;
 
-internal interface IStacksRepository
+public interface IStacksRepository
 {
     Stack GetStack(string name);
     void DeleteStack(int stackId);

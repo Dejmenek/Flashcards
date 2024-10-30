@@ -2,7 +2,7 @@
 
 namespace Flashcards.DataAccess.Interfaces;
 
-internal interface IStudySessionsRepository
+public interface IStudySessionsRepository
 {
     IEnumerable<MonthlyStudySessionsNumberData> GetMonthlyStudySessionReport(string year);
     IEnumerable<MonthlyStudySessionsAverageScoreData> GetMonthlyStudySessionAverageScoreReport(string year);
