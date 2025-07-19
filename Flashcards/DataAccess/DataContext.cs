@@ -13,39 +13,39 @@ public class DataContext
         _connectionString = config.GetConnectionString("Default")!;
     }
 
-    public void CreateDatabase()
+    public async Task CreateDatabase()
     {
-        CreateTables();
-        SeedStacks();
-        SeedFlashcards();
+        await CreateTables();
+        await SeedStacks();
+        await SeedFlashcards();
     }
-    private void CreateTables()
+    private async Task CreateTables()
     {
         using (var connection = new SqlConnection(_connectionString))
         {
             string sql = SqlScripts.CreateTables;
 
-            connection.Execute(sql);
+            await connection.ExecuteAsync(sql);
         }
     }
 
-    private void SeedStacks()
+    private async Task SeedStacks()
     {
         using (var connection = new SqlConnection(_connectionString))
         {
             string sql = SqlScripts.SeedStacks;
 
-            connection.Execute(sql);
+            await connection.ExecuteAsync(sql);
         }
     }
 
-    private void SeedFlashcards()
+    private async Task SeedFlashcards()
     {
         using (var connection = new SqlConnection(_connectionString))
         {
             string sql = SqlScripts.SeedFlashcards;
 
-            connection.Execute(sql);
+            await connection.ExecuteAsync(sql);
         }
     }
 }
