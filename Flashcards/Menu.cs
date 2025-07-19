@@ -20,7 +20,7 @@ public class Menu
         _studySessionsController = studySessionsController;
     }
 
-    public void Run()
+    public async Task RunAsync()
     {
         bool exitMenuOptions = false;
 
@@ -35,81 +35,81 @@ public class Menu
                     break;
 
                 case MenuOptions.ManageStacks:
-                    ManageStacks();
+                    await ManageStacksAsync();
                     break;
 
                 case MenuOptions.ManageFlashcards:
-                    ManageFlashcards();
+                    await ManageFlashcardsAsync();
                     break;
 
                 case MenuOptions.Study:
-                    Study();
+                    await StudyAsync();
                     break;
 
                 case MenuOptions.ViewStudySessions:
-                    ViewStudySessions();
+                    await ViewStudySessionsAsync();
                     break;
 
                 case MenuOptions.MonthlyStudySessionsReport:
-                    MonthlyStudySessionsReport();
+                    await MonthlyStudySessionsReportAsync();
                     break;
 
                 case MenuOptions.MonthlyStudySessionsScoreReport:
-                    MonthlyStudySessionsScoreReport();
+                    await MonthlyStudySessionsScoreReportAsync();
                     break;
             }
         }
     }
 
-    private void ManageStacks()
+    private async Task ManageStacksAsync()
     {
         bool exitManageStacks = false;
-        DataVisualizer.ShowStacks(_stacksController.GetAllStacks());
-        _stacksController.GetStack();
+        DataVisualizer.ShowStacks(await _stacksController.GetAllStacksAsync());
+        await _stacksController.GetStackAsync();
 
         while (!exitManageStacks)
         {
             Console.Clear();
-            var userManageStackOption = _userInteractionService.GetManageStackOption(_stacksController.GetCurrentStack().Name);
+            var userManageStackOption = _userInteractionService.GetManageStackOption((await _stacksController.GetCurrentStackAsync()).Name);
 
             switch (userManageStackOption)
             {
                 case ManageStackOptions.ChangeStack:
-                    _stacksController.GetStack();
+                    await _stacksController.GetStackAsync();
                     break;
 
                 case ManageStackOptions.ViewAllFlashcardsInStack:
-                    var flashcardsInStack = _stacksController.GetFlashcardsByStackId();
+                    var flashcardsInStack = await _stacksController.GetFlashcardsByStackIdAsync();
                     DataVisualizer.ShowFlashcards(flashcardsInStack);
 
                     _userInteractionService.GetUserInputToContinue();
                     break;
 
                 case ManageStackOptions.ViewAmountOfFlashcardsInStack:
-                    AnsiConsole.MarkupLine($"This stack has {_stacksController.GetFlashcardsCountInStack()} flashcards.");
+                    AnsiConsole.MarkupLine($"This stack has {await _stacksController.GetFlashcardsCountInStackAsync()} flashcards.");
 
                     _userInteractionService.GetUserInputToContinue();
                     break;
 
                 case ManageStackOptions.CreateFlashcardInStack:
-                    _stacksController.AddFlashcardToStack();
+                    await _stacksController.AddFlashcardToStackAsync();
                     break;
 
                 case ManageStackOptions.EditFlashcardInStack:
-                    _stacksController.UpdateFlashcardInStack();
+                    await _stacksController.UpdateFlashcardInStackAsync();
                     break;
 
                 case ManageStackOptions.DeleteFlashcardFromStack:
-                    _stacksController.DeleteFlashcardFromStack();
+                    await _stacksController.DeleteFlashcardFromStackAsync();
                     break;
 
                 case ManageStackOptions.DeleteStack:
-                    _stacksController.DeleteStack();
+                    await _stacksController.DeleteStackAsync();
                     exitManageStacks = true;
                     break;
 
                 case ManageStackOptions.AddStack:
-                    _stacksController.AddStack();
+                    await _stacksController.AddStackAsync();
                     exitManageStacks = true;
                     break;
 
@@ -120,26 +120,26 @@ public class Menu
         }
     }
 
-    private void ManageFlashcards()
+    private async Task ManageFlashcardsAsync()
     {
         var userManageFlashcardsOption = _userInteractionService.GetManageFlashcardsOption();
 
         switch (userManageFlashcardsOption)
         {
             case ManageFlashcardsOptions.AddFlashcard:
-                _flashcardsController.AddFlashcard();
+                await _flashcardsController.AddFlashcardAsync();
 
                 Console.Clear();
                 break;
 
             case ManageFlashcardsOptions.DeleteFlashcard:
-                _flashcardsController.DeleteFlashcard();
+                await _flashcardsController.DeleteFlashcardAsync();
 
                 Console.Clear();
                 break;
 
             case ManageFlashcardsOptions.ViewAllFlashcards:
-                var flashcards = _flashcardsController.GetAllFlashcards();
+                var flashcards = await _flashcardsController.GetAllFlashcardsAsync();
                 DataVisualizer.ShowFlashcards(flashcards);
 
                 _userInteractionService.GetUserInputToContinue();
@@ -147,45 +147,46 @@ public class Menu
                 break;
 
             case ManageFlashcardsOptions.EditFlashcard:
-                _flashcardsController.UpdateFlashcard();
+                await _flashcardsController.UpdateFlashcardAsync();
 
                 Console.Clear();
                 break;
         }
     }
 
-    private void Study()
+    private async Task StudyAsync()
     {
-        _stacksController.GetStack();
+        await _stacksController.GetStackAsync();
 
-        var studySessionFlashcards = _stacksController.GetFlashcardsByStackId();
-        _studySessionsController.RunStudySession(studySessionFlashcards, _stacksController.GetCurrentStack().Id);
+        var studySessionFlashcards = await _stacksController.GetFlashcardsByStackIdAsync();
+        var currentStack = await _stacksController.GetCurrentStackAsync();
+        await _studySessionsController.RunStudySessionAsync(studySessionFlashcards, currentStack.Id);
 
         _userInteractionService.GetUserInputToContinue();
         Console.Clear();
     }
 
-    private void ViewStudySessions()
+    private async Task ViewStudySessionsAsync()
     {
-        var studySessions = _studySessionsController.GetAllStudySessions();
+        var studySessions = await _studySessionsController.GetAllStudySessionsAsync();
         DataVisualizer.ShowStudySessions(studySessions);
 
         _userInteractionService.GetUserInputToContinue();
         Console.Clear();
     }
 
-    private void MonthlyStudySessionsReport()
+    private async Task MonthlyStudySessionsReportAsync()
     {
-        var monthlyStudySessionReport = _studySessionsController.GetMonthlyStudySessionsReport();
+        var monthlyStudySessionReport = await _studySessionsController.GetMonthlyStudySessionsReportAsync();
         DataVisualizer.ShowMonthlyStudySessionReport(monthlyStudySessionReport);
 
         _userInteractionService.GetUserInputToContinue();
         Console.Clear();
     }
 
-    private void MonthlyStudySessionsScoreReport()
+    private async Task MonthlyStudySessionsScoreReportAsync()
     {
-        var monthlyStudySessionAverageScoreReport = _studySessionsController.GetMonthlyStudySessionsAverageScoreReport();
+        var monthlyStudySessionAverageScoreReport = await _studySessionsController.GetMonthlyStudySessionsAverageScoreReportAsync();
         DataVisualizer.ShowMonthlyStudySessionAverageScoreReport(monthlyStudySessionAverageScoreReport);
 
         _userInteractionService.GetUserInputToContinue();

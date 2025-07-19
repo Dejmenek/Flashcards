@@ -12,7 +12,7 @@ using Microsoft.Extensions.Hosting;
 var host = Host.CreateDefaultBuilder(args)
         .ConfigureHostConfiguration(hostConfig =>
         {
-            hostConfig.SetBasePath(Directory.GetCurrentDirectory());
+            hostConfig.SetBasePath(AppContext.BaseDirectory);
             hostConfig.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
         })
         .ConfigureServices((hostContext, services) =>
@@ -40,7 +40,7 @@ var host = Host.CreateDefaultBuilder(args)
 
 var config = host.Services.GetRequiredService<IConfiguration>();
 var dataContext = new DataContext(config);
-dataContext.CreateDatabase();
+await dataContext.CreateDatabase();
 
 var menu = host.Services.GetRequiredService<Menu>();
-menu.Run();
+await menu.RunAsync();
