@@ -4,8 +4,8 @@ namespace Flashcards.DataAccess.Interfaces;
 
 public interface IFlashcardsRepository
 {
-    void AddFlashcard(int stackId, string front, string back);
-    void DeleteFlashcard(int flashcardId);
-    void UpdateFlashcard(int flashcardId, string front, string back);
-    IEnumerable<Flashcard> GetAllFlashcards();
+    Task AddFlashcardAsync(int stackId, string front, string back);
+    Task DeleteFlashcardAsync(int flashcardId);
+    Task UpdateFlashcardAsync(int flashcardId, string front, string back);
+    Task<IEnumerable<Flashcard>> GetAllFlashcardsAsync();
 }

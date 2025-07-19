@@ -15,26 +15,26 @@ public class StacksRepository : IStacksRepository
         _connectionString = config.GetConnectionString("Default")!;
     }
 
-    public void AddStack(string name)
+    public async Task AddStackAsync(string name)
     {
         using (var connection = new SqlConnection(_connectionString))
         {
             string sql = SqlScripts.AddStack;
 
-            connection.Execute(sql, new
+            await connection.ExecuteAsync(sql, new
             {
                 Name = name
             });
         }
     }
 
-    public void DeleteFlashcardFromStack(int flashcardId, int stackId)
+    public async Task DeleteFlashcardFromStackAsync(int flashcardId, int stackId)
     {
         using (var connection = new SqlConnection(_connectionString))
         {
             string sql = SqlScripts.DeleteFlashcardFromStack;
 
-            connection.Execute(sql, new
+            await connection.ExecuteAsync(sql, new
             {
                 Id = flashcardId,
                 StackId = stackId
@@ -42,26 +42,26 @@ public class StacksRepository : IStacksRepository
         }
     }
 
-    public IEnumerable<Flashcard> GetFlashcardsByStackId(int stackId)
+    public async Task<IEnumerable<Flashcard>> GetFlashcardsByStackIdAsync(int stackId)
     {
         using (var connection = new SqlConnection(_connectionString))
         {
             string sql = SqlScripts.GetFlashcardsByStackId;
 
-            return connection.Query<Flashcard>(sql, new
+            return await connection.QueryAsync<Flashcard>(sql, new
             {
                 StackId = stackId
             });
         }
     }
 
-    public void UpdateFlashcardInStack(int flashcardId, int stackId, string front, string back)
+    public async Task UpdateFlashcardInStackAsync(int flashcardId, int stackId, string front, string back)
     {
         using (var connection = new SqlConnection(_connectionString))
         {
             string sql = SqlScripts.UpdateFlashcardInStack;
 
-            connection.Execute(sql, new
+            await connection.ExecuteAsync(sql, new
             {
                 Front = front,
                 Back = back,
@@ -71,85 +71,85 @@ public class StacksRepository : IStacksRepository
         }
     }
 
-    public void DeleteStack(int id)
+    public async Task DeleteStackAsync(int id)
     {
         using (var connection = new SqlConnection(_connectionString))
         {
             string sql = SqlScripts.DeleteStack;
 
-            connection.Execute(sql, new
+            await connection.ExecuteAsync(sql, new
             {
                 Id = id
             });
         }
     }
 
-    public IEnumerable<Stack> GetAllStacks()
+    public async Task<IEnumerable<Stack>> GetAllStacksAsync()
     {
         using (var connection = new SqlConnection(_connectionString))
         {
             string sql = SqlScripts.GetStacks;
 
-            return connection.Query<Stack>(sql);
+            return await connection.QueryAsync<Stack>(sql);
         }
     }
 
-    public Stack GetStack(string name)
+    public async Task<Stack> GetStackAsync(string name)
     {
         using (var connection = new SqlConnection(_connectionString))
         {
             string sql = SqlScripts.GetStack;
 
-            return connection.QuerySingle<Stack>(sql, new
+            return await connection.QuerySingleAsync<Stack>(sql, new
             {
                 Name = name
             });
         }
     }
 
-    public bool StackExistsWithName(string name)
+    public async Task<bool> StackExistsWithNameAsync(string name)
     {
         using (var connection = new SqlConnection(_connectionString))
         {
             string sql = SqlScripts.StackExistsWithName;
 
-            return connection.QuerySingle<bool>(sql, new
+            return await connection.QuerySingleAsync<bool>(sql, new
             {
                 Name = name
             });
         }
     }
 
-    public bool HasStack()
+    public async Task<bool> HasStackAsync()
     {
         using (var connection = new SqlConnection(_connectionString))
         {
             string sql = SqlScripts.HasStack;
 
-            return connection.QuerySingle<bool>(sql);
+            return await connection.QuerySingleAsync<bool>(sql);
         }
     }
 
-    public bool HasStackAnyFlashcards(int stackId)
+    public async Task<bool> HasStackAnyFlashcardsAsync(int stackId)
     {
         using (var connection = new SqlConnection(_connectionString))
         {
             string sql = SqlScripts.HasStackAnyFlashcards;
 
-            return connection.QuerySingle<bool>(sql, new
+            return await connection.QuerySingleAsync<bool>(sql, new
             {
                 Id = stackId
             });
         }
     }
 
-    public int GetFlashcardsCountInStack(int stackId)
+    public async Task<int> GetFlashcardsCountInStackAsync(int stackId)
     {
         using (var connection = new SqlConnection(_connectionString))
         {
             string sql = SqlScripts.GetFlashcardsCountInStack;
 
-            return connection.QuerySingle<int>(sql, new
+            return await connection.QuerySingleAsync<int>(sql, new
             {
                 StackId = stackId
             });

@@ -15,13 +15,13 @@ public class StudySessionsRepository : IStudySessionsRepository
         _connectionString = config.GetConnectionString("Default")!;
     }
 
-    public void AddStudySession(int stackId, DateTime date, int score)
+    public async Task AddStudySessionAsync(int stackId, DateTime date, int score)
     {
         using (var connection = new SqlConnection(_connectionString))
         {
             string sql = SqlScripts.AddStudySession;
 
-            connection.Execute(sql, new
+            await connection.ExecuteAsync(sql, new
             {
                 StackId = stackId,
                 Date = date,
@@ -30,49 +30,49 @@ public class StudySessionsRepository : IStudySessionsRepository
         }
     }
 
-    public IEnumerable<StudySession> GetAllStudySessions()
+    public async Task<IEnumerable<StudySession>> GetAllStudySessionsAsync()
     {
         using (var connection = new SqlConnection(_connectionString))
         {
             string sql = SqlScripts.GetStudySessions;
 
-            return connection.Query<StudySession>(sql);
+            return await connection.QueryAsync<StudySession>(sql);
         }
     }
 
-    public IEnumerable<MonthlyStudySessionsNumberData> GetMonthlyStudySessionReport(string year)
+    public async Task<IEnumerable<MonthlyStudySessionsNumberData>> GetMonthlyStudySessionReportAsync(string year)
     {
         using (var connection = new SqlConnection(_connectionString))
         {
             string sql = SqlScripts.GetMonthlyStudySessionReport;
 
-            return connection.Query<MonthlyStudySessionsNumberData>(sql, new
+            return await connection.QueryAsync<MonthlyStudySessionsNumberData>(sql, new
             {
                 Year = year
             });
         }
     }
 
-    public IEnumerable<MonthlyStudySessionsAverageScoreData> GetMonthlyStudySessionAverageScoreReport(string year)
+    public async Task<IEnumerable<MonthlyStudySessionsAverageScoreData>> GetMonthlyStudySessionAverageScoreReportAsync(string year)
     {
         using (var connection = new SqlConnection(_connectionString))
         {
             string sql = SqlScripts.GetMonthlyStudySessionAverageScoreReport;
 
-            return connection.Query<MonthlyStudySessionsAverageScoreData>(sql, new
+            return await connection.QueryAsync<MonthlyStudySessionsAverageScoreData>(sql, new
             {
                 Year = year
             });
         }
     }
 
-    public bool HasStudySession()
+    public async Task<bool> HasStudySessionAsync()
     {
         using (var connection = new SqlConnection(_connectionString))
         {
             string sql = SqlScripts.HasStudySession;
 
-            return connection.QuerySingle<bool>(sql);
+            return await connection.QuerySingleAsync<bool>(sql);
         }
     }
 }

@@ -15,13 +15,13 @@ public class FlashcardsRepository : IFlashcardsRepository
         _connectionString = config.GetConnectionString("Default")!;
     }
 
-    public void AddFlashcard(int stackId, string front, string back)
+    public async Task AddFlashcardAsync(int stackId, string front, string back)
     {
         using (var connection = new SqlConnection(_connectionString))
         {
             string sql = SqlScripts.AddFlashcard;
 
-            connection.Execute(sql, new
+            await connection.ExecuteAsync(sql, new
             {
                 StackId = stackId,
                 Front = front,
@@ -30,36 +30,36 @@ public class FlashcardsRepository : IFlashcardsRepository
         }
     }
 
-    public void DeleteFlashcard(int flashcardId)
+    public async Task DeleteFlashcardAsync(int flashcardId)
     {
         using (var connection = new SqlConnection(_connectionString))
         {
             string sql = SqlScripts.DeleteFlashcard;
 
-            connection.Execute(sql, new
+            await connection.ExecuteAsync(sql, new
             {
                 Id = flashcardId
             });
         }
     }
 
-    public IEnumerable<Flashcard> GetAllFlashcards()
+    public async Task<IEnumerable<Flashcard>> GetAllFlashcardsAsync()
     {
         using (var connection = new SqlConnection(_connectionString))
         {
             string sql = SqlScripts.GetFlashcards;
 
-            return connection.Query<Flashcard>(sql);
+            return await connection.QueryAsync<Flashcard>(sql);
         }
     }
 
-    public void UpdateFlashcard(int flashcardId, string front, string back)
+    public async Task UpdateFlashcardAsync(int flashcardId, string front, string back)
     {
         using (var connection = new SqlConnection(_connectionString))
         {
             string sql = SqlScripts.UpdateFlashcard;
 
-            connection.Execute(sql, new
+            await connection.ExecuteAsync(sql, new
             {
                 Front = front,
                 Back = back,
