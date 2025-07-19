@@ -12,23 +12,23 @@ public class StudySessionsController
         _studySessionsService = studySessionsService;
     }
 
-    public void RunStudySession(List<FlashcardDTO> studySessionFlashcards, int stackId)
+    public async Task RunStudySessionAsync(List<FlashcardDTO> studySessionFlashcards, int stackId)
     {
-        _studySessionsService.RunStudySession(studySessionFlashcards, stackId);
+        await _studySessionsService.RunStudySessionAsync(studySessionFlashcards, stackId);
     }
 
-    public List<StudySessionDTO> GetAllStudySessions()
+    public async Task<List<StudySessionDTO>> GetAllStudySessionsAsync()
     {
-        return _studySessionsService.GetAllStudySessions();
+        return await _studySessionsService.GetAllStudySessionsAsync();
     }
 
-    public IEnumerable<MonthlyStudySessionsNumberData> GetMonthlyStudySessionsReport()
+    public async Task<IEnumerable<MonthlyStudySessionsNumberData>> GetMonthlyStudySessionsReportAsync()
     {
-        return _studySessionsService.GetMonthlyStudySessionsReport();
+        return await _studySessionsService.GetMonthlyStudySessionsReportAsync();
     }
 
-    public IEnumerable<MonthlyStudySessionsAverageScoreData> GetMonthlyStudySessionsAverageScoreReport()
+    public async Task<IEnumerable<MonthlyStudySessionsAverageScoreData>> GetMonthlyStudySessionsAverageScoreReportAsync()
     {
-        return _studySessionsService.GetMonthlyStudySessionsAverageScoreReport();
+        return await _studySessionsService.GetMonthlyStudySessionsAverageScoreReportAsync();
     }
 }

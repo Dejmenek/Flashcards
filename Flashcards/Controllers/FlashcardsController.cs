@@ -12,23 +12,23 @@ public class FlashcardsController
         _flashcardsService = flashcardsService;
     }
 
-    public void AddFlashcard()
+    public async Task AddFlashcardAsync()
     {
-        _flashcardsService.AddFlashcard();
+        await _flashcardsService.AddFlashcardAsync();
     }
 
-    public void DeleteFlashcard()
+    public async Task DeleteFlashcardAsync()
     {
-        _flashcardsService.DeleteFlashcard();
+        await _flashcardsService.DeleteFlashcardAsync();
     }
 
-    public List<FlashcardDTO> GetAllFlashcards()
+    public async Task<List<FlashcardDTO>> GetAllFlashcardsAsync()
     {
-        return _flashcardsService.GetAllFlashcards();
+        return await _flashcardsService.GetAllFlashcardsAsync();
     }
 
-    public void UpdateFlashcard()
+    public async Task UpdateFlashcardAsync()
     {
-        _flashcardsService.UpdateFlashcard();
+        await _flashcardsService.UpdateFlashcardAsync();
     }
 }
