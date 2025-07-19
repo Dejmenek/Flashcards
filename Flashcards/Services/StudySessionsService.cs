@@ -18,7 +18,7 @@ public class StudySessionsService : IStudySessionsService
         _userInteractionService = userInteractionService;
     }
 
-    public void StartStudySession(List<FlashcardDTO> flashcards)
+    public async Task StartStudySessionAsync(List<FlashcardDTO> flashcards)
     {
         Score = 0;
         foreach (FlashcardDTO flashcard in flashcards)
@@ -46,7 +46,7 @@ public class StudySessionsService : IStudySessionsService
         Console.Clear();
     }
 
-    public void RunStudySession(List<FlashcardDTO> studySessionFlashcards, int stackId)
+    public async Task RunStudySessionAsync(List<FlashcardDTO> studySessionFlashcards, int stackId)
     {
         if (studySessionFlashcards is [])
         {
@@ -54,31 +54,30 @@ public class StudySessionsService : IStudySessionsService
             return;
         }
 
-        StartStudySession(studySessionFlashcards);
-        EndStudySession(stackId);
+        await StartStudySessionAsync(studySessionFlashcards);
+        await EndStudySessionAsync(stackId);
     }
 
-    private void EndStudySession(int stackId)
+    private async Task EndStudySessionAsync(int stackId)
     {
-        AddStudySession(stackId);
+        await AddStudySessionAsync(stackId);
     }
 
-    private void AddStudySession(int stackId)
+    private async Task AddStudySessionAsync(int stackId)
     {
         DateTime date = DateTime.Now;
-
-        _studySessionsRepository.AddStudySession(stackId, date, Score);
+        await _studySessionsRepository.AddStudySessionAsync(stackId, date, Score);
     }
 
-    public List<StudySessionDTO> GetAllStudySessions()
+    public async Task<List<StudySessionDTO>> GetAllStudySessionsAsync()
     {
-        if (!_studySessionsRepository.HasStudySession())
+        if (!await _studySessionsRepository.HasStudySessionAsync())
         {
             return [];
         }
 
         List<StudySessionDTO> studySessionDtos = new List<StudySessionDTO>();
-        var studySessions = _studySessionsRepository.GetAllStudySessions();
+        var studySessions = await _studySessionsRepository.GetAllStudySessionsAsync();
 
         foreach (var studySession in studySessions)
         {
@@ -88,28 +87,27 @@ public class StudySessionsService : IStudySessionsService
         return studySessionDtos;
     }
 
-    public IEnumerable<MonthlyStudySessionsNumberData> GetMonthlyStudySessionsReport()
+    public async Task<IEnumerable<MonthlyStudySessionsNumberData>> GetMonthlyStudySessionsReportAsync()
     {
-
-        if (!_studySessionsRepository.HasStudySession())
+        if (!await _studySessionsRepository.HasStudySessionAsync())
         {
             return Enumerable.Empty<MonthlyStudySessionsNumberData>();
         }
 
         string year = _userInteractionService.GetYear();
 
-        return _studySessionsRepository.GetMonthlyStudySessionReport(year);
+        return await _studySessionsRepository.GetMonthlyStudySessionReportAsync(year);
     }
 
-    public IEnumerable<MonthlyStudySessionsAverageScoreData> GetMonthlyStudySessionsAverageScoreReport()
+    public async Task<IEnumerable<MonthlyStudySessionsAverageScoreData>> GetMonthlyStudySessionsAverageScoreReportAsync()
     {
-        if (!_studySessionsRepository.HasStudySession())
+        if (!await _studySessionsRepository.HasStudySessionAsync())
         {
             return Enumerable.Empty<MonthlyStudySessionsAverageScoreData>();
         }
 
         string year = _userInteractionService.GetYear();
 
-        return _studySessionsRepository.GetMonthlyStudySessionAverageScoreReport(year);
+        return await _studySessionsRepository.GetMonthlyStudySessionAverageScoreReportAsync(year);
     }
 }

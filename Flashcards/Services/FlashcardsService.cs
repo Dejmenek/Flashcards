@@ -19,11 +19,11 @@ public class FlashcardsService : IFlashcardsService
         _stacksRepository = stacksRepository;
     }
 
-    public void AddFlashcard()
+    public async Task AddFlashcardAsync()
     {
-        var stacks = _stacksRepository.GetAllStacks();
+        var stacks = await _stacksRepository.GetAllStacksAsync();
 
-        if (!_stacksRepository.HasStack())
+        if (!await _stacksRepository.HasStackAsync())
         {
             AnsiConsole.MarkupLine("No stacks found. Add new stack before creating new flashcard!");
             return;
@@ -42,22 +42,22 @@ public class FlashcardsService : IFlashcardsService
         string front = _userInteractionService.GetFlashcardFront();
         string back = _userInteractionService.GetFlashcardBack();
 
-        _flashcardsRepository.AddFlashcard(chosenStackId, front, back);
+        await _flashcardsRepository.AddFlashcardAsync(chosenStackId, front, back);
     }
 
-    public void DeleteFlashcard()
+    public async Task DeleteFlashcardAsync()
     {
-        List<FlashcardDTO> flashcards = GetAllFlashcards();
+        List<FlashcardDTO> flashcards = await GetAllFlashcardsAsync();
 
         FlashcardDTO chosenFlashcard = _userInteractionService.GetFlashcard(flashcards);
 
-        _flashcardsRepository.DeleteFlashcard(chosenFlashcard.Id);
+        await _flashcardsRepository.DeleteFlashcardAsync(chosenFlashcard.Id);
     }
 
-    public List<FlashcardDTO> GetAllFlashcards()
+    public async Task<List<FlashcardDTO>> GetAllFlashcardsAsync()
     {
         List<FlashcardDTO> flashcardDtos = new List<FlashcardDTO>();
-        var flashcards = _flashcardsRepository.GetAllFlashcards();
+        var flashcards = await _flashcardsRepository.GetAllFlashcardsAsync();
 
         foreach (var flashcard in flashcards)
         {
@@ -67,15 +67,15 @@ public class FlashcardsService : IFlashcardsService
         return flashcardDtos;
     }
 
-    public void UpdateFlashcard()
+    public async Task UpdateFlashcardAsync()
     {
-        List<FlashcardDTO> flashcards = GetAllFlashcards();
+        List<FlashcardDTO> flashcards = await GetAllFlashcardsAsync();
 
         FlashcardDTO chosenFlashcard = _userInteractionService.GetFlashcard(flashcards);
 
         string front = _userInteractionService.GetFlashcardFront();
         string back = _userInteractionService.GetFlashcardBack();
 
-        _flashcardsRepository.UpdateFlashcard(chosenFlashcard.Id, front, back);
+        await _flashcardsRepository.UpdateFlashcardAsync(chosenFlashcard.Id, front, back);
     }
 }

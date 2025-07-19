@@ -20,61 +20,76 @@ public class StacksService : IStacksService
         _flashcardsRepository = flashcardsRepository;
     }
 
-    public void AddStack()
+    public async Task AddStackAsync()
     {
         string name = _userInteractionService.GetStackName();
 
-        while (_stacksRepository.StackExistsWithName(name))
+        while (await _stacksRepository.StackExistsWithNameAsync(name))
         {
             AnsiConsole.MarkupLine($"There is already a stack named {name}. Please try a different name.");
             name = _userInteractionService.GetStackName();
         }
 
-        _stacksRepository.AddStack(name);
+        await _stacksRepository.AddStackAsync(name);
     }
 
-    public void AddFlashcardToStack()
+    public async Task AddFlashcardToStackAsync()
     {
         string front = _userInteractionService.GetFlashcardFront();
         string back = _userInteractionService.GetFlashcardBack();
 
-        _flashcardsRepository.AddFlashcard(CurrentStack.Id, front, back);
+        if (CurrentStack == null)
+            return;
+
+        await _flashcardsRepository.AddFlashcardAsync(CurrentStack.Id, front, back);
     }
 
-    public void DeleteStack()
+    public async Task DeleteStackAsync()
     {
-        _stacksRepository.DeleteStack(CurrentStack.Id);
+        if (CurrentStack == null)
+            return;
+
+        await _stacksRepository.DeleteStackAsync(CurrentStack.Id);
     }
 
-    public void DeleteFlashcardFromStack()
+    public async Task DeleteFlashcardFromStackAsync()
     {
-        List<FlashcardDTO> flashcards = GetFlashcardsByStackId();
+        var flashcards = await GetFlashcardsByStackIdAsync();
+
+        if (CurrentStack == null)
+            return;
 
         FlashcardDTO chosenFlashcard = _userInteractionService.GetFlashcard(flashcards);
 
-        _stacksRepository.DeleteFlashcardFromStack(chosenFlashcard.Id, CurrentStack.Id);
+        await _stacksRepository.DeleteFlashcardFromStackAsync(chosenFlashcard.Id, CurrentStack.Id);
     }
 
-    public void UpdateFlashcardInStack()
+    public async Task UpdateFlashcardInStackAsync()
     {
-        List<FlashcardDTO> flashcards = GetFlashcardsByStackId();
+        var flashcards = await GetFlashcardsByStackIdAsync();
+
+        if (CurrentStack == null)
+            return;
 
         FlashcardDTO chosenFlashcard = _userInteractionService.GetFlashcard(flashcards);
         string front = _userInteractionService.GetFlashcardFront();
         string back = _userInteractionService.GetFlashcardBack();
 
-        _stacksRepository.UpdateFlashcardInStack(chosenFlashcard.Id, CurrentStack.Id, front, back);
+        await _stacksRepository.UpdateFlashcardInStackAsync(chosenFlashcard.Id, CurrentStack.Id, front, back);
     }
 
-    public List<FlashcardDTO> GetFlashcardsByStackId()
+    public async Task<List<FlashcardDTO>> GetFlashcardsByStackIdAsync()
     {
-        if (!_stacksRepository.HasStackAnyFlashcards(CurrentStack.Id))
+        if (CurrentStack == null)
+            return [];
+
+        if (!await _stacksRepository.HasStackAnyFlashcardsAsync(CurrentStack.Id))
         {
             return [];
         }
 
         List<FlashcardDTO> flashcardDtos = new List<FlashcardDTO>();
-        var flashcards = _stacksRepository.GetFlashcardsByStackId(CurrentStack.Id);
+        var flashcards = await _stacksRepository.GetFlashcardsByStackIdAsync(CurrentStack.Id);
 
         foreach (var flashcard in flashcards)
         {
@@ -84,20 +99,23 @@ public class StacksService : IStacksService
         return flashcardDtos;
     }
 
-    public int GetFlashcardsCountInStack()
+    public async Task<int> GetFlashcardsCountInStackAsync()
     {
-        return _stacksRepository.GetFlashcardsCountInStack(CurrentStack.Id);
+        if (CurrentStack == null)
+            return 0;
+
+        return await _stacksRepository.GetFlashcardsCountInStackAsync(CurrentStack.Id);
     }
 
-    public List<StackDTO> GetAllStacks()
+    public async Task<List<StackDTO>> GetAllStacksAsync()
     {
-        if (!_stacksRepository.HasStack())
+        if (!await _stacksRepository.HasStackAsync())
         {
             return [];
         }
 
         List<StackDTO> stackDtos = new List<StackDTO>();
-        var stacks = _stacksRepository.GetAllStacks();
+        var stacks = await _stacksRepository.GetAllStacksAsync();
 
         foreach (var stack in stacks)
         {
@@ -107,9 +125,9 @@ public class StacksService : IStacksService
         return stackDtos;
     }
 
-    public void GetStack()
+    public async Task GetStackAsync()
     {
-        List<StackDTO> stacks = GetAllStacks();
+        var stacks = await GetAllStacksAsync();
 
         if (stacks.Count == 0)
         {
@@ -118,11 +136,11 @@ public class StacksService : IStacksService
 
         string name = _userInteractionService.GetStack(stacks);
 
-        CurrentStack = _stacksRepository.GetStack(name);
+        CurrentStack = await _stacksRepository.GetStackAsync(name);
     }
 
-    public Stack GetCurrentStack()
+    public Task<Stack> GetCurrentStackAsync()
     {
-        return CurrentStack!;
+        return Task.FromResult(CurrentStack!);
     }
 }

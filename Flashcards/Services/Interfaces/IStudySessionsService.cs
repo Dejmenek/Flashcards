@@ -3,9 +3,9 @@
 namespace Flashcards.Services.Interfaces;
 public interface IStudySessionsService
 {
-    void StartStudySession(List<FlashcardDTO> flashcards);
-    void RunStudySession(List<FlashcardDTO> studySessionFlashcards, int stackId);
-    List<StudySessionDTO> GetAllStudySessions();
-    IEnumerable<MonthlyStudySessionsNumberData> GetMonthlyStudySessionsReport();
-    IEnumerable<MonthlyStudySessionsAverageScoreData> GetMonthlyStudySessionsAverageScoreReport();
+    Task StartStudySessionAsync(List<FlashcardDTO> flashcards);
+    Task RunStudySessionAsync(List<FlashcardDTO> studySessionFlashcards, int stackId);
+    Task<List<StudySessionDTO>> GetAllStudySessionsAsync();
+    Task<IEnumerable<MonthlyStudySessionsNumberData>> GetMonthlyStudySessionsReportAsync();
+    Task<IEnumerable<MonthlyStudySessionsAverageScoreData>> GetMonthlyStudySessionsAverageScoreReportAsync();
 }

@@ -3,8 +3,8 @@
 namespace Flashcards.Services.Interfaces;
 public interface IFlashcardsService
 {
-    void AddFlashcard();
-    void DeleteFlashcard();
-    List<FlashcardDTO> GetAllFlashcards();
-    void UpdateFlashcard();
+    Task AddFlashcardAsync();
+    Task DeleteFlashcardAsync();
+    Task<List<FlashcardDTO>> GetAllFlashcardsAsync();
+    Task UpdateFlashcardAsync();
 }
