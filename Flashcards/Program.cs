@@ -16,11 +16,11 @@ var host = Host.CreateDefaultBuilder(args)
         })
         .ConfigureServices((hostContext, services) =>
         {
-            var connectionString = hostContext.Configuration.GetConnectionString("LearnifyDb");
+            var connectionString = hostContext.Configuration.GetConnectionString("Default");
 
             if (string.IsNullOrWhiteSpace(connectionString))
             {
-                throw new InvalidOperationException("The connection string 'LearnifyDb' is not configured or is empty. Please check your appsettings.json file.");
+                throw new InvalidOperationException("The connection string 'Default' is not configured or is empty. Please check your appsettings.json file.");
             }
 
             services.AddSingleton<UserInteractionService>();

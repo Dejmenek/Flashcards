@@ -12,7 +12,7 @@ public class FlashcardsRepository : IFlashcardsRepository
 
     public FlashcardsRepository(IConfiguration config)
     {
-        _connectionString = config.GetConnectionString("LearnifyDb")!;
+        _connectionString = config.GetConnectionString("Default")!;
     }
 
     public void AddFlashcard(int stackId, string front, string back)

@@ -10,7 +10,7 @@ public class DataContext
 
     public DataContext(IConfiguration config)
     {
-        _connectionString = config.GetConnectionString("LearnifyDb")!;
+        _connectionString = config.GetConnectionString("Default")!;
     }
 
     public void CreateDatabase()

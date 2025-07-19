@@ -12,7 +12,7 @@ public class StudySessionsRepository : IStudySessionsRepository
 
     public StudySessionsRepository(IConfiguration config)
     {
-        _connectionString = config.GetConnectionString("LearnifyDb")!;
+        _connectionString = config.GetConnectionString("Default")!;
     }
 
     public void AddStudySession(int stackId, DateTime date, int score)

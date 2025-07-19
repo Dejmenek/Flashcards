@@ -12,7 +12,7 @@ public class StacksRepository : IStacksRepository
 
     public StacksRepository(IConfiguration config)
     {
-        _connectionString = config.GetConnectionString("LearnifyDb")!;
+        _connectionString = config.GetConnectionString("Default")!;
     }
 
     public void AddStack(string name)
