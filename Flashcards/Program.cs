@@ -1,5 +1,6 @@
 ﻿using Flashcards;
 using Flashcards.Controllers;
+using Flashcards.DataAccess;
 using Flashcards.DataAccess.Interfaces;
 using Flashcards.DataAccess.Repositories;
 using Flashcards.Services;
@@ -36,6 +37,10 @@ var host = Host.CreateDefaultBuilder(args)
             services.AddScoped<Menu>();
         })
         .Build();
+
+var config = host.Services.GetRequiredService<IConfiguration>();
+var dataContext = new DataContext(config);
+dataContext.CreateDatabase();
 
 var menu = host.Services.GetRequiredService<Menu>();
 menu.Run();
