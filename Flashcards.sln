@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34601.278
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flashcards", "Flashcards.csproj", "{C2703E5D-3B30-4D56-8D28-9C82CBFCE5C8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flashcards", "Flashcards\Flashcards.csproj", "{C2703E5D-3B30-4D56-8D28-9C82CBFCE5C8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
