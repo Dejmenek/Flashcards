@@ -14,6 +14,7 @@ var host = Host.CreateDefaultBuilder(args)
         {
             hostConfig.SetBasePath(AppContext.BaseDirectory);
             hostConfig.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            hostConfig.AddEnvironmentVariables();
         })
         .ConfigureServices((hostContext, services) =>
         {
@@ -40,7 +41,7 @@ var host = Host.CreateDefaultBuilder(args)
 
 var config = host.Services.GetRequiredService<IConfiguration>();
 var dataContext = new DataContext(config);
-await dataContext.CreateDatabase();
+await dataContext.Init();
 
 var menu = host.Services.GetRequiredService<Menu>();
 await menu.RunAsync();
