@@ -95,6 +95,20 @@ namespace Flashcards {
         
         /// <summary>
         ///   Looks up a localized string similar to IF NOT EXISTS (
+        /// SELECT * FROM sys.databases WHERE name = &apos;Flashcards&apos;
+        ///)
+        ///BEGIN
+        /// CREATE DATABASE Flashcards;
+        ///END;.
+        /// </summary>
+        internal static string CreateDatabase {
+            get {
+                return ResourceManager.GetString("CreateDatabase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IF NOT EXISTS (
         ///    SELECT * FROM INFORMATION_SCHEMA.TABLES
         ///    WHERE TABLE_NAME = &apos;Stacks&apos;
         ///)
