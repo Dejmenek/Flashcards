@@ -8,16 +8,16 @@ namespace Flashcards.DataAccess.Repositories;
 
 public class StudySessionsRepository : IStudySessionsRepository
 {
-    private readonly string _connectionString;
+    private readonly string _defaultConnectionString;
 
     public StudySessionsRepository(IConfiguration config)
     {
-        _connectionString = config.GetConnectionString("Default")!;
+        _defaultConnectionString = config.GetConnectionString("Default")!;
     }
 
     public async Task AddStudySessionAsync(int stackId, DateTime date, int score)
     {
-        using (var connection = new SqlConnection(_connectionString))
+        using (var connection = new SqlConnection(_defaultConnectionString))
         {
             string sql = SqlScripts.AddStudySession;
 
@@ -32,7 +32,7 @@ public class StudySessionsRepository : IStudySessionsRepository
 
     public async Task<IEnumerable<StudySession>> GetAllStudySessionsAsync()
     {
-        using (var connection = new SqlConnection(_connectionString))
+        using (var connection = new SqlConnection(_defaultConnectionString))
         {
             string sql = SqlScripts.GetStudySessions;
 
@@ -42,7 +42,7 @@ public class StudySessionsRepository : IStudySessionsRepository
 
     public async Task<IEnumerable<MonthlyStudySessionsNumberData>> GetMonthlyStudySessionReportAsync(string year)
     {
-        using (var connection = new SqlConnection(_connectionString))
+        using (var connection = new SqlConnection(_defaultConnectionString))
         {
             string sql = SqlScripts.GetMonthlyStudySessionReport;
 
@@ -55,7 +55,7 @@ public class StudySessionsRepository : IStudySessionsRepository
 
     public async Task<IEnumerable<MonthlyStudySessionsAverageScoreData>> GetMonthlyStudySessionAverageScoreReportAsync(string year)
     {
-        using (var connection = new SqlConnection(_connectionString))
+        using (var connection = new SqlConnection(_defaultConnectionString))
         {
             string sql = SqlScripts.GetMonthlyStudySessionAverageScoreReport;
 
@@ -68,7 +68,7 @@ public class StudySessionsRepository : IStudySessionsRepository
 
     public async Task<bool> HasStudySessionAsync()
     {
-        using (var connection = new SqlConnection(_connectionString))
+        using (var connection = new SqlConnection(_defaultConnectionString))
         {
             string sql = SqlScripts.HasStudySession;
 

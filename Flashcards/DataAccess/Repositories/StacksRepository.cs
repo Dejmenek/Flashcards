@@ -8,16 +8,16 @@ namespace Flashcards.DataAccess.Repositories;
 
 public class StacksRepository : IStacksRepository
 {
-    private readonly string _connectionString;
+    private readonly string _defaultConnectionString;
 
     public StacksRepository(IConfiguration config)
     {
-        _connectionString = config.GetConnectionString("Default")!;
+        _defaultConnectionString = config.GetConnectionString("Default")!;
     }
 
     public async Task AddStackAsync(string name)
     {
-        using (var connection = new SqlConnection(_connectionString))
+        using (var connection = new SqlConnection(_defaultConnectionString))
         {
             string sql = SqlScripts.AddStack;
 
@@ -30,7 +30,7 @@ public class StacksRepository : IStacksRepository
 
     public async Task DeleteFlashcardFromStackAsync(int flashcardId, int stackId)
     {
-        using (var connection = new SqlConnection(_connectionString))
+        using (var connection = new SqlConnection(_defaultConnectionString))
         {
             string sql = SqlScripts.DeleteFlashcardFromStack;
 
@@ -44,7 +44,7 @@ public class StacksRepository : IStacksRepository
 
     public async Task<IEnumerable<Flashcard>> GetFlashcardsByStackIdAsync(int stackId)
     {
-        using (var connection = new SqlConnection(_connectionString))
+        using (var connection = new SqlConnection(_defaultConnectionString))
         {
             string sql = SqlScripts.GetFlashcardsByStackId;
 
@@ -57,7 +57,7 @@ public class StacksRepository : IStacksRepository
 
     public async Task UpdateFlashcardInStackAsync(int flashcardId, int stackId, string front, string back)
     {
-        using (var connection = new SqlConnection(_connectionString))
+        using (var connection = new SqlConnection(_defaultConnectionString))
         {
             string sql = SqlScripts.UpdateFlashcardInStack;
 
@@ -73,7 +73,7 @@ public class StacksRepository : IStacksRepository
 
     public async Task DeleteStackAsync(int id)
     {
-        using (var connection = new SqlConnection(_connectionString))
+        using (var connection = new SqlConnection(_defaultConnectionString))
         {
             string sql = SqlScripts.DeleteStack;
 
@@ -86,7 +86,7 @@ public class StacksRepository : IStacksRepository
 
     public async Task<IEnumerable<Stack>> GetAllStacksAsync()
     {
-        using (var connection = new SqlConnection(_connectionString))
+        using (var connection = new SqlConnection(_defaultConnectionString))
         {
             string sql = SqlScripts.GetStacks;
 
@@ -96,7 +96,7 @@ public class StacksRepository : IStacksRepository
 
     public async Task<Stack> GetStackAsync(string name)
     {
-        using (var connection = new SqlConnection(_connectionString))
+        using (var connection = new SqlConnection(_defaultConnectionString))
         {
             string sql = SqlScripts.GetStack;
 
@@ -109,7 +109,7 @@ public class StacksRepository : IStacksRepository
 
     public async Task<bool> StackExistsWithNameAsync(string name)
     {
-        using (var connection = new SqlConnection(_connectionString))
+        using (var connection = new SqlConnection(_defaultConnectionString))
         {
             string sql = SqlScripts.StackExistsWithName;
 
@@ -122,7 +122,7 @@ public class StacksRepository : IStacksRepository
 
     public async Task<bool> HasStackAsync()
     {
-        using (var connection = new SqlConnection(_connectionString))
+        using (var connection = new SqlConnection(_defaultConnectionString))
         {
             string sql = SqlScripts.HasStack;
 
@@ -132,7 +132,7 @@ public class StacksRepository : IStacksRepository
 
     public async Task<bool> HasStackAnyFlashcardsAsync(int stackId)
     {
-        using (var connection = new SqlConnection(_connectionString))
+        using (var connection = new SqlConnection(_defaultConnectionString))
         {
             string sql = SqlScripts.HasStackAnyFlashcards;
 
@@ -145,7 +145,7 @@ public class StacksRepository : IStacksRepository
 
     public async Task<int> GetFlashcardsCountInStackAsync(int stackId)
     {
-        using (var connection = new SqlConnection(_connectionString))
+        using (var connection = new SqlConnection(_defaultConnectionString))
         {
             string sql = SqlScripts.GetFlashcardsCountInStack;
 

@@ -8,16 +8,16 @@ namespace Flashcards.DataAccess.Repositories;
 
 public class FlashcardsRepository : IFlashcardsRepository
 {
-    private readonly string _connectionString;
+    private readonly string _defaultConnectionString;
 
     public FlashcardsRepository(IConfiguration config)
     {
-        _connectionString = config.GetConnectionString("Default")!;
+        _defaultConnectionString = config.GetConnectionString("Default")!;
     }
 
     public async Task AddFlashcardAsync(int stackId, string front, string back)
     {
-        using (var connection = new SqlConnection(_connectionString))
+        using (var connection = new SqlConnection(_defaultConnectionString))
         {
             string sql = SqlScripts.AddFlashcard;
 
@@ -32,7 +32,7 @@ public class FlashcardsRepository : IFlashcardsRepository
 
     public async Task DeleteFlashcardAsync(int flashcardId)
     {
-        using (var connection = new SqlConnection(_connectionString))
+        using (var connection = new SqlConnection(_defaultConnectionString))
         {
             string sql = SqlScripts.DeleteFlashcard;
 
@@ -45,7 +45,7 @@ public class FlashcardsRepository : IFlashcardsRepository
 
     public async Task<IEnumerable<Flashcard>> GetAllFlashcardsAsync()
     {
-        using (var connection = new SqlConnection(_connectionString))
+        using (var connection = new SqlConnection(_defaultConnectionString))
         {
             string sql = SqlScripts.GetFlashcards;
 
@@ -55,7 +55,7 @@ public class FlashcardsRepository : IFlashcardsRepository
 
     public async Task UpdateFlashcardAsync(int flashcardId, string front, string back)
     {
-        using (var connection = new SqlConnection(_connectionString))
+        using (var connection = new SqlConnection(_defaultConnectionString))
         {
             string sql = SqlScripts.UpdateFlashcard;
 
