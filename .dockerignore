@@ -1,0 +1,20 @@
+# directories
+**/bin/
+**/obj/
+**/out/
+
+# test results and coverage
+**/TestResults/
+**/coverage/
+
+# documentation and legal
+README*
+LICENSE*
+
+# docker files
+**/Dockerfile*
+**/docker-compose.yml
+
+# Source control
+**/.git
+**/.gitignore

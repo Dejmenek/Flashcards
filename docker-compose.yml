@@ -1,0 +1,39 @@
+services:
+  flashcards:
+    build:
+        context: .
+        dockerfile: Dockerfile
+    depends_on:
+        db:
+            condition: service_healthy
+    stdin_open: true # docker run -i
+    tty: true # docker run -t
+    environment:
+        ConnectionStrings__Default: "Server=db;Database=Flashcards;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;"
+        ConnectionStrings__Master: "Server=db;Database=master;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;"
+    networks:
+        - flashcardsnet
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: flashcards_db
+    environment:
+        SA_PASSWORD: "YourStrong!Passw0rd"
+        ACCEPT_EULA: "Y"
+    ports:
+        - "1433:1433"
+    volumes:
+        - flashcards_db_data:/var/opt/mssql
+    networks:
+        - flashcardsnet
+    healthcheck:
+        test: /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "$$SA_PASSWORD" -Q "SELECT 1" || exit 1
+        interval: 10s
+        timeout: 3s
+        retries: 10
+        start_period: 10s
+
+networks:
+    flashcardsnet:
+    
+volumes:
+    flashcards_db_data:
