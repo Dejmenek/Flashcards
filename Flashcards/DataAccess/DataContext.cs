@@ -6,22 +6,35 @@ namespace Flashcards.DataAccess;
 
 public class DataContext
 {
-    private readonly string _connectionString;
+    private readonly string _defaultConnectionString;
+    private readonly string _masterConnectionString;
 
     public DataContext(IConfiguration config)
     {
-        _connectionString = config.GetConnectionString("Default")!;
+        _defaultConnectionString = config.GetConnectionString("Default")!;
+        _masterConnectionString = config.GetConnectionString("Master")!;
     }
 
-    public async Task CreateDatabase()
+    public async Task Init()
     {
+        await CreateDatabase();
         await CreateTables();
         await SeedStacks();
         await SeedFlashcards();
     }
+
+    private async Task CreateDatabase()
+    {
+        using (var connection = new SqlConnection(_masterConnectionString))
+        {
+            string sql = SqlScripts.CreateDatabase;
+            await connection.ExecuteAsync(sql);
+        }
+    }
+
     private async Task CreateTables()
     {
-        using (var connection = new SqlConnection(_connectionString))
+        using (var connection = new SqlConnection(_defaultConnectionString))
         {
             string sql = SqlScripts.CreateTables;
 
@@ -31,7 +44,7 @@ public class DataContext
 
     private async Task SeedStacks()
     {
-        using (var connection = new SqlConnection(_connectionString))
+        using (var connection = new SqlConnection(_defaultConnectionString))
         {
             string sql = SqlScripts.SeedStacks;
 
@@ -41,7 +54,7 @@ public class DataContext
 
     private async Task SeedFlashcards()
     {
-        using (var connection = new SqlConnection(_connectionString))
+        using (var connection = new SqlConnection(_defaultConnectionString))
         {
             string sql = SqlScripts.SeedFlashcards;
 
