@@ -21,6 +21,7 @@ It allows users to create stacks, add flashcards with questions and answers, see
 - SQL Server
 - Dapper
 - [Spectre.Console](https://github.com/spectreconsole/spectre.console)
+- Docker
 
 ## Features
 - Create and manage stacks of flashcards.
@@ -29,6 +30,47 @@ It allows users to create stacks, add flashcards with questions and answers, see
 - Review study sessions statistics.
 - User-friendly interface: Provides clear menus and prompts for interaction.
 - Input validation: Ensure data entered by the user is valid.
+
+## Instalation and Setup
+You can run the Flashcards app either locally or using Docker.
+
+### Local Setup
+#### Steps
+1. Clone or download this project repository.
+2. Open the solution file (Flashcards.Dejmenek.sln) in Visual Studio.
+3. Install the required NuGet packages
+4. Update the appsettings.json file.
+	- Make sure you have two connection strings:
+		```
+		{
+			"ConnectionStrings": {
+				"Default": "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=Flashcards;Integrated Security=True;",
+				"Master": "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=master;Integrated Security=True;"
+			}
+		}
+		```
+5. Build and Run the application from Visual Studio or CLI.
+
+### Docker
+
+#### Prerequisites
+- Docker installed on your machine.
+- Docker Compose installed.
+
+#### Steps
+1. Clone or download this project repository.
+2. Navigate to the project directory in your terminal.
+3. Run the following command to build and start the Docker containers:
+   ```bash
+   docker-compose up -d --build
+   ```
+
+#### Accessing the Application
+Once the containers are running, you can access the application through the terminal.
+You can run the application using the following command:
+```bash
+docker compose run --service-ports -it flashcards
+```
 
 ## Examples
 - Main Menu  
@@ -48,16 +90,6 @@ It allows users to create stacks, add flashcards with questions and answers, see
 	- Number of sessions  
 ![image](https://github.com/user-attachments/assets/2079e36c-5288-4701-b76e-7f459995f102)
 
-## Instalation and Setup
-1. Clone or download this project repository.
-2. Open the solution file (Flashcards.Dejmenek.sln) in Visual Studio.
-3. Install the required NuGet packages:
-	- Dapper
-	- System.Data.SqlClient
-	- Spectre.Console
-	- Spectre.Console.Cli
-	- System.Configuration.ConfigurationManager
-4. Update the App.config file with your SQL Server connection string details.
   
 ## Requirements
 - [x] This is an application where the users will create Stacks of Flashcards.
@@ -76,9 +108,7 @@ It allows users to create stacks, add flashcards with questions and answers, see
 
 ## Things Learned
 I have some previous experience with other DBMS like MySQL and SQLite so using SQL Server wasn't that hard.  
-I only had to look up for data types and how to create pivot tables. Unfortunately, I encountered an issue with auto inrecementing ids in tables.  
-When inserting a new record, the id would jump to 1000. It was weird, because it only occurred in the flashcards table.  
-I removed all the tables and then recreated them. Now it works as intended😅.
+I only had to look up for data types and how to create pivot tables.
 
 I've also learned about Data Transfer Objects (DTOs).  
 They provide a clean way to transfer data between different layers of an application, reducing the amount of unnecessary data sent.
