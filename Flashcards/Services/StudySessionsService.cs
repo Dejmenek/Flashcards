@@ -18,7 +18,7 @@ public class StudySessionsService : IStudySessionsService
         _userInteractionService = userInteractionService;
     }
 
-    public async Task StartStudySessionAsync(List<FlashcardDTO> flashcards)
+    public void StartStudySessionAsync(List<FlashcardDTO> flashcards)
     {
         Score = 0;
         foreach (FlashcardDTO flashcard in flashcards)
@@ -54,7 +54,7 @@ public class StudySessionsService : IStudySessionsService
             return;
         }
 
-        await StartStudySessionAsync(studySessionFlashcards);
+        StartStudySessionAsync(studySessionFlashcards);
         await EndStudySessionAsync(stackId);
     }
 
