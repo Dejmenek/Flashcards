@@ -269,24 +269,6 @@ namespace Flashcards {
         
         /// <summary>
         ///   Looks up a localized string similar to IF EXISTS (
-        ///    SELECT 1 FROM Stacks
-        ///)
-        ///BEGIN
-        ///    SELECT 1;
-        ///END
-        ///ELSE
-        ///BEGIN
-        ///    SELECT 0;
-        ///END;.
-        /// </summary>
-        internal static string HasStack {
-            get {
-                return ResourceManager.GetString("HasStack", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to IF EXISTS (
         ///    SELECT 1 FROM Stacks s JOIN Flashcards f ON s.Id = f.StackId WHERE s.Id = @Id
         ///)
         ///BEGIN
