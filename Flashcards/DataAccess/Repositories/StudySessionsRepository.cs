@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Flashcards.DataAccess.Interfaces;
 using Flashcards.Models;
+using Flashcards.Utils;
 using Microsoft.Extensions.Configuration;
 using System.Data.SqlClient;
 
@@ -15,64 +16,113 @@ public class StudySessionsRepository : IStudySessionsRepository
         _defaultConnectionString = config.GetConnectionString("Default")!;
     }
 
-    public async Task AddStudySessionAsync(int stackId, DateTime date, int score)
+    public async Task<Result> AddStudySessionAsync(int stackId, DateTime date, int score)
     {
-        using (var connection = new SqlConnection(_defaultConnectionString))
+        try
         {
-            string sql = SqlScripts.AddStudySession;
-
-            await connection.ExecuteAsync(sql, new
+            using (var connection = new SqlConnection(_defaultConnectionString))
             {
-                StackId = stackId,
-                Date = date,
-                Score = score
-            });
+                string sql = SqlScripts.AddStudySession;
+
+                await connection.ExecuteAsync(sql, new { StackId = stackId, Date = date, Score = score });
+            }
+            return Result.Success();
+        }
+        catch (SqlException)
+        {
+            return Result.Failure(StudySessionsErrors.AddFailed);
+        }
+        catch (Exception)
+        {
+            return Result.Failure(StudySessionsErrors.AddFailed);
         }
     }
 
-    public async Task<IEnumerable<StudySession>> GetAllStudySessionsAsync()
+    public async Task<Result<IEnumerable<StudySession>>> GetAllStudySessionsAsync()
     {
-        using (var connection = new SqlConnection(_defaultConnectionString))
+        try
         {
-            string sql = SqlScripts.GetStudySessions;
-
-            return await connection.QueryAsync<StudySession>(sql);
-        }
-    }
-
-    public async Task<IEnumerable<MonthlyStudySessionsNumberData>> GetMonthlyStudySessionReportAsync(string year)
-    {
-        using (var connection = new SqlConnection(_defaultConnectionString))
-        {
-            string sql = SqlScripts.GetMonthlyStudySessionReport;
-
-            return await connection.QueryAsync<MonthlyStudySessionsNumberData>(sql, new
+            using (var connection = new SqlConnection(_defaultConnectionString))
             {
-                Year = year
-            });
+                string sql = SqlScripts.GetStudySessions;
+
+                var sessions = await connection.QueryAsync<StudySession>(sql);
+                return Result.Success(sessions);
+            }
+        }
+        catch (SqlException)
+        {
+            return Result.Failure<IEnumerable<StudySession>>(StudySessionsErrors.GetFailed);
+        }
+        catch (Exception)
+        {
+            return Result.Failure<IEnumerable<StudySession>>(StudySessionsErrors.GetFailed);
         }
     }
 
-    public async Task<IEnumerable<MonthlyStudySessionsAverageScoreData>> GetMonthlyStudySessionAverageScoreReportAsync(string year)
+    public async Task<Result<IEnumerable<MonthlyStudySessionsNumberData>>> GetMonthlyStudySessionReportAsync(string year)
     {
-        using (var connection = new SqlConnection(_defaultConnectionString))
+        try
         {
-            string sql = SqlScripts.GetMonthlyStudySessionAverageScoreReport;
-
-            return await connection.QueryAsync<MonthlyStudySessionsAverageScoreData>(sql, new
+            using (var connection = new SqlConnection(_defaultConnectionString))
             {
-                Year = year
-            });
+                string sql = SqlScripts.GetMonthlyStudySessionReport;
+
+                var report = await connection.QueryAsync<MonthlyStudySessionsNumberData>(sql, new { Year = year });
+                return Result.Success(report);
+            }
+        }
+        catch (SqlException)
+        {
+            return Result.Failure<IEnumerable<MonthlyStudySessionsNumberData>>(StudySessionsErrors.ReportFailed);
+        }
+        catch (Exception)
+        {
+            return Result.Failure<IEnumerable<MonthlyStudySessionsNumberData>>(StudySessionsErrors.ReportFailed);
         }
     }
 
-    public async Task<bool> HasStudySessionAsync()
+    public async Task<Result<IEnumerable<MonthlyStudySessionsAverageScoreData>>> GetMonthlyStudySessionAverageScoreReportAsync(string year)
     {
-        using (var connection = new SqlConnection(_defaultConnectionString))
+        try
         {
-            string sql = SqlScripts.HasStudySession;
+            using (var connection = new SqlConnection(_defaultConnectionString))
+            {
+                string sql = SqlScripts.GetMonthlyStudySessionAverageScoreReport;
 
-            return await connection.QuerySingleAsync<bool>(sql);
+                var report = await connection.QueryAsync<MonthlyStudySessionsAverageScoreData>(sql, new { Year = year });
+                return Result.Success(report);
+            }
+        }
+        catch (SqlException)
+        {
+            return Result.Failure<IEnumerable<MonthlyStudySessionsAverageScoreData>>(StudySessionsErrors.ReportFailed);
+        }
+        catch (Exception)
+        {
+            return Result.Failure<IEnumerable<MonthlyStudySessionsAverageScoreData>>(StudySessionsErrors.ReportFailed);
+        }
+    }
+
+    public async Task<Result<bool>> HasStudySessionAsync()
+    {
+        try
+        {
+            using (var connection = new SqlConnection(_defaultConnectionString))
+            {
+                string sql = SqlScripts.HasStudySession;
+
+                var hasSession = await connection.QuerySingleAsync<bool>(sql);
+                return Result.Success(hasSession);
+            }
+        }
+        catch (SqlException)
+        {
+            return Result.Failure<bool>(StudySessionsErrors.HasStudySessionFailed);
+        }
+        catch (Exception)
+        {
+            return Result.Failure<bool>(StudySessionsErrors.HasStudySessionFailed);
         }
     }
 }
