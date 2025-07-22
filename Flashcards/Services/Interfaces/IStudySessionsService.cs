@@ -1,11 +1,12 @@
 ﻿using Flashcards.Models;
+using Flashcards.Utils;
 
 namespace Flashcards.Services.Interfaces;
 public interface IStudySessionsService
 {
     void StartStudySessionAsync(List<FlashcardDTO> flashcards);
-    Task RunStudySessionAsync(List<FlashcardDTO> studySessionFlashcards, int stackId);
-    Task<List<StudySessionDTO>> GetAllStudySessionsAsync();
-    Task<IEnumerable<MonthlyStudySessionsNumberData>> GetMonthlyStudySessionsReportAsync();
-    Task<IEnumerable<MonthlyStudySessionsAverageScoreData>> GetMonthlyStudySessionsAverageScoreReportAsync();
+    Task<Result> RunStudySessionAsync(List<FlashcardDTO> studySessionFlashcards, int stackId);
+    Task<Result<List<StudySessionDTO>>> GetAllStudySessionsAsync();
+    Task<Result<IEnumerable<MonthlyStudySessionsNumberData>>> GetMonthlyStudySessionsReportAsync();
+    Task<Result<IEnumerable<MonthlyStudySessionsAverageScoreData>>> GetMonthlyStudySessionsAverageScoreReportAsync();
 }

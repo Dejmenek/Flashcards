@@ -2,6 +2,7 @@
 using Flashcards.Helpers;
 using Flashcards.Models;
 using Flashcards.Services.Interfaces;
+using Flashcards.Utils;
 using Spectre.Console;
 
 namespace Flashcards.Services;
@@ -46,68 +47,78 @@ public class StudySessionsService : IStudySessionsService
         Console.Clear();
     }
 
-    public async Task RunStudySessionAsync(List<FlashcardDTO> studySessionFlashcards, int stackId)
+    public async Task<Result> RunStudySessionAsync(List<FlashcardDTO> studySessionFlashcards, int stackId)
     {
         if (studySessionFlashcards is [])
-        {
-            AnsiConsole.MarkupLine("No flashcards found to study.");
-            return;
-        }
+            return Result.Failure(FlashcardsErrors.FlashcardsNotFound);
 
         StartStudySessionAsync(studySessionFlashcards);
-        await EndStudySessionAsync(stackId);
+        var endResult = await EndStudySessionAsync(stackId);
+        if (endResult.IsFailure) return Result.Failure(endResult.Error);
+
+        return Result.Success();
     }
 
-    private async Task EndStudySessionAsync(int stackId)
+    private async Task<Result> EndStudySessionAsync(int stackId)
     {
-        await AddStudySessionAsync(stackId);
+        return await AddStudySessionAsync(stackId);
     }
 
-    private async Task AddStudySessionAsync(int stackId)
+    private async Task<Result> AddStudySessionAsync(int stackId)
     {
         DateTime date = DateTime.Now;
-        await _studySessionsRepository.AddStudySessionAsync(stackId, date, Score);
+        var addResult = await _studySessionsRepository.AddStudySessionAsync(stackId, date, Score);
+        if (addResult.IsFailure) return Result.Failure(addResult.Error);
+
+        return Result.Success();
     }
 
-    public async Task<List<StudySessionDTO>> GetAllStudySessionsAsync()
+    public async Task<Result<List<StudySessionDTO>>> GetAllStudySessionsAsync()
     {
-        if (!await _studySessionsRepository.HasStudySessionAsync())
-        {
-            return [];
-        }
+        var hasSessionResult = await _studySessionsRepository.HasStudySessionAsync();
+        if (hasSessionResult.IsFailure) return Result.Failure<List<StudySessionDTO>>(hasSessionResult.Error);
+        if (!hasSessionResult.Value) return Result.Success(new List<StudySessionDTO>());
 
-        List<StudySessionDTO> studySessionDtos = new List<StudySessionDTO>();
-        var studySessions = await _studySessionsRepository.GetAllStudySessionsAsync();
+        var studySessionsResult = await _studySessionsRepository.GetAllStudySessionsAsync();
+        if (studySessionsResult.IsFailure) return Result.Failure<List<StudySessionDTO>>(studySessionsResult.Error);
 
-        foreach (var studySession in studySessions)
+        List<StudySessionDTO> studySessionDtos = new();
+        foreach (var studySession in studySessionsResult.Value)
         {
             studySessionDtos.Add(Mapper.ToStudySessionDTO(studySession));
         }
 
-        return studySessionDtos;
+        return Result.Success(studySessionDtos);
     }
 
-    public async Task<IEnumerable<MonthlyStudySessionsNumberData>> GetMonthlyStudySessionsReportAsync()
+    public async Task<Result<IEnumerable<MonthlyStudySessionsNumberData>>> GetMonthlyStudySessionsReportAsync()
     {
-        if (!await _studySessionsRepository.HasStudySessionAsync())
-        {
-            return Enumerable.Empty<MonthlyStudySessionsNumberData>();
-        }
+        var hasSessionResult = await _studySessionsRepository.HasStudySessionAsync();
+        if (hasSessionResult.IsFailure)
+            return Result.Failure<IEnumerable<MonthlyStudySessionsNumberData>>(hasSessionResult.Error);
+        if (!hasSessionResult.Value) return Result.Success(Enumerable.Empty<MonthlyStudySessionsNumberData>());
 
         string year = _userInteractionService.GetYear();
+        var reportResult = await _studySessionsRepository.GetMonthlyStudySessionReportAsync(year);
+        if (reportResult.IsFailure)
+            return Result.Failure<IEnumerable<MonthlyStudySessionsNumberData>>(reportResult.Error);
 
-        return await _studySessionsRepository.GetMonthlyStudySessionReportAsync(year);
+        return Result.Success(reportResult.Value);
     }
 
-    public async Task<IEnumerable<MonthlyStudySessionsAverageScoreData>> GetMonthlyStudySessionsAverageScoreReportAsync()
+    public async Task<Result<IEnumerable<MonthlyStudySessionsAverageScoreData>>> GetMonthlyStudySessionsAverageScoreReportAsync()
     {
-        if (!await _studySessionsRepository.HasStudySessionAsync())
-        {
-            return Enumerable.Empty<MonthlyStudySessionsAverageScoreData>();
-        }
+        var hasSessionResult = await _studySessionsRepository.HasStudySessionAsync();
+        if (hasSessionResult.IsFailure)
+            return Result.Failure<IEnumerable<MonthlyStudySessionsAverageScoreData>>(hasSessionResult.Error);
+        if (!hasSessionResult.Value)
+            return Result.Success(Enumerable.Empty<MonthlyStudySessionsAverageScoreData>());
 
         string year = _userInteractionService.GetYear();
+        var reportResult = await _studySessionsRepository.GetMonthlyStudySessionAverageScoreReportAsync(year);
+        if (reportResult.IsFailure)
+            return Result.Failure<IEnumerable<MonthlyStudySessionsAverageScoreData>>(reportResult.Error);
 
-        return await _studySessionsRepository.GetMonthlyStudySessionAverageScoreReportAsync(year);
+        return Result.Success(reportResult.Value);
     }
 }
