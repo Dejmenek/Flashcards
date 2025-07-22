@@ -1,5 +1,6 @@
 ﻿using Flashcards.Models;
 using Flashcards.Services.Interfaces;
+using Flashcards.Utils;
 
 namespace Flashcards.Controllers;
 
@@ -12,22 +13,22 @@ public class StudySessionsController
         _studySessionsService = studySessionsService;
     }
 
-    public async Task RunStudySessionAsync(List<FlashcardDTO> studySessionFlashcards, int stackId)
+    public async Task<Result> RunStudySessionAsync(List<FlashcardDTO> studySessionFlashcards, int stackId)
     {
-        await _studySessionsService.RunStudySessionAsync(studySessionFlashcards, stackId);
+        return await _studySessionsService.RunStudySessionAsync(studySessionFlashcards, stackId);
     }
 
-    public async Task<List<StudySessionDTO>> GetAllStudySessionsAsync()
+    public async Task<Result<List<StudySessionDTO>>> GetAllStudySessionsAsync()
     {
         return await _studySessionsService.GetAllStudySessionsAsync();
     }
 
-    public async Task<IEnumerable<MonthlyStudySessionsNumberData>> GetMonthlyStudySessionsReportAsync()
+    public async Task<Result<IEnumerable<MonthlyStudySessionsNumberData>>> GetMonthlyStudySessionsReportAsync()
     {
         return await _studySessionsService.GetMonthlyStudySessionsReportAsync();
     }
 
-    public async Task<IEnumerable<MonthlyStudySessionsAverageScoreData>> GetMonthlyStudySessionsAverageScoreReportAsync()
+    public async Task<Result<IEnumerable<MonthlyStudySessionsAverageScoreData>>> GetMonthlyStudySessionsAverageScoreReportAsync()
     {
         return await _studySessionsService.GetMonthlyStudySessionsAverageScoreReportAsync();
     }
