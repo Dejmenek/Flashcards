@@ -7,6 +7,7 @@ public record Error
 
     public static readonly Error None = new Error(string.Empty, string.Empty, ErrorType.Failure);
     public static readonly Error NullValue = new Error("General.Null", "Null value was provided", ErrorType.Failure);
+    public static readonly Error General = new Error("General.Error", "An unexpected error occurred", ErrorType.Failure);
 
     public Error(string code, string description, ErrorType type)
     {
