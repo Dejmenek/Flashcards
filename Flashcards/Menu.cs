@@ -2,6 +2,7 @@
 using Flashcards.Enums;
 using Flashcards.Helpers;
 using Flashcards.Services;
+using Flashcards.Utils;
 using Spectre.Console;
 
 namespace Flashcards;
@@ -64,52 +65,106 @@ public class Menu
     private async Task ManageStacksAsync()
     {
         bool exitManageStacks = false;
-        DataVisualizer.ShowStacks(await _stacksController.GetAllStacksAsync());
-        await _stacksController.GetStackAsync();
+        var stacksResult = await _stacksController.GetAllStacksAsync();
+        if (stacksResult.IsFailure)
+        {
+            ShowError(stacksResult.Error);
+            return;
+        }
+        DataVisualizer.ShowStacks(stacksResult.Value);
+
+        var stackResult = await _stacksController.GetStackAsync();
+        if (stackResult.IsFailure)
+        {
+            ShowError(stackResult.Error);
+            return;
+        }
 
         while (!exitManageStacks)
         {
             Console.Clear();
-            var userManageStackOption = _userInteractionService.GetManageStackOption((await _stacksController.GetCurrentStackAsync()).Name);
+            var currentStack = _stacksController.GetCurrentStack();
+            var userManageStackOption = _userInteractionService.GetManageStackOption(currentStack.Name);
 
             switch (userManageStackOption)
             {
                 case ManageStackOptions.ChangeStack:
-                    await _stacksController.GetStackAsync();
+                    var changeStackResult = await _stacksController.GetStackAsync();
+                    if (changeStackResult.IsFailure)
+                    {
+                        ShowError(changeStackResult.Error);
+                        _userInteractionService.GetUserInputToContinue();
+                    }
                     break;
 
                 case ManageStackOptions.ViewAllFlashcardsInStack:
-                    var flashcardsInStack = await _stacksController.GetFlashcardsByStackIdAsync();
-                    DataVisualizer.ShowFlashcards(flashcardsInStack);
-
+                    var flashcardsInStackResult = await _stacksController.GetFlashcardsByStackIdAsync();
+                    if (flashcardsInStackResult.IsFailure)
+                    {
+                        ShowError(flashcardsInStackResult.Error);
+                        _userInteractionService.GetUserInputToContinue();
+                        break;
+                    }
+                    DataVisualizer.ShowFlashcards(flashcardsInStackResult.Value);
                     _userInteractionService.GetUserInputToContinue();
                     break;
 
                 case ManageStackOptions.ViewAmountOfFlashcardsInStack:
-                    AnsiConsole.MarkupLine($"This stack has {await _stacksController.GetFlashcardsCountInStackAsync()} flashcards.");
-
+                    var countResult = await _stacksController.GetFlashcardsCountInStackAsync();
+                    if (countResult.IsFailure)
+                    {
+                        ShowError(countResult.Error);
+                        _userInteractionService.GetUserInputToContinue();
+                        break;
+                    }
+                    AnsiConsole.MarkupLine($"This stack has {countResult.Value} flashcards.");
                     _userInteractionService.GetUserInputToContinue();
                     break;
 
                 case ManageStackOptions.CreateFlashcardInStack:
-                    await _stacksController.AddFlashcardToStackAsync();
+                    var addFlashcardResult = await _stacksController.AddFlashcardToStackAsync();
+                    if (addFlashcardResult.IsFailure)
+                    {
+                        ShowError(addFlashcardResult.Error);
+                        _userInteractionService.GetUserInputToContinue();
+                    }
                     break;
 
                 case ManageStackOptions.EditFlashcardInStack:
-                    await _stacksController.UpdateFlashcardInStackAsync();
+                    var updateFlashcardResult = await _stacksController.UpdateFlashcardInStackAsync();
+                    if (updateFlashcardResult.IsFailure)
+                    {
+                        ShowError(updateFlashcardResult.Error);
+                        _userInteractionService.GetUserInputToContinue();
+                    }
                     break;
 
                 case ManageStackOptions.DeleteFlashcardFromStack:
-                    await _stacksController.DeleteFlashcardFromStackAsync();
+                    var deleteFlashcardResult = await _stacksController.DeleteFlashcardFromStackAsync();
+                    if (deleteFlashcardResult.IsFailure)
+                    {
+                        ShowError(deleteFlashcardResult.Error);
+                        _userInteractionService.GetUserInputToContinue();
+                    }
                     break;
 
                 case ManageStackOptions.DeleteStack:
-                    await _stacksController.DeleteStackAsync();
+                    var deleteStackResult = await _stacksController.DeleteStackAsync();
+                    if (deleteStackResult.IsFailure)
+                    {
+                        ShowError(deleteStackResult.Error);
+                        _userInteractionService.GetUserInputToContinue();
+                    }
                     exitManageStacks = true;
                     break;
 
                 case ManageStackOptions.AddStack:
-                    await _stacksController.AddStackAsync();
+                    var addStackResult = await _stacksController.AddStackAsync();
+                    if (addStackResult.IsFailure)
+                    {
+                        ShowError(addStackResult.Error);
+                        _userInteractionService.GetUserInputToContinue();
+                    }
                     exitManageStacks = true;
                     break;
 
@@ -127,28 +182,46 @@ public class Menu
         switch (userManageFlashcardsOption)
         {
             case ManageFlashcardsOptions.AddFlashcard:
-                await _flashcardsController.AddFlashcardAsync();
-
+                var addResult = await _flashcardsController.AddFlashcardAsync();
+                if (addResult.IsFailure)
+                {
+                    ShowError(addResult.Error);
+                    _userInteractionService.GetUserInputToContinue();
+                }
                 Console.Clear();
                 break;
 
             case ManageFlashcardsOptions.DeleteFlashcard:
-                await _flashcardsController.DeleteFlashcardAsync();
-
+                var deleteResult = await _flashcardsController.DeleteFlashcardAsync();
+                if (deleteResult.IsFailure)
+                {
+                    ShowError(deleteResult.Error);
+                    _userInteractionService.GetUserInputToContinue();
+                }
                 Console.Clear();
                 break;
 
             case ManageFlashcardsOptions.ViewAllFlashcards:
-                var flashcards = await _flashcardsController.GetAllFlashcardsAsync();
-                DataVisualizer.ShowFlashcards(flashcards);
-
+                var flashcardsResult = await _flashcardsController.GetAllFlashcardsAsync();
+                if (flashcardsResult.IsFailure)
+                {
+                    ShowError(flashcardsResult.Error);
+                    _userInteractionService.GetUserInputToContinue();
+                    Console.Clear();
+                    break;
+                }
+                DataVisualizer.ShowFlashcards(flashcardsResult.Value);
                 _userInteractionService.GetUserInputToContinue();
                 Console.Clear();
                 break;
 
             case ManageFlashcardsOptions.EditFlashcard:
-                await _flashcardsController.UpdateFlashcardAsync();
-
+                var updateResult = await _flashcardsController.UpdateFlashcardAsync();
+                if (updateResult.IsFailure)
+                {
+                    ShowError(updateResult.Error);
+                    _userInteractionService.GetUserInputToContinue();
+                }
                 Console.Clear();
                 break;
         }
@@ -156,11 +229,33 @@ public class Menu
 
     private async Task StudyAsync()
     {
-        await _stacksController.GetStackAsync();
+        var stackResult = await _stacksController.GetStackAsync();
+        if (stackResult.IsFailure)
+        {
+            ShowError(stackResult.Error);
+            _userInteractionService.GetUserInputToContinue();
+            Console.Clear();
+            return;
+        }
 
-        var studySessionFlashcards = await _stacksController.GetFlashcardsByStackIdAsync();
-        var currentStack = await _stacksController.GetCurrentStackAsync();
-        await _studySessionsController.RunStudySessionAsync(studySessionFlashcards, currentStack.Id);
+        var flashcardsResult = await _stacksController.GetFlashcardsByStackIdAsync();
+        if (flashcardsResult.IsFailure)
+        {
+            ShowError(flashcardsResult.Error);
+            _userInteractionService.GetUserInputToContinue();
+            Console.Clear();
+            return;
+        }
+
+        var currentStack = _stacksController.GetCurrentStack();
+        var studySessionResult = await _studySessionsController.RunStudySessionAsync(flashcardsResult.Value, currentStack.Id);
+        if (studySessionResult.IsFailure)
+        {
+            ShowError(studySessionResult.Error);
+            _userInteractionService.GetUserInputToContinue();
+            Console.Clear();
+            return;
+        }
 
         _userInteractionService.GetUserInputToContinue();
         Console.Clear();
@@ -168,8 +263,15 @@ public class Menu
 
     private async Task ViewStudySessionsAsync()
     {
-        var studySessions = await _studySessionsController.GetAllStudySessionsAsync();
-        DataVisualizer.ShowStudySessions(studySessions);
+        var studySessionsResult = await _studySessionsController.GetAllStudySessionsAsync();
+        if (studySessionsResult.IsFailure)
+        {
+            ShowError(studySessionsResult.Error);
+            _userInteractionService.GetUserInputToContinue();
+            Console.Clear();
+            return;
+        }
+        DataVisualizer.ShowStudySessions(studySessionsResult.Value);
 
         _userInteractionService.GetUserInputToContinue();
         Console.Clear();
@@ -177,8 +279,15 @@ public class Menu
 
     private async Task MonthlyStudySessionsReportAsync()
     {
-        var monthlyStudySessionReport = await _studySessionsController.GetMonthlyStudySessionsReportAsync();
-        DataVisualizer.ShowMonthlyStudySessionReport(monthlyStudySessionReport);
+        var monthlyReportResult = await _studySessionsController.GetMonthlyStudySessionsReportAsync();
+        if (monthlyReportResult.IsFailure)
+        {
+            ShowError(monthlyReportResult.Error);
+            _userInteractionService.GetUserInputToContinue();
+            Console.Clear();
+            return;
+        }
+        DataVisualizer.ShowMonthlyStudySessionReport(monthlyReportResult.Value);
 
         _userInteractionService.GetUserInputToContinue();
         Console.Clear();
@@ -186,10 +295,40 @@ public class Menu
 
     private async Task MonthlyStudySessionsScoreReportAsync()
     {
-        var monthlyStudySessionAverageScoreReport = await _studySessionsController.GetMonthlyStudySessionsAverageScoreReportAsync();
-        DataVisualizer.ShowMonthlyStudySessionAverageScoreReport(monthlyStudySessionAverageScoreReport);
+        var scoreReportResult = await _studySessionsController.GetMonthlyStudySessionsAverageScoreReportAsync();
+        if (scoreReportResult.IsFailure)
+        {
+            ShowError(scoreReportResult.Error);
+            _userInteractionService.GetUserInputToContinue();
+            Console.Clear();
+            return;
+        }
+        DataVisualizer.ShowMonthlyStudySessionAverageScoreReport(scoreReportResult.Value);
 
         _userInteractionService.GetUserInputToContinue();
         Console.Clear();
+    }
+
+    private static void ShowError(Error error)
+    {
+        switch (error.Type)
+        {
+            case ErrorType.NotFound:
+                AnsiConsole.MarkupLine($"[yellow]Not Found: {error.Description}[/]");
+                break;
+            case ErrorType.Validation:
+                AnsiConsole.MarkupLine($"[yellow]Validation Error: {error.Description}[/]");
+                break;
+            case ErrorType.Problem:
+                AnsiConsole.MarkupLine($"[red]Problem: {error.Description}[/]");
+                break;
+            case ErrorType.Conflict:
+                AnsiConsole.MarkupLine($"[red]Conflict: {error.Description}[/]");
+                break;
+            case ErrorType.Failure:
+            default:
+                AnsiConsole.MarkupLine($"[red]Error: {error.Description}[/]");
+                break;
+        }
     }
 }
