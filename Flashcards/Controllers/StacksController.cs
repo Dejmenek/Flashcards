@@ -1,5 +1,6 @@
 ﻿using Flashcards.Models;
 using Flashcards.Services.Interfaces;
+using Flashcards.Utils;
 
 namespace Flashcards.Controllers;
 
@@ -12,53 +13,53 @@ public class StacksController
         _stacksService = stacksService;
     }
 
-    public async Task AddStackAsync()
+    public async Task<Result> AddStackAsync()
     {
-        await _stacksService.AddStackAsync();
+        return await _stacksService.AddStackAsync();
     }
 
-    public async Task AddFlashcardToStackAsync()
+    public async Task<Result> AddFlashcardToStackAsync()
     {
-        await _stacksService.AddFlashcardToStackAsync();
+        return await _stacksService.AddFlashcardToStackAsync();
     }
 
-    public async Task DeleteStackAsync()
+    public async Task<Result> DeleteStackAsync()
     {
-        await _stacksService.DeleteStackAsync();
+        return await _stacksService.DeleteStackAsync();
     }
 
-    public async Task DeleteFlashcardFromStackAsync()
+    public async Task<Result> DeleteFlashcardFromStackAsync()
     {
-        await _stacksService.DeleteFlashcardFromStackAsync();
+        return await _stacksService.DeleteFlashcardFromStackAsync();
     }
 
-    public async Task UpdateFlashcardInStackAsync()
+    public async Task<Result> UpdateFlashcardInStackAsync()
     {
-        await _stacksService.UpdateFlashcardInStackAsync();
+        return await _stacksService.UpdateFlashcardInStackAsync();
     }
 
-    public async Task<List<FlashcardDTO>> GetFlashcardsByStackIdAsync()
+    public async Task<Result<List<FlashcardDTO>>> GetFlashcardsByStackIdAsync()
     {
         return await _stacksService.GetFlashcardsByStackIdAsync();
     }
 
-    public async Task<int> GetFlashcardsCountInStackAsync()
+    public async Task<Result<int>> GetFlashcardsCountInStackAsync()
     {
         return await _stacksService.GetFlashcardsCountInStackAsync();
     }
 
-    public async Task<List<StackDTO>> GetAllStacksAsync()
+    public async Task<Result<List<StackDTO>>> GetAllStacksAsync()
     {
         return await _stacksService.GetAllStacksAsync();
     }
 
-    public async Task GetStackAsync()
+    public async Task<Result> GetStackAsync()
     {
-        await _stacksService.GetStackAsync();
+        return await _stacksService.GetStackAsync();
     }
 
-    public async Task<Stack> GetCurrentStackAsync()
+    public Stack GetCurrentStack()
     {
-        return await _stacksService.GetCurrentStackAsync();
+        return _stacksService.GetCurrentStack();
     }
 }
