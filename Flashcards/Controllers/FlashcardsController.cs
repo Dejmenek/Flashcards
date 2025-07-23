@@ -1,5 +1,6 @@
 ﻿using Flashcards.Models;
 using Flashcards.Services.Interfaces;
+using Flashcards.Utils;
 
 namespace Flashcards.Controllers;
 
@@ -12,23 +13,23 @@ public class FlashcardsController
         _flashcardsService = flashcardsService;
     }
 
-    public async Task AddFlashcardAsync()
+    public async Task<Result> AddFlashcardAsync()
     {
-        await _flashcardsService.AddFlashcardAsync();
+        return await _flashcardsService.AddFlashcardAsync();
     }
 
-    public async Task DeleteFlashcardAsync()
+    public async Task<Result> DeleteFlashcardAsync()
     {
-        await _flashcardsService.DeleteFlashcardAsync();
+        return await _flashcardsService.DeleteFlashcardAsync();
     }
 
-    public async Task<List<FlashcardDTO>> GetAllFlashcardsAsync()
+    public async Task<Result<List<FlashcardDTO>>> GetAllFlashcardsAsync()
     {
         return await _flashcardsService.GetAllFlashcardsAsync();
     }
 
-    public async Task UpdateFlashcardAsync()
+    public async Task<Result> UpdateFlashcardAsync()
     {
-        await _flashcardsService.UpdateFlashcardAsync();
+        return await _flashcardsService.UpdateFlashcardAsync();
     }
 }
