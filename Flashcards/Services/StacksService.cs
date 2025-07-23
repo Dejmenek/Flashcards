@@ -158,7 +158,7 @@ public class StacksService : IStacksService
         if (stacksResult.IsFailure) return Result.Failure(stacksResult.Error);
 
         if (stacksResult.Value.Count == 0)
-            return Result.Failure(FlashcardsErrors.FlashcardsNotFound);
+            return Result.Failure(StacksErrors.StacksNotFound);
 
         string name = _userInteractionService.GetStack(stacksResult.Value);
 
