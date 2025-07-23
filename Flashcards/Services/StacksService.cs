@@ -2,6 +2,7 @@
 using Flashcards.Helpers;
 using Flashcards.Models;
 using Flashcards.Services.Interfaces;
+using Flashcards.Utils;
 using Spectre.Console;
 
 namespace Flashcards.Services;
@@ -20,127 +21,156 @@ public class StacksService : IStacksService
         _flashcardsRepository = flashcardsRepository;
     }
 
-    public async Task AddStackAsync()
+    public async Task<Result> AddStackAsync()
     {
         string name = _userInteractionService.GetStackName();
 
-        while (await _stacksRepository.StackExistsWithNameAsync(name))
+        while (true)
         {
+            var existsResult = await _stacksRepository.StackExistsWithNameAsync(name);
+            if (existsResult.IsFailure) return Result.Failure(existsResult.Error);
+            if (!existsResult.Value) break;
+
             AnsiConsole.MarkupLine($"There is already a stack named {name}. Please try a different name.");
             name = _userInteractionService.GetStackName();
         }
 
-        await _stacksRepository.AddStackAsync(name);
+        var addResult = await _stacksRepository.AddStackAsync(name);
+        if (addResult.IsFailure) return Result.Failure(addResult.Error);
+
+        return Result.Success();
     }
 
-    public async Task AddFlashcardToStackAsync()
+    public async Task<Result> AddFlashcardToStackAsync()
     {
         string front = _userInteractionService.GetFlashcardFront();
         string back = _userInteractionService.GetFlashcardBack();
 
         if (CurrentStack == null)
-            return;
+            return Result.Failure(StacksErrors.CurrentStackNotFound);
 
-        await _flashcardsRepository.AddFlashcardAsync(CurrentStack.Id, front, back);
+        var addResult = await _flashcardsRepository.AddFlashcardAsync(CurrentStack.Id, front, back);
+        if (addResult.IsFailure) return Result.Failure(addResult.Error);
+
+        return Result.Success();
     }
 
-    public async Task DeleteStackAsync()
+    public async Task<Result> DeleteStackAsync()
     {
         if (CurrentStack == null)
-            return;
+            return Result.Failure(StacksErrors.CurrentStackNotFound);
 
-        await _stacksRepository.DeleteStackAsync(CurrentStack.Id);
+        var deleteResult = await _stacksRepository.DeleteStackAsync(CurrentStack.Id);
+        if (deleteResult.IsFailure) return Result.Failure(deleteResult.Error);
+
+        return Result.Success();
     }
 
-    public async Task DeleteFlashcardFromStackAsync()
+    public async Task<Result> DeleteFlashcardFromStackAsync()
     {
-        var flashcards = await GetFlashcardsByStackIdAsync();
+        var flashcardsResult = await GetFlashcardsByStackIdAsync();
+        if (flashcardsResult.IsFailure) return Result.Failure(flashcardsResult.Error);
 
         if (CurrentStack == null)
-            return;
+            return Result.Failure(StacksErrors.CurrentStackNotFound);
 
-        FlashcardDTO chosenFlashcard = _userInteractionService.GetFlashcard(flashcards);
+        if (flashcardsResult.Value.Count == 0)
+            return Result.Failure(FlashcardsErrors.FlashcardsNotFound);
 
-        await _stacksRepository.DeleteFlashcardFromStackAsync(chosenFlashcard.Id, CurrentStack.Id);
+        FlashcardDTO chosenFlashcard = _userInteractionService.GetFlashcard(flashcardsResult.Value);
+
+        var deleteResult = await _stacksRepository.DeleteFlashcardFromStackAsync(chosenFlashcard.Id, CurrentStack.Id);
+        if (deleteResult.IsFailure) return Result.Failure(deleteResult.Error);
+
+        return Result.Success();
     }
 
-    public async Task UpdateFlashcardInStackAsync()
+    public async Task<Result> UpdateFlashcardInStackAsync()
     {
-        var flashcards = await GetFlashcardsByStackIdAsync();
+        var flashcardsResult = await GetFlashcardsByStackIdAsync();
+        if (flashcardsResult.IsFailure) return Result.Failure(flashcardsResult.Error);
 
         if (CurrentStack == null)
-            return;
+            return Result.Failure(StacksErrors.CurrentStackNotFound);
 
-        FlashcardDTO chosenFlashcard = _userInteractionService.GetFlashcard(flashcards);
+        if (flashcardsResult.Value.Count == 0)
+            return Result.Failure(FlashcardsErrors.FlashcardsNotFound);
+
+        FlashcardDTO chosenFlashcard = _userInteractionService.GetFlashcard(flashcardsResult.Value);
         string front = _userInteractionService.GetFlashcardFront();
         string back = _userInteractionService.GetFlashcardBack();
 
-        await _stacksRepository.UpdateFlashcardInStackAsync(chosenFlashcard.Id, CurrentStack.Id, front, back);
+        var updateResult = await _stacksRepository.UpdateFlashcardInStackAsync(chosenFlashcard.Id, CurrentStack.Id, front, back);
+        if (updateResult.IsFailure) return Result.Failure(updateResult.Error);
+
+        return Result.Success();
     }
 
-    public async Task<List<FlashcardDTO>> GetFlashcardsByStackIdAsync()
+    public async Task<Result<List<FlashcardDTO>>> GetFlashcardsByStackIdAsync()
     {
         if (CurrentStack == null)
-            return [];
+            return Result.Failure<List<FlashcardDTO>>(StacksErrors.CurrentStackNotFound);
 
-        if (!await _stacksRepository.HasStackAnyFlashcardsAsync(CurrentStack.Id))
-        {
-            return [];
-        }
+        var hasAnyResult = await _stacksRepository.HasStackAnyFlashcardsAsync(CurrentStack.Id);
+        if (hasAnyResult.IsFailure) return Result.Failure<List<FlashcardDTO>>(hasAnyResult.Error);
+        if (!hasAnyResult.Value) return Result.Success(new List<FlashcardDTO>());
 
-        List<FlashcardDTO> flashcardDtos = new List<FlashcardDTO>();
-        var flashcards = await _stacksRepository.GetFlashcardsByStackIdAsync(CurrentStack.Id);
+        var flashcardsResult = await _stacksRepository.GetFlashcardsByStackIdAsync(CurrentStack.Id);
+        if (flashcardsResult.IsFailure) return Result.Failure<List<FlashcardDTO>>(flashcardsResult.Error);
 
-        foreach (var flashcard in flashcards)
+        List<FlashcardDTO> flashcardDtos = new();
+        foreach (var flashcard in flashcardsResult.Value)
         {
             flashcardDtos.Add(Mapper.ToFlashcardDTO(flashcard));
         }
 
-        return flashcardDtos;
+        return Result.Success(flashcardDtos);
     }
 
-    public async Task<int> GetFlashcardsCountInStackAsync()
+    public async Task<Result<int>> GetFlashcardsCountInStackAsync()
     {
         if (CurrentStack == null)
-            return 0;
+            return Result.Failure<int>(StacksErrors.CurrentStackNotFound);
 
-        return await _stacksRepository.GetFlashcardsCountInStackAsync(CurrentStack.Id);
+        var countResult = await _stacksRepository.GetFlashcardsCountInStackAsync(CurrentStack.Id);
+        if (countResult.IsFailure) return Result.Failure<int>(countResult.Error);
+
+        return Result.Success(countResult.Value);
     }
 
-    public async Task<List<StackDTO>> GetAllStacksAsync()
+    public async Task<Result<List<StackDTO>>> GetAllStacksAsync()
     {
-        if (!await _stacksRepository.HasStackAsync())
-        {
-            return [];
-        }
+        var stacksResult = await _stacksRepository.GetAllStacksAsync();
+        if (stacksResult.IsFailure) return Result.Failure<List<StackDTO>>(stacksResult.Error);
 
-        List<StackDTO> stackDtos = new List<StackDTO>();
-        var stacks = await _stacksRepository.GetAllStacksAsync();
-
-        foreach (var stack in stacks)
+        List<StackDTO> stackDtos = new();
+        foreach (var stack in stacksResult.Value)
         {
             stackDtos.Add(Mapper.ToStackDTO(stack));
         }
 
-        return stackDtos;
+        return Result.Success(stackDtos);
     }
 
-    public async Task GetStackAsync()
+    public async Task<Result> GetStackAsync()
     {
-        var stacks = await GetAllStacksAsync();
+        var stacksResult = await GetAllStacksAsync();
+        if (stacksResult.IsFailure) return Result.Failure(stacksResult.Error);
 
-        if (stacks.Count == 0)
-        {
-            return;
-        }
+        if (stacksResult.Value.Count == 0)
+            return Result.Failure(FlashcardsErrors.FlashcardsNotFound);
 
-        string name = _userInteractionService.GetStack(stacks);
+        string name = _userInteractionService.GetStack(stacksResult.Value);
 
-        CurrentStack = await _stacksRepository.GetStackAsync(name);
+        var stackResult = await _stacksRepository.GetStackAsync(name);
+        if (stackResult.IsFailure) return Result.Failure(stackResult.Error);
+
+        CurrentStack = stackResult.Value;
+        return Result.Success();
     }
 
-    public Task<Stack> GetCurrentStackAsync()
+    public Stack GetCurrentStack()
     {
-        return Task.FromResult(CurrentStack!);
+        return CurrentStack!;
     }
 }
