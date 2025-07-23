@@ -2,7 +2,7 @@
 using Flashcards.Helpers;
 using Flashcards.Models;
 using Flashcards.Services.Interfaces;
-using Spectre.Console;
+using Flashcards.Utils;
 
 namespace Flashcards.Services;
 
@@ -19,63 +19,71 @@ public class FlashcardsService : IFlashcardsService
         _stacksRepository = stacksRepository;
     }
 
-    public async Task AddFlashcardAsync()
+    public async Task<Result> AddFlashcardAsync()
     {
-        var stacks = await _stacksRepository.GetAllStacksAsync();
+        var stacksResult = await _stacksRepository.GetAllStacksAsync();
+        if (stacksResult.IsFailure) return Result.Failure(stacksResult.Error);
 
-        if (!await _stacksRepository.HasStackAsync())
-        {
-            AnsiConsole.MarkupLine("No stacks found. Add new stack before creating new flashcard!");
-            return;
-        }
+        if (!stacksResult.Value.Any()) return Result.Failure(StacksErrors.StacksNotFound);
 
-        List<StackDTO> stackDtos = new List<StackDTO>();
-
-        foreach (var stack in stacks)
+        List<StackDTO> stackDtos = new();
+        foreach (var stack in stacksResult.Value)
         {
             stackDtos.Add(Mapper.ToStackDTO(stack));
         }
 
         string chosenStackName = _userInteractionService.GetStack(stackDtos);
-
-        int chosenStackId = stacks.Single(s => s.Name == chosenStackName).Id;
+        int chosenStackId = stacksResult.Value.Single(s => s.Name == chosenStackName).Id;
         string front = _userInteractionService.GetFlashcardFront();
         string back = _userInteractionService.GetFlashcardBack();
 
-        await _flashcardsRepository.AddFlashcardAsync(chosenStackId, front, back);
+        var addResult = await _flashcardsRepository.AddFlashcardAsync(chosenStackId, front, back);
+        if (addResult.IsFailure) return Result.Failure(addResult.Error);
+
+        return Result.Success();
     }
 
-    public async Task DeleteFlashcardAsync()
+    public async Task<Result> DeleteFlashcardAsync()
     {
-        List<FlashcardDTO> flashcards = await GetAllFlashcardsAsync();
+        var flashcardsResult = await GetAllFlashcardsAsync();
+        if (flashcardsResult.IsFailure) return Result.Failure(flashcardsResult.Error);
+        if (!flashcardsResult.Value.Any()) return Result.Failure(FlashcardsErrors.FlashcardsNotFound);
 
-        FlashcardDTO chosenFlashcard = _userInteractionService.GetFlashcard(flashcards);
+        FlashcardDTO chosenFlashcard = _userInteractionService.GetFlashcard(flashcardsResult.Value);
 
-        await _flashcardsRepository.DeleteFlashcardAsync(chosenFlashcard.Id);
+        var deleteResult = await _flashcardsRepository.DeleteFlashcardAsync(chosenFlashcard.Id);
+        if (deleteResult.IsFailure) return Result.Failure(deleteResult.Error);
+
+        return Result.Success();
     }
 
-    public async Task<List<FlashcardDTO>> GetAllFlashcardsAsync()
+    public async Task<Result<List<FlashcardDTO>>> GetAllFlashcardsAsync()
     {
-        List<FlashcardDTO> flashcardDtos = new List<FlashcardDTO>();
-        var flashcards = await _flashcardsRepository.GetAllFlashcardsAsync();
+        var flashcardsResult = await _flashcardsRepository.GetAllFlashcardsAsync();
+        if (flashcardsResult.IsFailure) return Result.Failure<List<FlashcardDTO>>(flashcardsResult.Error);
 
-        foreach (var flashcard in flashcards)
+        List<FlashcardDTO> flashcardDtos = new();
+        foreach (var flashcard in flashcardsResult.Value)
         {
             flashcardDtos.Add(Mapper.ToFlashcardDTO(flashcard));
         }
 
-        return flashcardDtos;
+        return Result.Success(flashcardDtos);
     }
 
-    public async Task UpdateFlashcardAsync()
+    public async Task<Result> UpdateFlashcardAsync()
     {
-        List<FlashcardDTO> flashcards = await GetAllFlashcardsAsync();
+        var flashcardsResult = await GetAllFlashcardsAsync();
+        if (flashcardsResult.IsFailure) return Result.Failure(flashcardsResult.Error);
 
-        FlashcardDTO chosenFlashcard = _userInteractionService.GetFlashcard(flashcards);
+        FlashcardDTO chosenFlashcard = _userInteractionService.GetFlashcard(flashcardsResult.Value);
 
         string front = _userInteractionService.GetFlashcardFront();
         string back = _userInteractionService.GetFlashcardBack();
 
-        await _flashcardsRepository.UpdateFlashcardAsync(chosenFlashcard.Id, front, back);
+        var updateResult = await _flashcardsRepository.UpdateFlashcardAsync(chosenFlashcard.Id, front, back);
+        if (updateResult.IsFailure) return Result.Failure(updateResult.Error);
+
+        return Result.Success();
     }
 }
