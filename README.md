@@ -10,6 +10,7 @@
 - [Challenges](#challenges)
 - [Things Learned](#things-learned)
 - [Used Resources](#used-resources)
+- [TODO](#todo)
 
 ## General Info
 Project made for @TheCSharpAcademy.  
@@ -112,8 +113,14 @@ I only had to look up for data types and how to create pivot tables.
 
 I've also learned about Data Transfer Objects (DTOs).  
 They provide a clean way to transfer data between different layers of an application, reducing the amount of unnecessary data sent.
-In the future, I'd like to develop this project into a full-stack app with more features😁.
 
 ## Used Resources
 - [SQL Server Tutorial](https://www.sqlservertutorial.net) used to learn some SQL Server syntax
 - [C# Corner](https://www.c-sharpcorner.com/article/data-transfer-objects-dtos-in-c-sharp/) used to learn about DTOs
+
+## TODO
+- [ ] Add unit tests for the application.
+- [ ] Add integration tests for the application.
+- [ ] Add more card types (e.g., multiple choice, true/false).
+- [ ] Leitner System implementation for spaced repetition.
+- [ ] Generate flashcards from text files or other formats.
