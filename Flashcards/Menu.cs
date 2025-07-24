@@ -1,19 +1,19 @@
 ﻿using Flashcards.Controllers;
 using Flashcards.Enums;
 using Flashcards.Helpers;
-using Flashcards.Services;
+using Flashcards.Services.Interfaces;
 using Flashcards.Utils;
 using Spectre.Console;
 
 namespace Flashcards;
 public class Menu
 {
-    private readonly UserInteractionService _userInteractionService;
+    private readonly IUserInteractionService _userInteractionService;
     private readonly StacksController _stacksController;
     private readonly FlashcardsController _flashcardsController;
     private readonly StudySessionsController _studySessionsController;
 
-    public Menu(UserInteractionService userInteractionService, StacksController stacksController, FlashcardsController flashcardsController, StudySessionsController studySessionsController)
+    public Menu(IUserInteractionService userInteractionService, StacksController stacksController, FlashcardsController flashcardsController, StudySessionsController studySessionsController)
     {
         _userInteractionService = userInteractionService;
         _stacksController = stacksController;

@@ -10,10 +10,10 @@ namespace Flashcards.Services;
 public class StudySessionsService : IStudySessionsService
 {
     private readonly IStudySessionsRepository _studySessionsRepository;
-    private readonly UserInteractionService _userInteractionService;
+    private readonly IUserInteractionService _userInteractionService;
     public int Score { get; private set; }
 
-    public StudySessionsService(IStudySessionsRepository studySessionsRepository, UserInteractionService userInteractionService)
+    public StudySessionsService(IStudySessionsRepository studySessionsRepository, IUserInteractionService userInteractionService, IConsoleService consoleService)
     {
         _studySessionsRepository = studySessionsRepository;
         _userInteractionService = userInteractionService;
@@ -39,12 +39,12 @@ public class StudySessionsService : IStudySessionsService
             }
 
             _userInteractionService.GetUserInputToContinue();
-            Console.Clear();
+            _consoleService.Clear();
         }
 
         AnsiConsole.MarkupLine($"You got {Score} out of {flashcards.Count}");
         _userInteractionService.GetUserInputToContinue();
-        Console.Clear();
+        _consoleService.Clear();
     }
 
     public async Task<Result> RunStudySessionAsync(List<FlashcardDTO> studySessionFlashcards, int stackId)

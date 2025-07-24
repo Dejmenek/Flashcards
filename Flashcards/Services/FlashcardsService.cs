@@ -10,9 +10,9 @@ public class FlashcardsService : IFlashcardsService
 {
     private readonly IFlashcardsRepository _flashcardsRepository;
     private readonly IStacksRepository _stacksRepository;
-    private readonly UserInteractionService _userInteractionService;
+    private readonly IUserInteractionService _userInteractionService;
 
-    public FlashcardsService(IFlashcardsRepository flashcardsRepository, UserInteractionService userInteractionService, IStacksRepository stacksRepository)
+    public FlashcardsService(IFlashcardsRepository flashcardsRepository, IUserInteractionService userInteractionService, IStacksRepository stacksRepository)
     {
         _flashcardsRepository = flashcardsRepository;
         _userInteractionService = userInteractionService;

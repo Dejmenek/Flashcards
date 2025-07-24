@@ -25,7 +25,7 @@ var host = Host.CreateDefaultBuilder(args)
                 throw new InvalidOperationException("The connection string 'Default' is not configured or is empty. Please check your appsettings.json file.");
             }
 
-            services.AddSingleton<UserInteractionService>();
+            services.AddSingleton<IUserInteractionService, UserInteractionService>();
             services.AddScoped<IFlashcardsRepository, FlashcardsRepository>();
             services.AddScoped<IStacksRepository, StacksRepository>();
             services.AddScoped<IStudySessionsRepository, StudySessionsRepository>();

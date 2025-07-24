@@ -1,10 +1,11 @@
 ﻿using Flashcards.Enums;
 using Flashcards.Models;
+using Flashcards.Services.Interfaces;
 using Spectre.Console;
 
 namespace Flashcards.Services;
 
-public class UserInteractionService
+public class UserInteractionService : IUserInteractionService
 {
     public int GetId()
     {

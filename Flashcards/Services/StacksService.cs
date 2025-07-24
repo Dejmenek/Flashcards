@@ -11,10 +11,10 @@ public class StacksService : IStacksService
 {
     private readonly IStacksRepository _stacksRepository;
     private readonly IFlashcardsRepository _flashcardsRepository;
-    private readonly UserInteractionService _userInteractionService;
+    private readonly IUserInteractionService _userInteractionService;
     public Stack? CurrentStack { get; private set; }
 
-    public StacksService(IStacksRepository stacksRepository, UserInteractionService userInteractionService, IFlashcardsRepository flashcardsRepository)
+    public StacksService(IStacksRepository stacksRepository, IUserInteractionService userInteractionService, IFlashcardsRepository flashcardsRepository)
     {
         _stacksRepository = stacksRepository;
         _userInteractionService = userInteractionService;
