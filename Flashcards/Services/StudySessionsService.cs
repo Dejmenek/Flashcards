@@ -11,12 +11,14 @@ public class StudySessionsService : IStudySessionsService
 {
     private readonly IStudySessionsRepository _studySessionsRepository;
     private readonly IUserInteractionService _userInteractionService;
+    private readonly IConsoleService _consoleService;
     public int Score { get; private set; }
 
     public StudySessionsService(IStudySessionsRepository studySessionsRepository, IUserInteractionService userInteractionService, IConsoleService consoleService)
     {
         _studySessionsRepository = studySessionsRepository;
         _userInteractionService = userInteractionService;
+        _consoleService = consoleService;
     }
 
     public void StartStudySessionAsync(List<FlashcardDTO> flashcards)

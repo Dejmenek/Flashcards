@@ -26,6 +26,7 @@ var host = Host.CreateDefaultBuilder(args)
             }
 
             services.AddSingleton<IUserInteractionService, UserInteractionService>();
+            services.AddSingleton<IConsoleService, ConsoleService>();
             services.AddScoped<IFlashcardsRepository, FlashcardsRepository>();
             services.AddScoped<IStacksRepository, StacksRepository>();
             services.AddScoped<IStudySessionsRepository, StudySessionsRepository>();
