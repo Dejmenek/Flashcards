@@ -5,6 +5,10 @@ VisualStudioVersion = 17.8.34601.278
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flashcards", "Flashcards\Flashcards.csproj", "{C2703E5D-3B30-4D56-8D28-9C82CBFCE5C8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flashcards.UnitTests", "Flashcards.UnitTests\Flashcards.UnitTests.csproj", "{8B2FCCF9-B65A-44D4-9460-302A2AF27215}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flashcards.IntegrationTests", "Flashcards.IntegrationTests\Flashcards.IntegrationTests.csproj", "{97A604D8-FFC6-4A1A-A419-F41CACEC2241}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{C2703E5D-3B30-4D56-8D28-9C82CBFCE5C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2703E5D-3B30-4D56-8D28-9C82CBFCE5C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2703E5D-3B30-4D56-8D28-9C82CBFCE5C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B2FCCF9-B65A-44D4-9460-302A2AF27215}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B2FCCF9-B65A-44D4-9460-302A2AF27215}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B2FCCF9-B65A-44D4-9460-302A2AF27215}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B2FCCF9-B65A-44D4-9460-302A2AF27215}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97A604D8-FFC6-4A1A-A419-F41CACEC2241}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97A604D8-FFC6-4A1A-A419-F41CACEC2241}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97A604D8-FFC6-4A1A-A419-F41CACEC2241}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97A604D8-FFC6-4A1A-A419-F41CACEC2241}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
