@@ -71,9 +71,6 @@ public class StacksService : IStacksService
         var flashcardsResult = await GetFlashcardsByStackIdAsync();
         if (flashcardsResult.IsFailure) return Result.Failure(flashcardsResult.Error);
 
-        if (CurrentStack == null)
-            return Result.Failure(StacksErrors.CurrentStackNotFound);
-
         if (flashcardsResult.Value.Count == 0)
             return Result.Failure(FlashcardsErrors.FlashcardsNotFound);
 
@@ -89,9 +86,6 @@ public class StacksService : IStacksService
     {
         var flashcardsResult = await GetFlashcardsByStackIdAsync();
         if (flashcardsResult.IsFailure) return Result.Failure(flashcardsResult.Error);
-
-        if (CurrentStack == null)
-            return Result.Failure(StacksErrors.CurrentStackNotFound);
 
         if (flashcardsResult.Value.Count == 0)
             return Result.Failure(FlashcardsErrors.FlashcardsNotFound);
