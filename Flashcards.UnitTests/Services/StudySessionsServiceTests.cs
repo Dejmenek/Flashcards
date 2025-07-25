@@ -62,7 +62,7 @@ public class StudySessionsServiceTests
 
     [Theory]
     [MemberData(nameof(StartStudySessionTestData))]
-    public void StartStudySessionAsync_ScoreIsCorrect(List<FlashcardDTO> flashcards, List<string> userAnswers, int expectedScore)
+    public void StartStudySessionAsync_ShouldCalculateCorrectScore_WhenAnswersProvided(List<FlashcardDTO> flashcards, List<string> userAnswers, int expectedScore)
     {
         // Arrange
         int i = 0;
@@ -76,7 +76,7 @@ public class StudySessionsServiceTests
     }
 
     [Fact]
-    public async Task RunStudySessionAsync_WhenFlashcardsEmpty_ReturnsFailure()
+    public async Task RunStudySessionAsync_ShouldReturnFailure_WhenFlashcardsEmpty()
     {
         // Arrange
         List<FlashcardDTO> flashcards = new();
@@ -91,7 +91,7 @@ public class StudySessionsServiceTests
     }
 
     [Fact]
-    public async Task RunStudySessionAsync_WhenEndStudySessionAsyncFails_ReturnsFailure()
+    public async Task RunStudySessionAsync_ShouldReturnFailure_WhenEndStudySessionAsyncFails()
     {
         // Arrange
         List<FlashcardDTO> flashcards = new()
@@ -112,7 +112,7 @@ public class StudySessionsServiceTests
     }
 
     [Fact]
-    public async Task RunStudySessionAsync_WhenSuccess_ReturnsSuccess()
+    public async Task RunStudySessionAsync_ShouldReturnSuccess_WhenValidFlashcardsProvided()
     {
         // Arrange
         List<FlashcardDTO> flashcards = new()
@@ -133,7 +133,7 @@ public class StudySessionsServiceTests
     }
 
     [Fact]
-    public async Task GetAllStudySessionsAsync_WhenGetAllFails_ReturnsFailure()
+    public async Task GetAllStudySessionsAsync_ShouldReturnFailure_WhenRepositoryGetAllFails()
     {
         // Arrange
         _studySessionsRepository.HasStudySessionAsync().Returns(Result.Success(true));
@@ -148,7 +148,7 @@ public class StudySessionsServiceTests
     }
 
     [Fact]
-    public async Task GetAllStudySessionsAsync_WhenNoSessions_ReturnsEmptyList()
+    public async Task GetAllStudySessionsAsync_ShouldReturnEmptyList_WhenNoSessionsExist()
     {
         // Arrange
         _studySessionsRepository.HasStudySessionAsync().Returns(Result.Success(false));
@@ -163,7 +163,7 @@ public class StudySessionsServiceTests
     }
 
     [Fact]
-    public async Task GetAllStudySessionsAsync_WhenSuccess_ReturnsMappedDTOs()
+    public async Task GetAllStudySessionsAsync_ShouldReturnMappedDTOs_WhenSessionsExist()
     {
         // Arrange
         var studySessions = new List<StudySession>
@@ -185,7 +185,7 @@ public class StudySessionsServiceTests
     }
 
     [Fact]
-    public async Task GetMonthlyStudySessionsReportAsync_WhenGetMonthlyReportFails_ReturnsFailure()
+    public async Task GetMonthlyStudySessionsReportAsync_ShouldReturnFailure_WhenRepositoryGetMonthlyReportFails()
     {
         // Arrange
         _studySessionsRepository.HasStudySessionAsync().Returns(Result.Success(true));
@@ -201,7 +201,7 @@ public class StudySessionsServiceTests
     }
 
     [Fact]
-    public async Task GetMonthlyStudySessionsReportAsync_WhenSuccess_ReturnsSuccess()
+    public async Task GetMonthlyStudySessionsReportAsync_ShouldReturnSuccess_WhenValidDataExists()
     {
         // Arrange
         var monthlyData = new List<MonthlyStudySessionsNumberData>
@@ -250,7 +250,7 @@ public class StudySessionsServiceTests
     }
 
     [Fact]
-    public async Task GetMonthlyStudySessionsReportAsync_WhenNoSessions_ReturnsFailure()
+    public async Task GetMonthlyStudySessionsReportAsync_ShouldReturnEmptyCollection_WhenNoSessionsExist()
     {
         // Arrange
         _studySessionsRepository.HasStudySessionAsync().Returns(Result.Success(false));
@@ -264,7 +264,7 @@ public class StudySessionsServiceTests
     }
 
     [Fact]
-    public async Task GetMonthlyStudySessionsReportAsync_WhenHasStudySessionsFails_ReturnsFailure()
+    public async Task GetMonthlyStudySessionsReportAsync_ShouldReturnFailure_WhenHasStudySessionsFails()
     {
         // Arrange
         _studySessionsRepository.HasStudySessionAsync().Returns(Result.Failure<bool>(StudySessionsErrors.HasStudySessionFailed));
@@ -278,7 +278,7 @@ public class StudySessionsServiceTests
     }
 
     [Fact]
-    public async Task GetMonthlyStudySessionsAverageScoreReportAsync_WhenNoSessions_ReturnsEmptyReport()
+    public async Task GetMonthlyStudySessionsAverageScoreReportAsync_ShouldReturnEmptyReport_WhenNoSessionsExist()
     {
         // Arrange
         _studySessionsRepository.HasStudySessionAsync().Returns(Result.Success(false));
@@ -292,7 +292,7 @@ public class StudySessionsServiceTests
     }
 
     [Fact]
-    public async Task GetMonthlyStudySessionsAverageScoreReportAsync_WhenHasStudySessionsFails_ReturnsFailure()
+    public async Task GetMonthlyStudySessionsAverageScoreReportAsync_ShouldReturnFailure_WhenHasStudySessionsFails()
     {
         // Arrange
         _studySessionsRepository.HasStudySessionAsync().Returns(Result.Failure<bool>(StudySessionsErrors.HasStudySessionFailed));
@@ -306,7 +306,7 @@ public class StudySessionsServiceTests
     }
 
     [Fact]
-    public async Task GetMonthlyStudySessionsAverageScoreReportAsync_WhenGetMonthlyAverageScoreReportFails_ReturnsFailure()
+    public async Task GetMonthlyStudySessionsAverageScoreReportAsync_ShouldReturnFailure_WhenRepositoryGetMonthlyAverageScoreReportFails()
     {
         // Arrange
         _studySessionsRepository.HasStudySessionAsync().Returns(Result.Success(true));
@@ -322,7 +322,7 @@ public class StudySessionsServiceTests
     }
 
     [Fact]
-    public async Task GetMonthlyStudySessionsAverageScoreReportAsync_WhenSuccess_ReturnsSuccess()
+    public async Task GetMonthlyStudySessionsAverageScoreReportAsync_ShouldReturnSuccess_WhenValidDataExists()
     {
         // Arrange
         var monthlyData = new List<MonthlyStudySessionsAverageScoreData>
