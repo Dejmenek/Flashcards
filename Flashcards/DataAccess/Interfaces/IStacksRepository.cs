@@ -14,5 +14,4 @@ public interface IStacksRepository
     Task<Result> AddStackAsync(string name);
     Task<Result<IEnumerable<Stack>>> GetAllStacksAsync();
     Task<Result<bool>> StackExistsWithNameAsync(string name);
-    Task<Result<bool>> HasStackAnyFlashcardsAsync(int stackId);
 }

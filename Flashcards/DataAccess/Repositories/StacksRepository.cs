@@ -192,28 +192,6 @@ public class StacksRepository : IStacksRepository
         }
     }
 
-    public async Task<Result<bool>> HasStackAnyFlashcardsAsync(int stackId)
-    {
-        try
-        {
-            using (var connection = new SqlConnection(_defaultConnectionString))
-            {
-                string sql = SqlScripts.HasStackAnyFlashcards;
-
-                var hasAny = await connection.QuerySingleAsync<bool>(sql, new { Id = stackId });
-                return Result.Success(hasAny);
-            }
-        }
-        catch (SqlException)
-        {
-            return Result.Failure<bool>(StacksErrors.HasAnyFlashcardsFailed);
-        }
-        catch (Exception)
-        {
-            return Result.Failure<bool>(StacksErrors.HasAnyFlashcardsFailed);
-        }
-    }
-
     public async Task<Result<int>> GetFlashcardsCountInStackAsync(int stackId)
     {
         try

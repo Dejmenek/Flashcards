@@ -111,10 +111,6 @@ public class StacksService : IStacksService
         if (CurrentStack == null)
             return Result.Failure<List<FlashcardDTO>>(StacksErrors.CurrentStackNotFound);
 
-        var hasAnyResult = await _stacksRepository.HasStackAnyFlashcardsAsync(CurrentStack.Id);
-        if (hasAnyResult.IsFailure) return Result.Failure<List<FlashcardDTO>>(hasAnyResult.Error);
-        if (!hasAnyResult.Value) return Result.Success(new List<FlashcardDTO>());
-
         var flashcardsResult = await _stacksRepository.GetFlashcardsByStackIdAsync(CurrentStack.Id);
         if (flashcardsResult.IsFailure) return Result.Failure<List<FlashcardDTO>>(flashcardsResult.Error);
 
