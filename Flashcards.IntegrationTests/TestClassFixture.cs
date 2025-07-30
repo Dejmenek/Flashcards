@@ -1,5 +1,4 @@
-﻿using DotNet.Testcontainers.Builders;
-using Flashcards.Controllers;
+﻿using Flashcards.Controllers;
 using Flashcards.DataAccess;
 using Flashcards.DataAccess.Interfaces;
 using Flashcards.DataAccess.Repositories;
@@ -23,7 +22,6 @@ public class TestClassFixture : IAsyncLifetime
             .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
             .WithName("dbTest")
             .WithPortBinding(1433, true)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(1433))
             .WithPassword("YourStrong!Passw0rd")
             .Build();
 
