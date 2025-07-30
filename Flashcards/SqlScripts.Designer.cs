@@ -98,7 +98,7 @@ namespace Flashcards {
         /// SELECT * FROM sys.databases WHERE name = &apos;Flashcards&apos;
         ///)
         ///BEGIN
-        /// CREATE DATABASE Flashcards;
+        /// CREATE DATABASE Flashcards COLLATE Latin1_General_100_CI_AS_SC_UTF8;
         ///END;.
         /// </summary>
         internal static string CreateDatabase {
@@ -108,27 +108,27 @@ namespace Flashcards {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to IF NOT EXISTS (
-        ///    SELECT * FROM INFORMATION_SCHEMA.TABLES
-        ///    WHERE TABLE_NAME = &apos;Stacks&apos;
-        ///)
-        ///BEGIN
-        ///    CREATE TABLE Stacks (
-        ///        Id INT IDENTITY(1, 1) PRIMARY KEY,
-        ///        Name NVARCHAR(50) NOT NULL UNIQUE
-        ///    );
-        ///END;
+        ///   Looks up a localized string similar to DROP TABLE IF EXISTS StudySessions;
+        ///DROP TABLE IF EXISTS Flashcards;
+        ///DROP TABLE IF EXISTS Stacks;
         ///
-        ///IF NOT EXISTS (
-        ///    SELECT * FROM INFORMATION_SCHEMA.TABLES
-        ///    WHERE TABLE_NAME = &apos;Flashcards&apos;
-        ///)
-        ///BEGIN
-        ///    CREATE TABLE Flashcards (
-        ///        Id INT IDENTITY(1, 1) PRIMARY KEY,
-        ///        StackId INT,
-        ///        Front NVARCHAR(50) NOT NULL,
-        ///        Back NVARCHAR(50) NOT NUL [rest of string was truncated]&quot;;.
+        ///CREATE TABLE Stacks (
+        ///    Id INT IDENTITY(1, 1) PRIMARY KEY,
+        ///    Name NVARCHAR(50) NOT NULL UNIQUE
+        ///);
+        ///
+        ///CREATE TABLE Flashcards (
+        ///    Id INT IDENTITY(1, 1) PRIMARY KEY,
+        ///    StackId INT,
+        ///    Front NVARCHAR(50) NOT NULL,
+        ///    Back NVARCHAR(50) NOT NULL,
+        ///    FOREIGN KEY (StackId) REFERENCES Stacks(Id)
+        ///    ON DELETE CASCADE
+        ///);
+        ///
+        ///CREATE TABLE StudySessions (
+        ///    Id INT IDENTITY(1, 1) PRIMARY KEY,
+        ///  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string CreateTables {
             get {
@@ -286,11 +286,7 @@ namespace Flashcards {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to IF NOT EXISTS (
-        ///	SELECT 1 FROM Flashcards
-        ///)
-        ///BEGIN
-        ///	INSERT INTO Flashcards (StackId, Front, Back) VALUES
+        ///   Looks up a localized string similar to INSERT INTO Flashcards (StackId, Front, Back) VALUES
         ///	(1, &apos;Hola&apos;, &apos;Hello&apos;),
         ///	(1, &apos;¿Cómo estás?&apos;, &apos;How are you?&apos;),
         ///	(1, &apos;Gracias&apos;, &apos;Thank you&apos;),
@@ -299,8 +295,7 @@ namespace Flashcards {
         ///	(2, &apos;Danke&apos;, &apos;Thank you&apos;),
         ///	(3, &apos;Dzień dobry&apos;, &apos;Good morning&apos;),
         ///	(3, &apos;Do widzenia&apos;, &apos;Goodbye&apos;),
-        ///	(3, &apos;Proszę&apos;, &apos;Please&apos;)
-        ///END;.
+        ///	(3, &apos;Proszę&apos;, &apos;Please&apos;);.
         /// </summary>
         internal static string SeedFlashcards {
             get {
@@ -309,15 +304,10 @@ namespace Flashcards {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to IF NOT EXISTS (
-        ///    SELECT 1 FROM Stacks
-        ///)
-        ///BEGIN
-        ///    INSERT INTO Stacks (Name) VALUES
+        ///   Looks up a localized string similar to INSERT INTO Stacks (Name) VALUES
         ///    (&apos;Spanish&apos;),
         ///    (&apos;German&apos;),
-        ///    (&apos;Polish&apos;);
-        ///END;.
+        ///    (&apos;Polish&apos;);.
         /// </summary>
         internal static string SeedStacks {
             get {

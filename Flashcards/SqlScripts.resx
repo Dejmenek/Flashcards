@@ -132,11 +132,68 @@
  SELECT * FROM sys.databases WHERE name = 'Flashcards'
 )
 BEGIN
- CREATE DATABASE Flashcards;
+ CREATE DATABASE Flashcards COLLATE Latin1_General_100_CI_AS_SC_UTF8;
 END;</value>
+    <comment>IF NOT EXISTS (
+ SELECT * FROM sys.databases WHERE name = 'Flashcards'
+)
+BEGIN
+ CREATE DATABASE Flashcards COLLATE Latin1_General_100_CI_AS_SC_UTF8;
+END;</comment>
   </data>
-  <data name="CreateTables" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>SqlScripts\CreateTables.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+  <data name="CreateTables" xml:space="preserve">
+    <value>DROP TABLE IF EXISTS StudySessions;
+DROP TABLE IF EXISTS Flashcards;
+DROP TABLE IF EXISTS Stacks;
+
+CREATE TABLE Stacks (
+    Id INT IDENTITY(1, 1) PRIMARY KEY,
+    Name NVARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE Flashcards (
+    Id INT IDENTITY(1, 1) PRIMARY KEY,
+    StackId INT,
+    Front NVARCHAR(50) NOT NULL,
+    Back NVARCHAR(50) NOT NULL,
+    FOREIGN KEY (StackId) REFERENCES Stacks(Id)
+    ON DELETE CASCADE
+);
+
+CREATE TABLE StudySessions (
+    Id INT IDENTITY(1, 1) PRIMARY KEY,
+    StackId INT,
+    Date DATETIME NOT NULL,
+    Score INT NOT NULL,
+    FOREIGN KEY (StackId) REFERENCES Stacks(Id)
+    ON DELETE CASCADE
+);</value>
+    <comment>DROP TABLE IF EXISTS StudySessions;
+DROP TABLE IF EXISTS Flashcards;
+DROP TABLE IF EXISTS Stacks;
+
+CREATE TABLE Stacks (
+    Id INT IDENTITY(1, 1) PRIMARY KEY,
+    Name NVARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE Flashcards (
+    Id INT IDENTITY(1, 1) PRIMARY KEY,
+    StackId INT,
+    Front NVARCHAR(50) NOT NULL,
+    Back NVARCHAR(50) NOT NULL,
+    FOREIGN KEY (StackId) REFERENCES Stacks(Id)
+    ON DELETE CASCADE
+);
+
+CREATE TABLE StudySessions (
+    Id INT IDENTITY(1, 1) PRIMARY KEY,
+    StackId INT,
+    Date DATETIME NOT NULL,
+    Score INT NOT NULL,
+    FOREIGN KEY (StackId) REFERENCES Stacks(Id)
+    ON DELETE CASCADE
+);</comment>
   </data>
   <data name="DeleteFlashcard" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>SqlScripts\DeleteFlashcard.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
@@ -177,8 +234,15 @@ END;</value>
   <data name="SeedFlashcards" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>SqlScripts\SeedFlashcards.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
-  <data name="SeedStacks" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>SqlScripts\SeedStacks.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+  <data name="SeedStacks" xml:space="preserve">
+    <value>INSERT INTO Stacks (Name) VALUES
+    ('Spanish'),
+    ('German'),
+    ('Polish');</value>
+    <comment>INSERT INTO Stacks (Name) VALUES
+    ('Spanish'),
+    ('German'),
+    ('Polish');</comment>
   </data>
   <data name="StackExistsWithName" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>SqlScripts\StackExistsWithName.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
