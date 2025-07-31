@@ -20,7 +20,6 @@ public class TestClassFixture : IAsyncLifetime
     {
         _dbContainer = new MsSqlBuilder()
             .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
-            .WithName("dbTest")
             .WithPortBinding(1433, true)
             .WithPassword("YourStrong!Passw0rd")
             .Build();
@@ -57,9 +56,10 @@ public class TestClassFixture : IAsyncLifetime
                 }
 
                 var userInteractionSubstitute = Substitute.For<IUserInteractionService>();
+                var consoleServiceSubstitute = Substitute.For<IConsoleService>();
 
                 services.AddSingleton(userInteractionSubstitute);
-                services.AddSingleton<IConsoleService, ConsoleService>();
+                services.AddSingleton(consoleServiceSubstitute);
                 services.AddScoped<IFlashcardsRepository, FlashcardsRepository>();
                 services.AddScoped<IStacksRepository, StacksRepository>();
                 services.AddScoped<IStudySessionsRepository, StudySessionsRepository>();
@@ -82,5 +82,8 @@ public class TestClassFixture : IAsyncLifetime
     public async Task DisposeAsync()
     {
         await _dbContainer.StopAsync();
+        await _dbContainer.DisposeAsync();
+
+        TestHost?.Dispose();
     }
 }
