@@ -119,8 +119,8 @@ They provide a clean way to transfer data between different layers of an applica
 - [C# Corner](https://www.c-sharpcorner.com/article/data-transfer-objects-dtos-in-c-sharp/) used to learn about DTOs
 
 ## TODO
-- [ ] Add unit tests for the application.
-- [ ] Add integration tests for the application.
+- [x] Add unit tests for the application.
+- [x] Add integration tests for the application.
 - [ ] Add more card types (e.g., multiple choice, true/false).
 - [ ] Leitner System implementation for spaced repetition.
 - [ ] Generate flashcards from text files or other formats.
