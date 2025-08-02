@@ -3,10 +3,10 @@ using Flashcards.Utils;
 
 namespace Flashcards.DataAccess.Interfaces;
 
-public interface IFlashcardsRepository
+public interface ICardsRepository
 {
     Task<Result> AddFlashcardAsync(int stackId, string front, string back);
-    Task<Result> DeleteFlashcardAsync(int flashcardId);
+    Task<Result> DeleteCardAsync(int cardId);
     Task<Result> UpdateFlashcardAsync(int flashcardId, string front, string back);
-    Task<Result<IEnumerable<Flashcard>>> GetAllFlashcardsAsync();
+    Task<Result<IEnumerable<BaseCard>>> GetAllCardsAsync();
 }
