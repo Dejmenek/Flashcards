@@ -9,8 +9,42 @@ public static class Mapper
         return new FlashcardDTO
         {
             Id = flashcard.Id,
-            Front = flashcard.Front,
-            Back = flashcard.Back,
+            CardType = flashcard.CardType,
+            Front = flashcard.Front ?? string.Empty,
+            Back = flashcard.Back ?? string.Empty,
+        };
+    }
+
+    public static ClozeCardDTO ToClozeCardDTO(ClozeCard clozeCard)
+    {
+        return new ClozeCardDTO
+        {
+            Id = clozeCard.Id,
+            CardType = clozeCard.CardType,
+            ClozeText = clozeCard.ClozeText ?? string.Empty,
+        };
+    }
+
+    public static FillInCardDTO ToFillInCardDTO(FillInCard fillInCard)
+    {
+        return new FillInCardDTO
+        {
+            Id = fillInCard.Id,
+            CardType = fillInCard.CardType,
+            FillInText = fillInCard.FillInText ?? string.Empty,
+            Answer = fillInCard.Answer ?? new List<string>(),
+        };
+    }
+
+    public static MultipleChoiceCardDTO ToMultipleChoiceCardDTO(MultipleChoiceCard multipleChoiceCard)
+    {
+        return new MultipleChoiceCardDTO
+        {
+            Id = multipleChoiceCard.Id,
+            CardType = multipleChoiceCard.CardType,
+            Question = multipleChoiceCard.Question ?? string.Empty,
+            Choices = multipleChoiceCard.Choices ?? new List<string>(),
+            Answer = multipleChoiceCard.Answer ?? string.Empty,
         };
     }
 
