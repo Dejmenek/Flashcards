@@ -21,38 +21,43 @@ public class StudySessionsService : IStudySessionsService
         _consoleService = consoleService;
     }
 
-    public void StartStudySessionAsync(List<FlashcardDTO> flashcards)
+    public void StartStudySessionAsync(List<BaseCardDTO> cards)
     {
         Score = 0;
-        foreach (FlashcardDTO flashcard in flashcards)
+        foreach (BaseCardDTO card in cards)
         {
-            DataVisualizer.ShowFlashcardFront(flashcard);
-            string userAnswer = _userInteractionService.GetAnswer();
+            switch (card)
+            {
+                case FlashcardDTO flashcard:
+                    DataVisualizer.ShowFlashcardFront(flashcard);
+                    string userAnswer = _userInteractionService.GetAnswer();
 
-            if (userAnswer == flashcard.Back)
-            {
-                AnsiConsole.MarkupLine("Your answer is correct!");
-                Score++;
-            }
-            else
-            {
-                AnsiConsole.MarkupLine("Your answwer was wrong.");
-                AnsiConsole.MarkupLine($"The correct answer was {flashcard.Back}.");
+                    if (userAnswer == flashcard.Back)
+                    {
+                        AnsiConsole.MarkupLine("Your answer is correct!");
+                        Score++;
+                    }
+                    else
+                    {
+                        AnsiConsole.MarkupLine("Your answwer was wrong.");
+                        AnsiConsole.MarkupLine($"The correct answer was {flashcard.Back}.");
+                    }
+                    break;
             }
 
             _userInteractionService.GetUserInputToContinue();
             _consoleService.Clear();
         }
 
-        AnsiConsole.MarkupLine($"You got {Score} out of {flashcards.Count}");
+        AnsiConsole.MarkupLine($"You got {Score} out of {cards.Count}");
         _userInteractionService.GetUserInputToContinue();
         _consoleService.Clear();
     }
 
-    public async Task<Result> RunStudySessionAsync(List<FlashcardDTO> studySessionFlashcards, int stackId)
+    public async Task<Result> RunStudySessionAsync(List<BaseCardDTO> studySessionFlashcards, int stackId)
     {
         if (studySessionFlashcards is [])
-            return Result.Failure(FlashcardsErrors.FlashcardsNotFound);
+            return Result.Failure(CardsErrors.CardsNotFound);
 
         StartStudySessionAsync(studySessionFlashcards);
         var endResult = await EndStudySessionAsync(stackId);

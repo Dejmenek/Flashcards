@@ -11,10 +11,11 @@ public interface IUserInteractionService
     string GetStackName();
     string GetAnswer();
     string GetYear();
-    FlashcardDTO GetFlashcard(List<FlashcardDTO> flashcards);
+    CardType GetCardType();
+    BaseCardDTO GetCard(List<BaseCardDTO> flashcards);
     string GetStack(List<StackDTO> stacks);
     MenuOptions GetMenuOption();
     ManageStackOptions GetManageStackOption(string currentStack);
-    ManageFlashcardsOptions GetManageFlashcardsOption();
+    ManageCardsOptions GetManageCardsOption();
     void GetUserInputToContinue();
 }
