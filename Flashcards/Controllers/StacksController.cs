@@ -18,9 +18,9 @@ public class StacksController
         return await _stacksService.AddStackAsync();
     }
 
-    public async Task<Result> AddFlashcardToStackAsync()
+    public async Task<Result> AddCardToStackAsync()
     {
-        return await _stacksService.AddFlashcardToStackAsync();
+        return await _stacksService.AddCardToStackAsync();
     }
 
     public async Task<Result> DeleteStackAsync()
@@ -28,24 +28,24 @@ public class StacksController
         return await _stacksService.DeleteStackAsync();
     }
 
-    public async Task<Result> DeleteFlashcardFromStackAsync()
+    public async Task<Result> DeleteCardFromStackAsync()
     {
-        return await _stacksService.DeleteFlashcardFromStackAsync();
+        return await _stacksService.DeleteCardFromStackAsync();
     }
 
-    public async Task<Result> UpdateFlashcardInStackAsync()
+    public async Task<Result> UpdateCardInStackAsync()
     {
-        return await _stacksService.UpdateFlashcardInStackAsync();
+        return await _stacksService.UpdateCardInStackAsync();
     }
 
-    public async Task<Result<List<FlashcardDTO>>> GetFlashcardsByStackIdAsync()
+    public async Task<Result<List<BaseCardDTO>>> GetCardsByStackIdAsync()
     {
-        return await _stacksService.GetFlashcardsByStackIdAsync();
+        return await _stacksService.GetCardsByStackIdAsync();
     }
 
-    public async Task<Result<int>> GetFlashcardsCountInStackAsync()
+    public async Task<Result<int>> GetCardsCountInStackAsync()
     {
-        return await _stacksService.GetFlashcardsCountInStackAsync();
+        return await _stacksService.GetCardsCountInStackAsync();
     }
 
     public async Task<Result<List<StackDTO>>> GetAllStacksAsync()

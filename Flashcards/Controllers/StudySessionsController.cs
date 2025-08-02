@@ -13,9 +13,9 @@ public class StudySessionsController
         _studySessionsService = studySessionsService;
     }
 
-    public async Task<Result> RunStudySessionAsync(List<FlashcardDTO> studySessionFlashcards, int stackId)
+    public async Task<Result> RunStudySessionAsync(List<BaseCardDTO> studySessionCards, int stackId)
     {
-        return await _studySessionsService.RunStudySessionAsync(studySessionFlashcards, stackId);
+        return await _studySessionsService.RunStudySessionAsync(studySessionCards, stackId);
     }
 
     public async Task<Result<List<StudySessionDTO>>> GetAllStudySessionsAsync()
