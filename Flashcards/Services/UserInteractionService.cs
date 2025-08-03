@@ -54,13 +54,32 @@ public class UserInteractionService : IUserInteractionService
             );
     }
 
-    public FlashcardDTO GetFlashcard(List<FlashcardDTO> flashcards)
+    public CardType GetCardType()
     {
         return AnsiConsole.Prompt(
-            new SelectionPrompt<FlashcardDTO>()
-                .Title("Choose your flashcard")
-                .UseConverter(flashcard => flashcard.Front)
-                .AddChoices(flashcards)
+            new SelectionPrompt<CardType>()
+                .Title("Choose the type of card you want to create")
+                .AddChoices(Enum.GetValues<CardType>())
+            );
+    }
+
+    public BaseCardDTO GetCard(List<BaseCardDTO> cards)
+    {
+        return AnsiConsole.Prompt(
+            new SelectionPrompt<BaseCardDTO>()
+                .Title("Choose your card")
+                .UseConverter(card =>
+                {
+                    return card switch
+                    {
+                        FlashcardDTO flashcard => $"Flashcard: {flashcard.Front}",
+                        ClozeCardDTO clozeCard => $"Cloze Card: {clozeCard.ClozeText}",
+                        FillInCardDTO fillInCard => $"Fill-in Card: {fillInCard.FillInText}",
+                        MultipleChoiceCardDTO multipleChoiceCard => $"Multiple Choice Card: {multipleChoiceCard.Question}",
+                        _ => throw new InvalidOperationException("Unknown card type")
+                    };
+                })
+                .AddChoices(cards)
             );
     }
 
@@ -91,12 +110,12 @@ public class UserInteractionService : IUserInteractionService
             );
     }
 
-    public ManageFlashcardsOptions GetManageFlashcardsOption()
+    public ManageCardsOptions GetManageCardsOption()
     {
         return AnsiConsole.Prompt(
-            new SelectionPrompt<ManageFlashcardsOptions>()
-                .Title($"What would you like to do with flashcards?")
-                .AddChoices(Enum.GetValues<ManageFlashcardsOptions>())
+            new SelectionPrompt<ManageCardsOptions>()
+                .Title($"What would you like to do with cards?")
+                .AddChoices(Enum.GetValues<ManageCardsOptions>())
             );
     }
 

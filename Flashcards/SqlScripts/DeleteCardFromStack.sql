@@ -1,2 +1,2 @@
-DELETE FROM Flashcards
+DELETE FROM Cards
 WHERE Id = @Id AND StackId = @StackId

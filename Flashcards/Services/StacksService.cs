@@ -1,6 +1,7 @@
 ﻿using Flashcards.DataAccess.Interfaces;
 using Flashcards.Helpers;
 using Flashcards.Models;
+using Flashcards.Services.CardStrategies;
 using Flashcards.Services.Interfaces;
 using Flashcards.Utils;
 using Spectre.Console;
@@ -10,15 +11,15 @@ namespace Flashcards.Services;
 public class StacksService : IStacksService
 {
     private readonly IStacksRepository _stacksRepository;
-    private readonly IFlashcardsRepository _flashcardsRepository;
+    private readonly ICardsRepository _cardsRepository;
     private readonly IUserInteractionService _userInteractionService;
     public Stack? CurrentStack { get; private set; }
 
-    public StacksService(IStacksRepository stacksRepository, IUserInteractionService userInteractionService, IFlashcardsRepository flashcardsRepository)
+    public StacksService(IStacksRepository stacksRepository, IUserInteractionService userInteractionService, ICardsRepository cardsRepository)
     {
         _stacksRepository = stacksRepository;
         _userInteractionService = userInteractionService;
-        _flashcardsRepository = flashcardsRepository;
+        _cardsRepository = cardsRepository;
     }
 
     public async Task<Result> AddStackAsync()
@@ -41,18 +42,19 @@ public class StacksService : IStacksService
         return Result.Success();
     }
 
-    public async Task<Result> AddFlashcardToStackAsync()
+    public async Task<Result> AddCardToStackAsync()
     {
-        string front = _userInteractionService.GetFlashcardFront();
-        string back = _userInteractionService.GetFlashcardBack();
-
         if (CurrentStack == null)
             return Result.Failure(StacksErrors.CurrentStackNotFound);
 
-        var addResult = await _flashcardsRepository.AddFlashcardAsync(CurrentStack.Id, front, back);
-        if (addResult.IsFailure) return Result.Failure(addResult.Error);
+        CardType chosenCardType = _userInteractionService.GetCardType();
+        ICardStrategy strategy = chosenCardType switch
+        {
+            CardType.Flashcard => new FlashcardStrategy(_cardsRepository, _userInteractionService),
+            _ => throw new ArgumentOutOfRangeException(nameof(chosenCardType), "Invalid card type selected.")
+        };
 
-        return Result.Success();
+        return await strategy.AddCardAsync(CurrentStack.Id);
     }
 
     public async Task<Result> DeleteStackAsync()
@@ -66,63 +68,71 @@ public class StacksService : IStacksService
         return Result.Success();
     }
 
-    public async Task<Result> DeleteFlashcardFromStackAsync()
+    public async Task<Result> DeleteCardFromStackAsync()
     {
-        var flashcardsResult = await GetFlashcardsByStackIdAsync();
-        if (flashcardsResult.IsFailure) return Result.Failure(flashcardsResult.Error);
+        var cardsResult = await GetCardsByStackIdAsync();
+        if (cardsResult.IsFailure) return Result.Failure(cardsResult.Error);
 
-        if (flashcardsResult.Value.Count == 0)
-            return Result.Failure(FlashcardsErrors.FlashcardsNotFound);
+        if (cardsResult.Value.Count == 0)
+            return Result.Failure(CardsErrors.CardsNotFound);
 
-        FlashcardDTO chosenFlashcard = _userInteractionService.GetFlashcard(flashcardsResult.Value);
+        BaseCardDTO chosenCard = _userInteractionService.GetCard(cardsResult.Value);
 
-        var deleteResult = await _stacksRepository.DeleteFlashcardFromStackAsync(chosenFlashcard.Id, CurrentStack.Id);
+        var deleteResult = await _stacksRepository.DeleteCardFromStackAsync(chosenCard.Id, CurrentStack!.Id);
         if (deleteResult.IsFailure) return Result.Failure(deleteResult.Error);
 
         return Result.Success();
     }
 
-    public async Task<Result> UpdateFlashcardInStackAsync()
+    public async Task<Result> UpdateCardInStackAsync()
     {
-        var flashcardsResult = await GetFlashcardsByStackIdAsync();
-        if (flashcardsResult.IsFailure) return Result.Failure(flashcardsResult.Error);
+        var cardsResult = await GetCardsByStackIdAsync();
+        if (cardsResult.IsFailure) return Result.Failure(cardsResult.Error);
 
-        if (flashcardsResult.Value.Count == 0)
-            return Result.Failure(FlashcardsErrors.FlashcardsNotFound);
+        if (cardsResult.Value.Count == 0)
+            return Result.Failure(CardsErrors.CardsNotFound);
 
-        FlashcardDTO chosenFlashcard = _userInteractionService.GetFlashcard(flashcardsResult.Value);
-        string front = _userInteractionService.GetFlashcardFront();
-        string back = _userInteractionService.GetFlashcardBack();
+        BaseCardDTO chosenCard = _userInteractionService.GetCard(cardsResult.Value);
 
-        var updateResult = await _stacksRepository.UpdateFlashcardInStackAsync(chosenFlashcard.Id, CurrentStack.Id, front, back);
-        if (updateResult.IsFailure) return Result.Failure(updateResult.Error);
+        ICardStrategy strategy = chosenCard.CardType switch
+        {
+            CardType.Flashcard => new FlashcardStrategy(_cardsRepository, _userInteractionService, _stacksRepository),
+            _ => throw new ArgumentOutOfRangeException(nameof(chosenCard.CardType), "Invalid card type selected.")
+        };
 
-        return Result.Success();
+        return await strategy.UpdateCardInStackAsync(chosenCard.Id, CurrentStack!.Id);
     }
 
-    public async Task<Result<List<FlashcardDTO>>> GetFlashcardsByStackIdAsync()
+    public async Task<Result<List<BaseCardDTO>>> GetCardsByStackIdAsync()
     {
         if (CurrentStack == null)
-            return Result.Failure<List<FlashcardDTO>>(StacksErrors.CurrentStackNotFound);
+            return Result.Failure<List<BaseCardDTO>>(StacksErrors.CurrentStackNotFound);
 
-        var flashcardsResult = await _stacksRepository.GetFlashcardsByStackIdAsync(CurrentStack.Id);
-        if (flashcardsResult.IsFailure) return Result.Failure<List<FlashcardDTO>>(flashcardsResult.Error);
+        var cardsResult = await _stacksRepository.GetCardsByStackIdAsync(CurrentStack.Id);
+        if (cardsResult.IsFailure) return Result.Failure<List<BaseCardDTO>>(cardsResult.Error);
 
-        List<FlashcardDTO> flashcardDtos = new();
-        foreach (var flashcard in flashcardsResult.Value)
+        List<BaseCardDTO> cardDtos = new();
+        foreach (var card in cardsResult.Value)
         {
-            flashcardDtos.Add(Mapper.ToFlashcardDTO(flashcard));
+            switch (card)
+            {
+                case Flashcard flashcard:
+                    cardDtos.Add(Mapper.ToFlashcardDTO(flashcard));
+                    break;
+                default:
+                    return Result.Failure<List<BaseCardDTO>>(CardsErrors.GetAllFailed);
+            }
         }
 
-        return Result.Success(flashcardDtos);
+        return Result.Success(cardDtos);
     }
 
-    public async Task<Result<int>> GetFlashcardsCountInStackAsync()
+    public async Task<Result<int>> GetCardsCountInStackAsync()
     {
         if (CurrentStack == null)
             return Result.Failure<int>(StacksErrors.CurrentStackNotFound);
 
-        var countResult = await _stacksRepository.GetFlashcardsCountInStackAsync(CurrentStack.Id);
+        var countResult = await _stacksRepository.GetCardsCountInStackAsync(CurrentStack.Id);
         if (countResult.IsFailure) return Result.Failure<int>(countResult.Error);
 
         return Result.Success(countResult.Value);

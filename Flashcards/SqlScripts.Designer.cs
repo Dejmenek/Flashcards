@@ -61,9 +61,9 @@ namespace Flashcards {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INSERT INTO Flashcards (StackId, Front, Back)
+        ///   Looks up a localized string similar to INSERT INTO Cards (StackId, Front, Back, CardType)
         ///VALUES
-        ///(@StackId, @Front, @Back).
+        ///(@StackId, @Front, @Back, @CardType).
         /// </summary>
         internal static string AddFlashcard {
             get {
@@ -95,10 +95,10 @@ namespace Flashcards {
         
         /// <summary>
         ///   Looks up a localized string similar to IF NOT EXISTS (
-        /// SELECT * FROM sys.databases WHERE name = &apos;Flashcards&apos;
+        ///	SELECT * FROM sys.databases WHERE name = &apos;Flashcards&apos;
         ///)
         ///BEGIN
-        /// CREATE DATABASE Flashcards COLLATE Latin1_General_100_CI_AS_SC_UTF8;
+        ///	CREATE DATABASE Flashcards COLLATE Latin1_General_100_CI_AS_SC_UTF8;
         ///END;.
         /// </summary>
         internal static string CreateDatabase {
@@ -109,7 +109,7 @@ namespace Flashcards {
         
         /// <summary>
         ///   Looks up a localized string similar to DROP TABLE IF EXISTS StudySessions;
-        ///DROP TABLE IF EXISTS Flashcards;
+        ///DROP TABLE IF EXISTS Cards;
         ///DROP TABLE IF EXISTS Stacks;
         ///
         ///CREATE TABLE Stacks (
@@ -117,18 +117,16 @@ namespace Flashcards {
         ///    Name NVARCHAR(50) NOT NULL UNIQUE
         ///);
         ///
-        ///CREATE TABLE Flashcards (
+        ///CREATE TABLE Cards (
         ///    Id INT IDENTITY(1, 1) PRIMARY KEY,
         ///    StackId INT,
-        ///    Front NVARCHAR(50) NOT NULL,
-        ///    Back NVARCHAR(50) NOT NULL,
-        ///    FOREIGN KEY (StackId) REFERENCES Stacks(Id)
-        ///    ON DELETE CASCADE
-        ///);
-        ///
-        ///CREATE TABLE StudySessions (
-        ///    Id INT IDENTITY(1, 1) PRIMARY KEY,
-        ///  [rest of string was truncated]&quot;;.
+        ///    Front NVARCHAR(50) NULL,
+        ///    Back NVARCHAR(50) NULL,
+        ///    Question NVARCHAR(max) NULL,
+        ///    Choices NVARCHAR(max) NULL,
+        ///    ClozeText NVARCHAR(max) NULL,
+        ///    FillInText NVARCHAR(max) NULL,
+        ///    Answer NVARCHAR(max) NULL [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string CreateTables {
             get {
@@ -137,22 +135,22 @@ namespace Flashcards {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DELETE FROM Flashcards
+        ///   Looks up a localized string similar to DELETE FROM Cards
         ///WHERE Id = @Id.
         /// </summary>
-        internal static string DeleteFlashcard {
+        internal static string DeleteCard {
             get {
-                return ResourceManager.GetString("DeleteFlashcard", resourceCulture);
+                return ResourceManager.GetString("DeleteCard", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DELETE FROM Flashcards
+        ///   Looks up a localized string similar to DELETE FROM Cards
         ///WHERE Id = @Id AND StackId = @StackId.
         /// </summary>
-        internal static string DeleteFlashcardFromStack {
+        internal static string DeleteCardFromStack {
             get {
-                return ResourceManager.GetString("DeleteFlashcardFromStack", resourceCulture);
+                return ResourceManager.GetString("DeleteCardFromStack", resourceCulture);
             }
         }
         
@@ -167,32 +165,32 @@ namespace Flashcards {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT * FROM Flashcards.
+        ///   Looks up a localized string similar to SELECT * FROM Cards.
         /// </summary>
-        internal static string GetFlashcards {
+        internal static string GetCards {
             get {
-                return ResourceManager.GetString("GetFlashcards", resourceCulture);
+                return ResourceManager.GetString("GetCards", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT * FROM Flashcards
+        ///   Looks up a localized string similar to SELECT * FROM Cards
         ///WHERE StackId = @StackId.
         /// </summary>
-        internal static string GetFlashcardsByStackId {
+        internal static string GetCardsByStackId {
             get {
-                return ResourceManager.GetString("GetFlashcardsByStackId", resourceCulture);
+                return ResourceManager.GetString("GetCardsByStackId", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to SELECT COUNT(Id)
-        ///FROM Flashcards
+        ///FROM Cards
         ///WHERE StackId = @StackId.
         /// </summary>
-        internal static string GetFlashcardsCountInStack {
+        internal static string GetCardsCountInStack {
             get {
-                return ResourceManager.GetString("GetFlashcardsCountInStack", resourceCulture);
+                return ResourceManager.GetString("GetCardsCountInStack", resourceCulture);
             }
         }
         
@@ -286,20 +284,20 @@ namespace Flashcards {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INSERT INTO Flashcards (StackId, Front, Back) VALUES
-        ///	(1, &apos;Hola&apos;, &apos;Hello&apos;),
-        ///	(1, &apos;¿Cómo estás?&apos;, &apos;How are you?&apos;),
-        ///	(1, &apos;Gracias&apos;, &apos;Thank you&apos;),
-        ///	(2, &apos;Hallo&apos;, &apos;Hello&apos;),
-        ///	(2, &apos;Wie geht es dir?&apos;, &apos;How are you?&apos;),
-        ///	(2, &apos;Danke&apos;, &apos;Thank you&apos;),
-        ///	(3, &apos;Dzień dobry&apos;, &apos;Good morning&apos;),
-        ///	(3, &apos;Do widzenia&apos;, &apos;Goodbye&apos;),
-        ///	(3, &apos;Proszę&apos;, &apos;Please&apos;);.
+        ///   Looks up a localized string similar to INSERT INTO Cards (StackId, Front, Back, CardType) VALUES
+        ///	(1, &apos;Hola&apos;, &apos;Hello&apos;, &apos;Flashcard&apos;),
+        ///	(1, &apos;¿Cómo estás?&apos;, &apos;How are you?&apos;, &apos;Flashcard&apos;),
+        ///	(1, &apos;Gracias&apos;, &apos;Thank you&apos;, &apos;Flashcard&apos;),
+        ///	(2, &apos;Hallo&apos;, &apos;Hello&apos;, &apos;Flashcard&apos;),
+        ///	(2, &apos;Wie geht es dir?&apos;, &apos;How are you?&apos;, &apos;Flashcard&apos;),
+        ///	(2, &apos;Danke&apos;, &apos;Thank you&apos;, &apos;Flashcard&apos;),
+        ///	(3, &apos;Dzień dobry&apos;, &apos;Good morning&apos;, &apos;Flashcard&apos;),
+        ///	(3, &apos;Do widzenia&apos;, &apos;Goodbye&apos;, &apos;Flashcard&apos;),
+        ///	(3, &apos;Proszę&apos;, &apos;Please&apos;, &apos;Flashcard&apos;);.
         /// </summary>
-        internal static string SeedFlashcards {
+        internal static string SeedCards {
             get {
-                return ResourceManager.GetString("SeedFlashcards", resourceCulture);
+                return ResourceManager.GetString("SeedCards", resourceCulture);
             }
         }
         
@@ -334,7 +332,7 @@ namespace Flashcards {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to UPDATE Flashcards
+        ///   Looks up a localized string similar to UPDATE Cards
         ///SET Front = @Front, Back = @Back
         ///WHERE Id = @Id.
         /// </summary>
@@ -345,7 +343,7 @@ namespace Flashcards {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to UPDATE Flashcards
+        ///   Looks up a localized string similar to UPDATE Cards
         ///SET Front = @Front, Back = @Back
         ///WHERE Id = @Id AND StackId = @StackId.
         /// </summary>

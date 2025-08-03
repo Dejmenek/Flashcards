@@ -60,15 +60,15 @@ public class TestClassFixture : IAsyncLifetime
 
                 services.AddSingleton(userInteractionSubstitute);
                 services.AddSingleton(consoleServiceSubstitute);
-                services.AddScoped<IFlashcardsRepository, FlashcardsRepository>();
+                services.AddScoped<ICardsRepository, CardsRepository>();
                 services.AddScoped<IStacksRepository, StacksRepository>();
                 services.AddScoped<IStudySessionsRepository, StudySessionsRepository>();
                 services.AddScoped<IStudySessionsService, StudySessionsService>();
                 services.AddScoped<IStacksService, StacksService>();
-                services.AddSingleton<IFlashcardsService, FlashcardsService>();
+                services.AddSingleton<ICardsService, CardsService>();
                 services.AddSingleton<StacksController>();
                 services.AddSingleton<StudySessionsController>();
-                services.AddSingleton<FlashcardsController>();
+                services.AddSingleton<CardsController>();
                 services.AddScoped<Menu>();
             })
             .Build();

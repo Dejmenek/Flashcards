@@ -10,14 +10,14 @@ public class Menu
 {
     private readonly IUserInteractionService _userInteractionService;
     private readonly StacksController _stacksController;
-    private readonly FlashcardsController _flashcardsController;
+    private readonly CardsController _cardsController;
     private readonly StudySessionsController _studySessionsController;
 
-    public Menu(IUserInteractionService userInteractionService, StacksController stacksController, FlashcardsController flashcardsController, StudySessionsController studySessionsController)
+    public Menu(IUserInteractionService userInteractionService, StacksController stacksController, CardsController cardsController, StudySessionsController studySessionsController)
     {
         _userInteractionService = userInteractionService;
         _stacksController = stacksController;
-        _flashcardsController = flashcardsController;
+        _cardsController = cardsController;
         _studySessionsController = studySessionsController;
     }
 
@@ -39,8 +39,8 @@ public class Menu
                     await ManageStacksAsync();
                     break;
 
-                case MenuOptions.ManageFlashcards:
-                    await ManageFlashcardsAsync();
+                case MenuOptions.ManageCards:
+                    await ManageCardsAsync();
                     break;
 
                 case MenuOptions.Study:
@@ -97,53 +97,53 @@ public class Menu
                     }
                     break;
 
-                case ManageStackOptions.ViewAllFlashcardsInStack:
-                    var flashcardsInStackResult = await _stacksController.GetFlashcardsByStackIdAsync();
-                    if (flashcardsInStackResult.IsFailure)
+                case ManageStackOptions.ViewCardsInStack:
+                    var cardsInStackResult = await _stacksController.GetCardsByStackIdAsync();
+                    if (cardsInStackResult.IsFailure)
                     {
-                        ShowError(flashcardsInStackResult.Error);
+                        ShowError(cardsInStackResult.Error);
                         _userInteractionService.GetUserInputToContinue();
                         break;
                     }
-                    DataVisualizer.ShowFlashcards(flashcardsInStackResult.Value);
+                    DataVisualizer.ShowCards(cardsInStackResult.Value);
                     _userInteractionService.GetUserInputToContinue();
                     break;
 
-                case ManageStackOptions.ViewAmountOfFlashcardsInStack:
-                    var countResult = await _stacksController.GetFlashcardsCountInStackAsync();
+                case ManageStackOptions.ViewAmountOfCardsInStack:
+                    var countResult = await _stacksController.GetCardsCountInStackAsync();
                     if (countResult.IsFailure)
                     {
                         ShowError(countResult.Error);
                         _userInteractionService.GetUserInputToContinue();
                         break;
                     }
-                    AnsiConsole.MarkupLine($"This stack has {countResult.Value} flashcards.");
+                    AnsiConsole.MarkupLine($"This stack has {countResult.Value} cards.");
                     _userInteractionService.GetUserInputToContinue();
                     break;
 
-                case ManageStackOptions.CreateFlashcardInStack:
-                    var addFlashcardResult = await _stacksController.AddFlashcardToStackAsync();
-                    if (addFlashcardResult.IsFailure)
+                case ManageStackOptions.CreateCardInStack:
+                    var addCardResult = await _stacksController.AddCardToStackAsync();
+                    if (addCardResult.IsFailure)
                     {
-                        ShowError(addFlashcardResult.Error);
+                        ShowError(addCardResult.Error);
                         _userInteractionService.GetUserInputToContinue();
                     }
                     break;
 
-                case ManageStackOptions.EditFlashcardInStack:
-                    var updateFlashcardResult = await _stacksController.UpdateFlashcardInStackAsync();
-                    if (updateFlashcardResult.IsFailure)
+                case ManageStackOptions.EditCardInStack:
+                    var updateCardResult = await _stacksController.UpdateCardInStackAsync();
+                    if (updateCardResult.IsFailure)
                     {
-                        ShowError(updateFlashcardResult.Error);
+                        ShowError(updateCardResult.Error);
                         _userInteractionService.GetUserInputToContinue();
                     }
                     break;
 
-                case ManageStackOptions.DeleteFlashcardFromStack:
-                    var deleteFlashcardResult = await _stacksController.DeleteFlashcardFromStackAsync();
-                    if (deleteFlashcardResult.IsFailure)
+                case ManageStackOptions.DeleteCardFromStack:
+                    var deleteCardResult = await _stacksController.DeleteCardFromStackAsync();
+                    if (deleteCardResult.IsFailure)
                     {
-                        ShowError(deleteFlashcardResult.Error);
+                        ShowError(deleteCardResult.Error);
                         _userInteractionService.GetUserInputToContinue();
                     }
                     break;
@@ -175,14 +175,14 @@ public class Menu
         }
     }
 
-    private async Task ManageFlashcardsAsync()
+    private async Task ManageCardsAsync()
     {
-        var userManageFlashcardsOption = _userInteractionService.GetManageFlashcardsOption();
+        var userManageCardsOption = _userInteractionService.GetManageCardsOption();
 
-        switch (userManageFlashcardsOption)
+        switch (userManageCardsOption)
         {
-            case ManageFlashcardsOptions.AddFlashcard:
-                var addResult = await _flashcardsController.AddFlashcardAsync();
+            case ManageCardsOptions.AddCcard:
+                var addResult = await _cardsController.AddCardAsync();
                 if (addResult.IsFailure)
                 {
                     ShowError(addResult.Error);
@@ -191,8 +191,8 @@ public class Menu
                 Console.Clear();
                 break;
 
-            case ManageFlashcardsOptions.DeleteFlashcard:
-                var deleteResult = await _flashcardsController.DeleteFlashcardAsync();
+            case ManageCardsOptions.DeleteCard:
+                var deleteResult = await _cardsController.DeleteCardAsync();
                 if (deleteResult.IsFailure)
                 {
                     ShowError(deleteResult.Error);
@@ -201,22 +201,22 @@ public class Menu
                 Console.Clear();
                 break;
 
-            case ManageFlashcardsOptions.ViewAllFlashcards:
-                var flashcardsResult = await _flashcardsController.GetAllFlashcardsAsync();
-                if (flashcardsResult.IsFailure)
+            case ManageCardsOptions.ViewAllCards:
+                var cardsResult = await _cardsController.GetAllCardsAsync();
+                if (cardsResult.IsFailure)
                 {
-                    ShowError(flashcardsResult.Error);
+                    ShowError(cardsResult.Error);
                     _userInteractionService.GetUserInputToContinue();
                     Console.Clear();
                     break;
                 }
-                DataVisualizer.ShowFlashcards(flashcardsResult.Value);
+                DataVisualizer.ShowCards(cardsResult.Value);
                 _userInteractionService.GetUserInputToContinue();
                 Console.Clear();
                 break;
 
-            case ManageFlashcardsOptions.EditFlashcard:
-                var updateResult = await _flashcardsController.UpdateFlashcardAsync();
+            case ManageCardsOptions.EditCard:
+                var updateResult = await _cardsController.UpdateCardAsync();
                 if (updateResult.IsFailure)
                 {
                     ShowError(updateResult.Error);
@@ -238,17 +238,17 @@ public class Menu
             return;
         }
 
-        var flashcardsResult = await _stacksController.GetFlashcardsByStackIdAsync();
-        if (flashcardsResult.IsFailure)
+        var cardsResult = await _stacksController.GetCardsByStackIdAsync();
+        if (cardsResult.IsFailure)
         {
-            ShowError(flashcardsResult.Error);
+            ShowError(cardsResult.Error);
             _userInteractionService.GetUserInputToContinue();
             Console.Clear();
             return;
         }
 
         var currentStack = _stacksController.GetCurrentStack();
-        var studySessionResult = await _studySessionsController.RunStudySessionAsync(flashcardsResult.Value, currentStack.Id);
+        var studySessionResult = await _studySessionsController.RunStudySessionAsync(cardsResult.Value, currentStack.Id);
         if (studySessionResult.IsFailure)
         {
             ShowError(studySessionResult.Error);

@@ -12,7 +12,7 @@ namespace Flashcards.IntegrationTests;
 public class StacksServiceIntegrationTests : BaseIntegrationTest, IAsyncLifetime
 {
     private readonly IStacksRepository _stacksRepository;
-    private readonly IFlashcardsRepository _flashcardsRepository;
+    private readonly ICardsRepository _cardsRepository;
     private readonly IUserInteractionService _userInteractionService;
     private readonly IStacksService _stacksService;
     private readonly IStudySessionsRepository _studySessionsRepository;
@@ -20,7 +20,7 @@ public class StacksServiceIntegrationTests : BaseIntegrationTest, IAsyncLifetime
     public StacksServiceIntegrationTests(TestClassFixture fixture) : base(fixture)
     {
         _stacksRepository = _scope.ServiceProvider.GetRequiredService<IStacksRepository>();
-        _flashcardsRepository = _scope.ServiceProvider.GetRequiredService<IFlashcardsRepository>();
+        _cardsRepository = _scope.ServiceProvider.GetRequiredService<ICardsRepository>();
         _userInteractionService = _scope.ServiceProvider.GetRequiredService<IUserInteractionService>();
         _studySessionsRepository = _scope.ServiceProvider.GetRequiredService<IStudySessionsRepository>();
         _stacksService = _scope.ServiceProvider.GetRequiredService<IStacksService>();
@@ -49,7 +49,7 @@ public class StacksServiceIntegrationTests : BaseIntegrationTest, IAsyncLifetime
     }
 
     [Fact]
-    public async Task AddFlashcardToStackAsync_ShouldPersistFlashcard()
+    public async Task AddCardToStackAsync_ShouldPersistFlashcard()
     {
         // Arrange
         string flashcardFront = "Miasto";
@@ -68,18 +68,18 @@ public class StacksServiceIntegrationTests : BaseIntegrationTest, IAsyncLifetime
         _userInteractionService.GetFlashcardBack().Returns(flashcardBack);
 
         // Act
-        var addFlashcardToStackResult = await _stacksService.AddFlashcardToStackAsync();
+        var result = await _stacksService.AddCardToStackAsync();
 
         // Assert
-        Assert.True(addFlashcardToStackResult.IsSuccess);
+        Assert.True(result.IsSuccess);
 
-        var flashcardsInStack = await _stacksRepository.GetFlashcardsByStackIdAsync(currentStack.Id);
-        Assert.True(flashcardsInStack.IsSuccess);
-        Assert.Contains(flashcardsInStack.Value, f => f.Front == flashcardFront && f.Back == flashcardBack);
+        var cardsInStack = await _stacksRepository.GetCardsByStackIdAsync(currentStack.Id);
+        Assert.True(cardsInStack.IsSuccess);
+        Assert.Contains(cardsInStack.Value.OfType<Flashcard>(), f => f.Front == flashcardFront && f.Back == flashcardBack);
     }
 
     [Fact]
-    public async Task DeleteStackAsync_ShouldRemoveStack_AndCascadeDeleteRelatedFlashcardsAndStudySessions()
+    public async Task DeleteStackAsync_ShouldRemoveStack_AndCascadeDeleteRelatedCardsAndStudySessions()
     {
         // Arrange
         var currentStack = new Stack()
@@ -102,9 +102,9 @@ public class StacksServiceIntegrationTests : BaseIntegrationTest, IAsyncLifetime
         Assert.True(allStacks.IsSuccess);
         Assert.DoesNotContain(allStacks.Value, s => s.Name == currentStack.Name);
 
-        var allFlashcards = await _flashcardsRepository.GetAllFlashcardsAsync();
-        Assert.True(allFlashcards.IsSuccess);
-        Assert.DoesNotContain(allFlashcards.Value, f => f.StackId == currentStack.Id);
+        var allCards = await _cardsRepository.GetAllCardsAsync();
+        Assert.True(allCards.IsSuccess);
+        Assert.DoesNotContain(allCards.Value, f => f.StackId == currentStack.Id);
 
         var allStudySessions = await _studySessionsRepository.GetAllStudySessionsAsync();
         Assert.True(allStudySessions.IsSuccess);
@@ -112,7 +112,7 @@ public class StacksServiceIntegrationTests : BaseIntegrationTest, IAsyncLifetime
     }
 
     [Fact]
-    public async Task DeleteFlashcardFromStackAsync_ShouldRemoveFlashcard()
+    public async Task DeleteCardFromStackAsync_ShouldRemoveFlashcard()
     {
         // Arrange
         var currentStack = new Stack()
@@ -121,28 +121,28 @@ public class StacksServiceIntegrationTests : BaseIntegrationTest, IAsyncLifetime
             Name = "Polish",
         };
 
-        var flashcardToDelete = (await _stacksRepository.GetFlashcardsByStackIdAsync(currentStack.Id))
-            .Value.First();
+        var flashcardToDelete = (await _stacksRepository.GetCardsByStackIdAsync(currentStack.Id))
+            .Value.OfType<Flashcard>().First();
 
         typeof(StacksService)
             .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             ?.SetValue(_stacksService, currentStack);
 
-        _userInteractionService.GetFlashcard(Arg.Any<List<FlashcardDTO>>()).Returns(Mapper.ToFlashcardDTO(flashcardToDelete));
+        _userInteractionService.GetCard(Arg.Any<List<BaseCardDTO>>()).Returns(Mapper.ToFlashcardDTO(flashcardToDelete));
 
         // Act
-        var deleteFlashcardFromStackResult = await _stacksService.DeleteFlashcardFromStackAsync();
+        var result = await _stacksService.DeleteCardFromStackAsync();
 
         // Assert
-        Assert.True(deleteFlashcardFromStackResult.IsSuccess);
+        Assert.True(result.IsSuccess);
 
-        var flashcardsInStack = await _stacksRepository.GetFlashcardsByStackIdAsync(currentStack.Id);
-        Assert.True(flashcardsInStack.IsSuccess);
-        Assert.DoesNotContain(flashcardsInStack.Value, f => f.Id == flashcardToDelete.Id);
+        var cardsInStack = await _stacksRepository.GetCardsByStackIdAsync(currentStack.Id);
+        Assert.True(cardsInStack.IsSuccess);
+        Assert.DoesNotContain(cardsInStack.Value, c => c.Id == flashcardToDelete.Id);
     }
 
     [Fact]
-    public async Task UpdateFlashcardInStack_ShouldUpdateFlashcard()
+    public async Task UpdateCardInStack_ShouldUpdateFlashcard()
     {
         // Arrange
         var currentStack = new Stack()
@@ -150,8 +150,8 @@ public class StacksServiceIntegrationTests : BaseIntegrationTest, IAsyncLifetime
             Id = 3,
             Name = "Polish",
         };
-        var flashcardToUpdate = (await _stacksRepository.GetFlashcardsByStackIdAsync(currentStack.Id))
-            .Value.First();
+        var flashcardToUpdate = (await _stacksRepository.GetCardsByStackIdAsync(currentStack.Id))
+            .Value.OfType<Flashcard>().First();
         var flashcardDTO = Mapper.ToFlashcardDTO(flashcardToUpdate);
         string updatedFront = "Updated Front";
         string updatedBack = "Updated Back";
@@ -160,26 +160,26 @@ public class StacksServiceIntegrationTests : BaseIntegrationTest, IAsyncLifetime
             .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             ?.SetValue(_stacksService, currentStack);
 
-        _userInteractionService.GetFlashcard(Arg.Any<List<FlashcardDTO>>()).Returns(flashcardDTO);
+        _userInteractionService.GetCard(Arg.Any<List<BaseCardDTO>>()).Returns(flashcardDTO);
         _userInteractionService.GetFlashcardFront().Returns(updatedFront);
         _userInteractionService.GetFlashcardBack().Returns(updatedBack);
 
         // Act
-        var updateFlashcardInStackResult = await _stacksService.UpdateFlashcardInStackAsync();
+        var result = await _stacksService.UpdateCardInStackAsync();
 
         // Assert
-        Assert.True(updateFlashcardInStackResult.IsSuccess);
+        Assert.True(result.IsSuccess);
 
-        var flashcardsInStack = await _stacksRepository.GetFlashcardsByStackIdAsync(currentStack.Id);
-        Assert.True(flashcardsInStack.IsSuccess);
+        var cardsInStack = await _stacksRepository.GetCardsByStackIdAsync(currentStack.Id);
+        Assert.True(cardsInStack.IsSuccess);
 
-        var updatedFlashcard = flashcardsInStack.Value.First(f => f.Id == flashcardToUpdate.Id);
+        var updatedFlashcard = cardsInStack.Value.OfType<Flashcard>().First(f => f.Id == flashcardToUpdate.Id);
         Assert.Equal(updatedFront, updatedFlashcard.Front);
         Assert.Equal(updatedBack, updatedFlashcard.Back);
     }
 
     [Fact]
-    public async Task GetFlashcardsByStackId_Async_ShouldReturnFlashcardsForStack()
+    public async Task GetCardsByStackId_Async_ShouldReturnCardsForStack()
     {
         // Arrange
         var currentStack = new Stack()
@@ -193,15 +193,15 @@ public class StacksServiceIntegrationTests : BaseIntegrationTest, IAsyncLifetime
             ?.SetValue(_stacksService, currentStack);
 
         // Act
-        var flashcardsInStackResult = await _stacksService.GetFlashcardsByStackIdAsync();
+        var result = await _stacksService.GetCardsByStackIdAsync();
 
         // Assert
-        Assert.True(flashcardsInStackResult.IsSuccess);
-        Assert.NotNull(flashcardsInStackResult.Value);
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Value);
     }
 
     [Fact]
-    public async Task GetFlashcardsCountAsync_ShouldReturnCountOfFlashcardsInCurrentStack()
+    public async Task GetCardsCountAsync_ShouldReturnCountOfCardsInCurrentStack()
     {
         // Arrange
         var currentStack = new Stack()
@@ -215,15 +215,15 @@ public class StacksServiceIntegrationTests : BaseIntegrationTest, IAsyncLifetime
             ?.SetValue(_stacksService, currentStack);
 
         // Act
-        var flashcardsCountResult = await _stacksService.GetFlashcardsCountInStackAsync();
+        var result = await _stacksService.GetCardsCountInStackAsync();
 
         // Assert
-        Assert.True(flashcardsCountResult.IsSuccess);
-        Assert.True(flashcardsCountResult.Value >= 0);
+        Assert.True(result.IsSuccess);
+        Assert.True(result.Value >= 0);
 
-        var flashcardsInStack = await _stacksRepository.GetFlashcardsByStackIdAsync(currentStack.Id);
-        Assert.True(flashcardsInStack.IsSuccess);
-        Assert.Equal(flashcardsCountResult.Value, flashcardsInStack.Value.Count());
+        var cardsInStack = await _stacksRepository.GetCardsByStackIdAsync(currentStack.Id);
+        Assert.True(cardsInStack.IsSuccess);
+        Assert.Equal(result.Value, cardsInStack.Value.Count());
     }
 
     [Fact]

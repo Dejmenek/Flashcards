@@ -26,34 +26,34 @@ public class StudySessionsServiceTests
         {
             new object[]
             {
-                new List<FlashcardDTO>
+                new List<BaseCardDTO>
                 {
-                    new() { Front = "Dog", Back = "Pies" },
-                    new() { Front = "Cat", Back = "Kot" }
+                    new FlashcardDTO { Front = "Dog", Back = "Pies" },
+                    new FlashcardDTO { Front = "Cat", Back = "Kot" }
                 },
                 new List<string> { "Pies", "Kot" },
                 2
             },
             new object[]
             {
-                new List<FlashcardDTO>
+                new List<BaseCardDTO>
                 {
-                    new() { Front = "Front3", Back = "Back3" }
+                    new FlashcardDTO { Front = "Front3", Back = "Back3" }
                 },
                 new List<string> { "Back3" },
                 1
             },
             new object[]
             {
-                new List<FlashcardDTO>(),
+                new List<BaseCardDTO>(),
                 new List<string>(),
                 0
             },
             new object[]
             {
-                new List<FlashcardDTO>
+                new List<BaseCardDTO>
                 {
-                    new() { Front = "Front4", Back = "Back4" },
+                    new FlashcardDTO { Front = "Front4", Back = "Back4" },
                 },
                 new List<string> { "WrongAnswer" },
                 0
@@ -62,41 +62,41 @@ public class StudySessionsServiceTests
 
     [Theory]
     [MemberData(nameof(StartStudySessionTestData))]
-    public void StartStudySessionAsync_ShouldCalculateCorrectScore_WhenAnswersProvided(List<FlashcardDTO> flashcards, List<string> userAnswers, int expectedScore)
+    public void StartStudySessionAsync_ShouldCalculateCorrectScore_WhenAnswersProvided(List<BaseCardDTO> cards, List<string> userAnswers, int expectedScore)
     {
         // Arrange
         int i = 0;
         _userInteractionService.GetAnswer().Returns(_ => userAnswers[i++]);
 
         // Act
-        _studySessionsService.StartStudySessionAsync(flashcards);
+        _studySessionsService.StartStudySessionAsync(cards);
 
         // Assert
         Assert.Equal(expectedScore, _studySessionsService.Score);
     }
 
     [Fact]
-    public async Task RunStudySessionAsync_ShouldReturnFailure_WhenFlashcardsEmpty()
+    public async Task RunStudySessionAsync_ShouldReturnFailure_WhenCardsEmpty()
     {
         // Arrange
-        List<FlashcardDTO> flashcards = new();
+        List<BaseCardDTO> cards = new();
         int stackId = 1;
 
         // Act
-        var result = await _studySessionsService.RunStudySessionAsync(flashcards, stackId);
+        var result = await _studySessionsService.RunStudySessionAsync(cards, stackId);
 
         // Assert
         Assert.True(result.IsFailure);
-        Assert.Equal(FlashcardsErrors.FlashcardsNotFound, result.Error);
+        Assert.Equal(CardsErrors.CardsNotFound, result.Error);
     }
 
     [Fact]
     public async Task RunStudySessionAsync_ShouldReturnFailure_WhenEndStudySessionAsyncFails()
     {
         // Arrange
-        List<FlashcardDTO> flashcards = new()
+        List<BaseCardDTO> cards = new()
         {
-            new() { Front = "Front1", Back = "Back1" }
+            new FlashcardDTO() { Front = "Front1", Back = "Back1" }
         };
         int stackId = 1;
 
@@ -105,19 +105,19 @@ public class StudySessionsServiceTests
             .Returns(Result.Failure(StudySessionsErrors.AddFailed));
 
         // Act
-        var result = await _studySessionsService.RunStudySessionAsync(flashcards, stackId);
+        var result = await _studySessionsService.RunStudySessionAsync(cards, stackId);
 
         // Assert
         Assert.True(result.IsFailure);
     }
 
     [Fact]
-    public async Task RunStudySessionAsync_ShouldReturnSuccess_WhenValidFlashcardsProvided()
+    public async Task RunStudySessionAsync_ShouldReturnSuccess_WhenValidCardsProvided()
     {
         // Arrange
-        List<FlashcardDTO> flashcards = new()
+        List<BaseCardDTO> cards = new()
         {
-            new() { Front = "Front1", Back = "Back1" }
+            new FlashcardDTO() { Front = "Front1", Back = "Back1" }
         };
         int stackId = 1;
 
@@ -126,7 +126,7 @@ public class StudySessionsServiceTests
             .Returns(Result.Success());
 
         // Act
-        var result = await _studySessionsService.RunStudySessionAsync(flashcards, stackId);
+        var result = await _studySessionsService.RunStudySessionAsync(cards, stackId);
 
         // Assert
         Assert.True(result.IsSuccess);

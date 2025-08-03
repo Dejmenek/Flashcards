@@ -1,3 +1,3 @@
 SELECT COUNT(Id)
-FROM Flashcards
+FROM Cards
 WHERE StackId = @StackId

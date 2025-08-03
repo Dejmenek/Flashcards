@@ -56,7 +56,7 @@ public class DataContext
     {
         using (var connection = new SqlConnection(_defaultConnectionString))
         {
-            string sql = SqlScripts.SeedFlashcards;
+            string sql = SqlScripts.SeedCards;
 
             await connection.ExecuteAsync(sql);
         }

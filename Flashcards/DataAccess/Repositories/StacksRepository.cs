@@ -38,47 +38,74 @@ public class StacksRepository : IStacksRepository
         }
     }
 
-    public async Task<Result> DeleteFlashcardFromStackAsync(int flashcardId, int stackId)
+    public async Task<Result> DeleteCardFromStackAsync(int cardId, int stackId)
     {
         try
         {
             using (var connection = new SqlConnection(_defaultConnectionString))
             {
-                string sql = SqlScripts.DeleteFlashcardFromStack;
+                string sql = SqlScripts.DeleteCardFromStack;
 
-                await connection.ExecuteAsync(sql, new { Id = flashcardId, StackId = stackId });
+                await connection.ExecuteAsync(sql, new { Id = cardId, StackId = stackId });
             }
             return Result.Success();
         }
         catch (SqlException)
         {
-            return Result.Failure(StacksErrors.DeleteFlashcardFailed);
+            return Result.Failure(StacksErrors.DeleteCardFailed);
         }
         catch (Exception)
         {
-            return Result.Failure(StacksErrors.DeleteFlashcardFailed);
+            return Result.Failure(StacksErrors.DeleteCardFailed);
         }
     }
 
-    public async Task<Result<IEnumerable<Flashcard>>> GetFlashcardsByStackIdAsync(int stackId)
+    public async Task<Result<IEnumerable<BaseCard>>> GetCardsByStackIdAsync(int stackId)
     {
         try
         {
             using (var connection = new SqlConnection(_defaultConnectionString))
             {
-                string sql = SqlScripts.GetFlashcardsByStackId;
+                string sql = SqlScripts.GetCardsByStackId;
+                using (var reader = await connection.ExecuteReaderAsync(sql, new { StackId = stackId }))
+                {
+                    var flashcardParser = reader.GetRowParser<Flashcard>();
+                    var clozeCardParser = reader.GetRowParser<ClozeCard>();
+                    var fillInCardParser = reader.GetRowParser<FillInCard>();
+                    var multipleChoiceCardParser = reader.GetRowParser<MultipleChoiceCard>();
 
-                var flashcards = await connection.QueryAsync<Flashcard>(sql, new { StackId = stackId });
-                return Result.Success(flashcards);
+                    var cards = new List<BaseCard>();
+                    while (await reader.ReadAsync())
+                    {
+                        var discriminator = reader.GetString(reader.GetOrdinal("CardType"));
+
+                        if (!Enum.TryParse(discriminator, out CardType cardType))
+                        {
+                            return Result.Failure<IEnumerable<BaseCard>>(CardsErrors.GetAllFailed);
+                        }
+
+                        BaseCard card = cardType switch
+                        {
+                            CardType.Flashcard => flashcardParser(reader),
+                            CardType.Cloze => clozeCardParser(reader),
+                            CardType.FillIn => fillInCardParser(reader),
+                            CardType.MultipleChoice => multipleChoiceCardParser(reader),
+                            _ => throw new InvalidOperationException("Unknown card type")
+                        };
+                        cards.Add(card);
+                    }
+
+                    return Result.Success(cards.AsEnumerable());
+                }
             }
         }
         catch (SqlException)
         {
-            return Result.Failure<IEnumerable<Flashcard>>(StacksErrors.GetFlashcardsByStackIdFailed);
+            return Result.Failure<IEnumerable<BaseCard>>(StacksErrors.GetCardsByStackIdFailed);
         }
         catch (Exception)
         {
-            return Result.Failure<IEnumerable<Flashcard>>(StacksErrors.GetFlashcardsByStackIdFailed);
+            return Result.Failure<IEnumerable<BaseCard>>(StacksErrors.GetCardsByStackIdFailed);
         }
     }
 
@@ -192,13 +219,13 @@ public class StacksRepository : IStacksRepository
         }
     }
 
-    public async Task<Result<int>> GetFlashcardsCountInStackAsync(int stackId)
+    public async Task<Result<int>> GetCardsCountInStackAsync(int stackId)
     {
         try
         {
             using (var connection = new SqlConnection(_defaultConnectionString))
             {
-                string sql = SqlScripts.GetFlashcardsCountInStack;
+                string sql = SqlScripts.GetCardsCountInStack;
 
                 var count = await connection.QuerySingleAsync<int>(sql, new { StackId = stackId });
                 return Result.Success(count);
@@ -206,11 +233,11 @@ public class StacksRepository : IStacksRepository
         }
         catch (SqlException)
         {
-            return Result.Failure<int>(StacksErrors.GetFlashcardsCountFailed);
+            return Result.Failure<int>(StacksErrors.GetCardsCountFailed);
         }
         catch (Exception)
         {
-            return Result.Failure<int>(StacksErrors.GetFlashcardsCountFailed);
+            return Result.Failure<int>(StacksErrors.GetCardsCountFailed);
         }
     }
 }

@@ -4,11 +4,11 @@ public enum ManageStackOptions
 {
     Exit,
     ChangeStack,
-    ViewAllFlashcardsInStack,
-    ViewAmountOfFlashcardsInStack,
-    CreateFlashcardInStack,
-    EditFlashcardInStack,
-    DeleteFlashcardFromStack,
+    ViewCardsInStack,
+    ViewAmountOfCardsInStack,
+    CreateCardInStack,
+    EditCardInStack,
+    DeleteCardFromStack,
     DeleteStack,
     AddStack,
 }

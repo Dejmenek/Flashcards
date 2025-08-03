@@ -4,7 +4,7 @@ public enum MenuOptions
 {
     Exit,
     ManageStacks,
-    ManageFlashcards,
+    ManageCards,
     Study,
     ViewStudySessions,
     MonthlyStudySessionsReport,

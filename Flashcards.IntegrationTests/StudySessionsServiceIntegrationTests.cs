@@ -25,17 +25,17 @@ public class StudySessionsServiceIntegrationTests : BaseIntegrationTest, IAsyncL
     public async Task InitializeAsync() => await InitializeDatabaseAsync();
 
     [Fact]
-    public async Task RunStudySessionAsync_WithValidFlashcards_AddsStudySessionAndReturnsSuccess()
+    public async Task RunStudySessionAsync_WithValidCards_AddsStudySessionAndReturnsSuccess()
     {
         // Arrange
         var stackId = 3;
-        var flashcards = (await _stacksRepository.GetFlashcardsByStackIdAsync(stackId)).Value;
-        var flashcardDTOs = flashcards.Select(Mapper.ToFlashcardDTO).ToList();
+        var cards = (await _stacksRepository.GetCardsByStackIdAsync(stackId)).Value;
+        var cardDTOs = cards.Select(Mapper.ToCardDTO).ToList();
 
         _userInteractionService.GetAnswer().Returns("Good morning", "Goodbye", "Please");
 
         // Act
-        var result = await _studySessionsService.RunStudySessionAsync(flashcardDTOs, stackId);
+        var result = await _studySessionsService.RunStudySessionAsync(cardDTOs, stackId);
 
         // Assert
         Assert.True(result.IsSuccess);

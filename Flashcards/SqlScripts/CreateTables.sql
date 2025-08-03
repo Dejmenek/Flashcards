@@ -1,5 +1,5 @@
 DROP TABLE IF EXISTS StudySessions;
-DROP TABLE IF EXISTS Flashcards;
+DROP TABLE IF EXISTS Cards;
 DROP TABLE IF EXISTS Stacks;
 
 CREATE TABLE Stacks (
@@ -7,11 +7,18 @@ CREATE TABLE Stacks (
     Name NVARCHAR(50) NOT NULL UNIQUE
 );
 
-CREATE TABLE Flashcards (
+CREATE TABLE Cards (
     Id INT IDENTITY(1, 1) PRIMARY KEY,
     StackId INT,
-    Front NVARCHAR(50) NOT NULL,
-    Back NVARCHAR(50) NOT NULL,
+    Front NVARCHAR(50) NULL,
+    Back NVARCHAR(50) NULL,
+    Question NVARCHAR(max) NULL,
+    Choices NVARCHAR(max) NULL,
+    ClozeText NVARCHAR(max) NULL,
+    FillInText NVARCHAR(max) NULL,
+    Answer NVARCHAR(max) NULL,
+    CardType NVARCHAR(30) NOT NULL,
+    CHECK (CardType IN ('Flashcard', 'Cloze', 'MultipleChoice', 'FillIn')),
     FOREIGN KEY (StackId) REFERENCES Stacks(Id)
     ON DELETE CASCADE
 );

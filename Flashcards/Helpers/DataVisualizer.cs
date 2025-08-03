@@ -10,24 +10,36 @@ public static class DataVisualizer
         "July", "August", "September", "October", "November", "December"
     };
 
-    public static void ShowFlashcards(List<FlashcardDTO> flashcards)
+    public static void ShowCards(List<BaseCardDTO> cards)
     {
-        if (flashcards is [])
+        if (cards is [] || cards.Count == 0)
         {
-            AnsiConsole.MarkupLine("No flashcards found.");
+            AnsiConsole.MarkupLine("[red]No cards found.[/]");
             return;
         }
 
-        var table = new Table().Title("FLASHCARDS");
-        int index = 1;
-
+        var table = new Table().Title("[bold yellow]CARDS[/]");
         table.AddColumn("Id");
-        table.AddColumn("Front");
-        table.AddColumn("Back");
+        table.AddColumn("Type");
+        table.AddColumn("Details");
 
-        foreach (FlashcardDTO flashcard in flashcards)
+        int index = 1;
+        foreach (var card in cards)
         {
-            table.AddRow(index.ToString(), flashcard.Front, flashcard.Back);
+            string details = card switch
+            {
+                FlashcardDTO f => $"[green]Front:[/] {f.Front}\n[blue]Back:[/] {f.Back}",
+                ClozeCardDTO c => $"[green]Cloze:[/] {c.ClozeText}",
+                FillInCardDTO fi => $"[green]FillIn:[/] {fi.FillInText}\n[blue]Answers:[/] {string.Join(", ", fi.Answer)}",
+                MultipleChoiceCardDTO mc => $"[green]Question:[/] {mc.Question}\n[blue]Choices:[/] {string.Join(", ", mc.Choices)}\n[magenta]Answer:[/] {mc.Answer}",
+                _ => "[red]Unknown card type[/]"
+            };
+
+            table.AddRow(
+                index.ToString(),
+                card.CardType.ToString(),
+                details
+            );
             index++;
         }
 
