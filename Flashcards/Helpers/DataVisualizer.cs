@@ -10,7 +10,7 @@ public static class DataVisualizer
         "July", "August", "September", "October", "November", "December"
     };
 
-    public static void ShowFlashcards(List<FlashcardDTO> flashcards)
+    public static void ShowCards(List<BaseCardDTO> cards)
     {
         if (cards is [] || cards.Count == 0)
         {
