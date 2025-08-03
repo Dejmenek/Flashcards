@@ -4,6 +4,18 @@ namespace Flashcards.Helpers;
 
 public static class Mapper
 {
+    public static BaseCardDTO ToCardDTO(BaseCard card)
+    {
+        return card switch
+        {
+            Flashcard flashcard => ToFlashcardDTO(flashcard),
+            ClozeCard clozeCard => ToClozeCardDTO(clozeCard),
+            FillInCard fillInCard => ToFillInCardDTO(fillInCard),
+            MultipleChoiceCard multipleChoiceCard => ToMultipleChoiceCardDTO(multipleChoiceCard),
+            _ => throw new ArgumentException($"Unknown card type: {card.GetType().Name}", nameof(card))
+        };
+    }
+
     public static FlashcardDTO ToFlashcardDTO(Flashcard flashcard)
     {
         return new FlashcardDTO
