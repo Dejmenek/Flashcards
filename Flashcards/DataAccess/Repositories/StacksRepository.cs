@@ -44,7 +44,7 @@ public class StacksRepository : IStacksRepository
         {
             using (var connection = new SqlConnection(_defaultConnectionString))
             {
-                string sql = SqlScripts.DeleteFlashcardFromStack;
+                string sql = SqlScripts.DeleteCardFromStack;
 
                 await connection.ExecuteAsync(sql, new { Id = cardId, StackId = stackId });
             }
@@ -66,7 +66,7 @@ public class StacksRepository : IStacksRepository
         {
             using (var connection = new SqlConnection(_defaultConnectionString))
             {
-                string sql = SqlScripts.GetFlashcardsByStackId;
+                string sql = SqlScripts.GetCardsByStackId;
                 using (var reader = await connection.ExecuteReaderAsync(sql, new { StackId = stackId }))
                 {
                     var flashcardParser = reader.GetRowParser<Flashcard>();
@@ -225,7 +225,7 @@ public class StacksRepository : IStacksRepository
         {
             using (var connection = new SqlConnection(_defaultConnectionString))
             {
-                string sql = SqlScripts.GetFlashcardsCountInStack;
+                string sql = SqlScripts.GetCardsCountInStack;
 
                 var count = await connection.QuerySingleAsync<int>(sql, new { StackId = stackId });
                 return Result.Success(count);

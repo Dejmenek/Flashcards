@@ -28,7 +28,8 @@ public class CardsRepository : ICardsRepository
                 {
                     StackId = stackId,
                     Front = front,
-                    Back = back
+                    Back = back,
+                    CardType = CardType.Flashcard.ToString()
                 });
             }
             return Result.Success();
@@ -49,7 +50,7 @@ public class CardsRepository : ICardsRepository
         {
             using (var connection = new SqlConnection(_defaultConnectionString))
             {
-                string sql = SqlScripts.DeleteFlashcard;
+                string sql = SqlScripts.DeleteCard;
 
                 await connection.ExecuteAsync(sql, new
                 {
@@ -74,7 +75,7 @@ public class CardsRepository : ICardsRepository
         {
             using (var connection = new SqlConnection(_defaultConnectionString))
             {
-                string sql = SqlScripts.GetFlashcards;
+                string sql = SqlScripts.GetCards;
                 using (var reader = await connection.ExecuteReaderAsync(sql))
                 {
                     var flashcardParser = reader.GetRowParser<Flashcard>();
