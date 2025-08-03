@@ -23,6 +23,7 @@ public class MapperTests
         Assert.Equal(flashcard.Id, result.Id);
         Assert.Equal(flashcard.Front, result.Front);
         Assert.Equal(flashcard.Back, result.Back);
+        Assert.Equal(flashcard.CardType, result.CardType);
         Assert.Null(typeof(FlashcardDTO).GetProperty("StackId"));
     }
 
