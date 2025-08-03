@@ -1,0 +1,2 @@
+DELETE FROM Cards
+WHERE Id = @Id

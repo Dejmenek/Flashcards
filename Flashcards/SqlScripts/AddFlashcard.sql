@@ -1,3 +1,3 @@
-INSERT INTO Flashcards (StackId, Front, Back)
+INSERT INTO Cards (StackId, Front, Back, CardType)
 VALUES
-(@StackId, @Front, @Back)
+(@StackId, @Front, @Back, @CardType)
