@@ -42,7 +42,7 @@ public class StacksService : IStacksService
         return Result.Success();
     }
 
-    public async Task<Result> AddFlashcardToStackAsync()
+    public async Task<Result> AddCardToStackAsync()
     {
         if (CurrentStack == null)
             return Result.Failure(StacksErrors.CurrentStackNotFound);
@@ -68,7 +68,7 @@ public class StacksService : IStacksService
         return Result.Success();
     }
 
-    public async Task<Result> DeleteFlashcardFromStackAsync()
+    public async Task<Result> DeleteCardFromStackAsync()
     {
         var cardsResult = await GetCardsByStackIdAsync();
         if (cardsResult.IsFailure) return Result.Failure(cardsResult.Error);
@@ -84,7 +84,7 @@ public class StacksService : IStacksService
         return Result.Success();
     }
 
-    public async Task<Result> UpdateFlashcardInStackAsync()
+    public async Task<Result> UpdateCardInStackAsync()
     {
         var cardsResult = await GetCardsByStackIdAsync();
         if (cardsResult.IsFailure) return Result.Failure(cardsResult.Error);
@@ -103,7 +103,7 @@ public class StacksService : IStacksService
         return await strategy.UpdateCardInStackAsync(chosenCard.Id, CurrentStack!.Id);
     }
 
-    public async Task<Result<List<FlashcardDTO>>> GetFlashcardsByStackIdAsync()
+    public async Task<Result<List<BaseCardDTO>>> GetCardsByStackIdAsync()
     {
         if (CurrentStack == null)
             return Result.Failure<List<BaseCardDTO>>(StacksErrors.CurrentStackNotFound);
@@ -115,7 +115,7 @@ public class StacksService : IStacksService
         foreach (var card in cardsResult.Value)
         {
             switch (card)
-        {
+            {
                 case Flashcard flashcard:
                     cardDtos.Add(Mapper.ToFlashcardDTO(flashcard));
                     break;
@@ -127,7 +127,7 @@ public class StacksService : IStacksService
         return Result.Success(cardDtos);
     }
 
-    public async Task<Result<int>> GetFlashcardsCountInStackAsync()
+    public async Task<Result<int>> GetCardsCountInStackAsync()
     {
         if (CurrentStack == null)
             return Result.Failure<int>(StacksErrors.CurrentStackNotFound);
