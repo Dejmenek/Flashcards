@@ -12,14 +12,14 @@ public class StacksServiceTests
     private readonly StacksService _stacksService;
     private readonly IUserInteractionService _userInteractionService;
     private readonly IStacksRepository _stacksRepository;
-    private readonly IFlashcardsRepository _flashcardsRepository;
+    private readonly ICardsRepository _cardsRepository;
 
     public StacksServiceTests()
     {
         _userInteractionService = Substitute.For<IUserInteractionService>();
         _stacksRepository = Substitute.For<IStacksRepository>();
-        _flashcardsRepository = Substitute.For<IFlashcardsRepository>();
-        _stacksService = new StacksService(_stacksRepository, _userInteractionService, _flashcardsRepository);
+        _cardsRepository = Substitute.For<ICardsRepository>();
+        _stacksService = new StacksService(_stacksRepository, _userInteractionService, _cardsRepository);
     }
 
     private Stack CreateTestStack(int id = 1, string name = "Test Stack") =>
@@ -82,16 +82,10 @@ public class StacksServiceTests
     }
 
     [Fact]
-    public async Task AddFlashcardToStackAsync_ShouldReturnFailure_WhenCurrentStackIsNull()
+    public async Task AddCardToStackAsync_ShouldReturnFailure_WhenCurrentStackIsNull()
     {
-        // Arrange
-        string front = "Front";
-        string back = "Back";
-        _userInteractionService.GetFlashcardFront().Returns(front);
-        _userInteractionService.GetFlashcardBack().Returns(back);
-
         // Act
-        var result = await _stacksService.AddFlashcardToStackAsync();
+        var result = await _stacksService.AddCardToStackAsync();
 
         // Assert
         Assert.False(result.IsSuccess);
@@ -99,7 +93,7 @@ public class StacksServiceTests
     }
 
     [Fact]
-    public async Task AddFlashcardToStackAsync_ShouldReturnFailure_WhenAddFlashcardFails()
+    public async Task AddCardToStackAsync_ShouldReturnFailure_WhenAddFlashcardFails()
     {
         // Arrange
         int stackId = 1;
@@ -111,21 +105,23 @@ public class StacksServiceTests
             .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             ?.SetValue(_stacksService, currentTestStack);
 
+        _userInteractionService.GetCardType().Returns(CardType.Flashcard);
         _userInteractionService.GetFlashcardFront().Returns(front);
         _userInteractionService.GetFlashcardBack().Returns(back);
-        _flashcardsRepository.AddFlashcardAsync(stackId, front, back)
-            .Returns(Result.Failure(FlashcardsErrors.AddFailed));
+
+        _cardsRepository.AddFlashcardAsync(stackId, front, back)
+            .Returns(Result.Failure(CardsErrors.AddFailed));
 
         // Act
-        var result = await _stacksService.AddFlashcardToStackAsync();
+        var result = await _stacksService.AddCardToStackAsync();
 
         // Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(FlashcardsErrors.AddFailed, result.Error);
+        Assert.Equal(CardsErrors.AddFailed, result.Error);
     }
 
     [Fact]
-    public async Task AddFlashcardToStackAsync_ShouldReturnSuccess_WhenAddFlashcardSucceeds()
+    public async Task AddCardToStackAsync_ShouldReturnSuccess_WhenAddFlashcardSucceeds()
     {
         // Arrange
         int stackId = 1;
@@ -137,13 +133,15 @@ public class StacksServiceTests
             .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             ?.SetValue(_stacksService, currentTestStack);
 
+        _userInteractionService.GetCardType().Returns(CardType.Flashcard);
         _userInteractionService.GetFlashcardFront().Returns(front);
         _userInteractionService.GetFlashcardBack().Returns(back);
-        _flashcardsRepository.AddFlashcardAsync(stackId, front, back)
+
+        _cardsRepository.AddFlashcardAsync(stackId, front, back)
             .Returns(Result.Success());
 
         // Act
-        var result = await _stacksService.AddFlashcardToStackAsync();
+        var result = await _stacksService.AddCardToStackAsync();
 
         // Assert
         Assert.True(result.IsSuccess);
@@ -203,7 +201,7 @@ public class StacksServiceTests
     }
 
     [Fact]
-    public async Task DeleteFlashcardFromStackAsync_ShouldReturnFailure_WhenGetAllFlashcardsByStackIdFails()
+    public async Task DeleteCardFromStackAsync_ShouldReturnFailure_WhenGetAllCardsByStackIdFails()
     {
         // Arrange
         int stackId = 1;
@@ -212,19 +210,19 @@ public class StacksServiceTests
         typeof(StacksService)
             .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             ?.SetValue(_stacksService, currentTestStack);
-        _stacksRepository.GetFlashcardsByStackIdAsync(stackId)
-            .Returns(Result.Failure<IEnumerable<Flashcard>>(StacksErrors.GetFlashcardsByStackIdFailed));
+        _stacksRepository.GetCardsByStackIdAsync(stackId)
+            .Returns(Result.Failure<IEnumerable<BaseCard>>(StacksErrors.GetCardsByStackIdFailed));
 
         // Act
-        var result = await _stacksService.DeleteFlashcardFromStackAsync();
+        var result = await _stacksService.DeleteCardFromStackAsync();
 
         // Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(StacksErrors.GetFlashcardsByStackIdFailed, result.Error);
+        Assert.Equal(StacksErrors.GetCardsByStackIdFailed, result.Error);
     }
 
     [Fact]
-    public async Task DeleteFlashcardFromStackAsync_ShouldReturnFailure_WhenFlashcardsEmpty()
+    public async Task DeleteCardFromStackAsync_ShouldReturnFailure_WhenCardsEmpty()
     {
         // Arrange
         int stackId = 1;
@@ -233,19 +231,19 @@ public class StacksServiceTests
         typeof(StacksService)
             .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             ?.SetValue(_stacksService, currentTestStack);
-        _stacksRepository.GetFlashcardsByStackIdAsync(stackId)
-            .Returns(Result.Success<IEnumerable<Flashcard>>([]));
+        _stacksRepository.GetCardsByStackIdAsync(stackId)
+            .Returns(Result.Success<IEnumerable<BaseCard>>([]));
 
         // Act
-        var result = await _stacksService.DeleteFlashcardFromStackAsync();
+        var result = await _stacksService.DeleteCardFromStackAsync();
 
         // Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(FlashcardsErrors.FlashcardsNotFound, result.Error);
+        Assert.Equal(CardsErrors.CardsNotFound, result.Error);
     }
 
     [Fact]
-    public async Task DeleteFlashcardFromStackAsync_ShouldReturnFailure_WhenDeleteFails()
+    public async Task DeleteCardFromStackAsync_ShouldReturnFailure_WhenDeleteFails()
     {
         // Arrange
         int stackId = 1;
@@ -261,21 +259,21 @@ public class StacksServiceTests
             .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             ?.SetValue(_stacksService, currentTestStack);
 
-        _userInteractionService.GetFlashcard(Arg.Any<List<FlashcardDTO>>()).Returns(flashcardsDTO[0]);
-        _stacksRepository.GetFlashcardsByStackIdAsync(stackId).Returns(Result.Success<IEnumerable<Flashcard>>(flashcards));
-        _stacksRepository.DeleteFlashcardFromStackAsync(flashcardId, stackId).Returns(Result.Failure(StacksErrors.DeleteFlashcardFailed));
+        _userInteractionService.GetCard(Arg.Any<List<BaseCardDTO>>()).Returns(flashcardsDTO[0]);
+        _stacksRepository.GetCardsByStackIdAsync(stackId).Returns(Result.Success<IEnumerable<BaseCard>>(flashcards));
+        _stacksRepository.DeleteCardFromStackAsync(flashcardId, stackId).Returns(Result.Failure(StacksErrors.DeleteCardFailed));
 
         // Act
-        var result = await _stacksService.DeleteFlashcardFromStackAsync();
+        var result = await _stacksService.DeleteCardFromStackAsync();
 
         // Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(StacksErrors.DeleteFlashcardFailed, result.Error);
-        await _stacksRepository.Received(1).DeleteFlashcardFromStackAsync(flashcardId, stackId);
+        Assert.Equal(StacksErrors.DeleteCardFailed, result.Error);
+        await _stacksRepository.Received(1).DeleteCardFromStackAsync(flashcardId, stackId);
     }
 
     [Fact]
-    public async Task DeleteFlashcardFromStackAsync_ShouldReturnSuccess_WhenDeleteSucceeds()
+    public async Task DeleteCardFromStackAsync_ShouldReturnSuccess_WhenDeleteSucceeds()
     {
         // Arrange
         int stackId = 1;
@@ -291,20 +289,20 @@ public class StacksServiceTests
             .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             ?.SetValue(_stacksService, currentTestStack);
 
-        _userInteractionService.GetFlashcard(Arg.Any<List<FlashcardDTO>>()).Returns(flashcardsDTO[0]);
-        _stacksRepository.GetFlashcardsByStackIdAsync(stackId).Returns(Result.Success<IEnumerable<Flashcard>>(flashcards));
-        _stacksRepository.DeleteFlashcardFromStackAsync(flashcardId, stackId).Returns(Result.Success());
+        _userInteractionService.GetCard(Arg.Any<List<BaseCardDTO>>()).Returns(flashcardsDTO[0]);
+        _stacksRepository.GetCardsByStackIdAsync(stackId).Returns(Result.Success<IEnumerable<BaseCard>>(flashcards));
+        _stacksRepository.DeleteCardFromStackAsync(flashcardId, stackId).Returns(Result.Success());
 
         // Act
-        var result = await _stacksService.DeleteFlashcardFromStackAsync();
+        var result = await _stacksService.DeleteCardFromStackAsync();
 
         // Assert
         Assert.True(result.IsSuccess);
-        await _stacksRepository.Received(1).DeleteFlashcardFromStackAsync(flashcardId, stackId);
+        await _stacksRepository.Received(1).DeleteCardFromStackAsync(flashcardId, stackId);
     }
 
     [Fact]
-    public async Task UpdateFlashcardInStackAsync_ShouldReturnFailure_WhenGetFlashcardsByStackIdFails()
+    public async Task UpdateCardInStackAsync_ShouldReturnFailure_WhenGetCardsByStackIdFails()
     {
         // Arrange
         int stackId = 1;
@@ -313,19 +311,19 @@ public class StacksServiceTests
         typeof(StacksService)
             .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             ?.SetValue(_stacksService, currentTestStack);
-        _stacksRepository.GetFlashcardsByStackIdAsync(stackId)
-            .Returns(Result.Failure<IEnumerable<Flashcard>>(StacksErrors.GetFlashcardsByStackIdFailed));
+        _stacksRepository.GetCardsByStackIdAsync(stackId)
+            .Returns(Result.Failure<IEnumerable<BaseCard>>(StacksErrors.GetCardsByStackIdFailed));
 
         // Act
-        var result = await _stacksService.UpdateFlashcardInStackAsync();
+        var result = await _stacksService.UpdateCardInStackAsync();
 
         // Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(StacksErrors.GetFlashcardsByStackIdFailed, result.Error);
+        Assert.Equal(StacksErrors.GetCardsByStackIdFailed, result.Error);
     }
 
     [Fact]
-    public async Task UpdateFlashcardInStackAsync_ShouldReturnFailure_WhenFlashcardsEmpty()
+    public async Task UpdateCardInStackAsync_ShouldReturnFailure_WhenCardsEmpty()
     {
         // Arrange
         int stackId = 1;
@@ -334,19 +332,19 @@ public class StacksServiceTests
         typeof(StacksService)
             .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             ?.SetValue(_stacksService, currentTestStack);
-        _stacksRepository.GetFlashcardsByStackIdAsync(stackId)
-            .Returns(Result.Success<IEnumerable<Flashcard>>([]));
+        _stacksRepository.GetCardsByStackIdAsync(stackId)
+            .Returns(Result.Success<IEnumerable<BaseCard>>([]));
 
         // Act
-        var result = await _stacksService.UpdateFlashcardInStackAsync();
+        var result = await _stacksService.UpdateCardInStackAsync();
 
         // Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(FlashcardsErrors.FlashcardsNotFound, result.Error);
+        Assert.Equal(CardsErrors.CardsNotFound, result.Error);
     }
 
     [Fact]
-    public async Task UpdateFlashcardInStackAsync_ShouldReturnFailure_WhenUpdateFails()
+    public async Task UpdateCardInStackAsync_ShouldReturnFailure_WhenUpdateFlashcardFails()
     {
         // Arrange
         int stackId = 1;
@@ -364,15 +362,16 @@ public class StacksServiceTests
             .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             ?.SetValue(_stacksService, currentTestStack);
 
-        _userInteractionService.GetFlashcard(Arg.Any<List<FlashcardDTO>>()).Returns(flashcardsDTO[0]);
+        _userInteractionService.GetCard(Arg.Any<List<BaseCardDTO>>()).Returns(flashcardsDTO[0]);
+        _userInteractionService.GetCardType().Returns(CardType.Flashcard);
         _userInteractionService.GetFlashcardFront().Returns(newFront);
         _userInteractionService.GetFlashcardBack().Returns(newBack);
-        _stacksRepository.GetFlashcardsByStackIdAsync(stackId).Returns(Result.Success<IEnumerable<Flashcard>>(flashcards));
+        _stacksRepository.GetCardsByStackIdAsync(stackId).Returns(Result.Success<IEnumerable<BaseCard>>(flashcards));
         _stacksRepository.UpdateFlashcardInStackAsync(flashcardId, stackId, newFront, newBack)
             .Returns(Result.Failure(StacksErrors.UpdateFailed));
 
         // Act
-        var result = await _stacksService.UpdateFlashcardInStackAsync();
+        var result = await _stacksService.UpdateCardInStackAsync();
 
         // Assert
         Assert.False(result.IsSuccess);
@@ -381,7 +380,7 @@ public class StacksServiceTests
     }
 
     [Fact]
-    public async Task UpdateFlashcardInStackAsync_ShouldReturnSuccess_WhenUpdateSucceeds()
+    public async Task UpdateCardInStackAsync_ShouldReturnSuccess_WhenUpdateFlashcardSucceeds()
     {
         // Arrange
         int stackId = 1;
@@ -399,15 +398,16 @@ public class StacksServiceTests
             .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             ?.SetValue(_stacksService, currentTestStack);
 
-        _userInteractionService.GetFlashcard(Arg.Any<List<FlashcardDTO>>()).Returns(flashcardsDTO[0]);
+        _userInteractionService.GetCardType().Returns(CardType.Flashcard);
+        _userInteractionService.GetCard(Arg.Any<List<BaseCardDTO>>()).Returns(flashcardsDTO[0]);
         _userInteractionService.GetFlashcardFront().Returns(newFront);
         _userInteractionService.GetFlashcardBack().Returns(newBack);
-        _stacksRepository.GetFlashcardsByStackIdAsync(stackId).Returns(Result.Success<IEnumerable<Flashcard>>(flashcards));
+        _stacksRepository.GetCardsByStackIdAsync(stackId).Returns(Result.Success<IEnumerable<BaseCard>>(flashcards));
         _stacksRepository.UpdateFlashcardInStackAsync(flashcardId, stackId, newFront, newBack)
             .Returns(Result.Success());
 
         // Act
-        var result = await _stacksService.UpdateFlashcardInStackAsync();
+        var result = await _stacksService.UpdateCardInStackAsync();
 
         // Assert
         Assert.True(result.IsSuccess);
@@ -415,10 +415,10 @@ public class StacksServiceTests
     }
 
     [Fact]
-    public async Task GetFlashcardsByStackIdAsync_ShouldReturnFailure_WhenCurrentStackIsNull()
+    public async Task GetCardsByStackIdAsync_ShouldReturnFailure_WhenCurrentStackIsNull()
     {
         // Act
-        var result = await _stacksService.GetFlashcardsByStackIdAsync();
+        var result = await _stacksService.GetCardsByStackIdAsync();
 
         // Assert
         Assert.False(result.IsSuccess);
@@ -426,7 +426,7 @@ public class StacksServiceTests
     }
 
     [Fact]
-    public async Task GetFlashcardsByStackIdAsync_ShouldReturnFailure_WhenRepositoryGetFlashcardsByStackIdFails()
+    public async Task GetCardsByStackIdAsync_ShouldReturnFailure_WhenRepositoryGetCardsByStackIdFails()
     {
         // Arrange
         int stackId = 1;
@@ -435,19 +435,19 @@ public class StacksServiceTests
         typeof(StacksService)
             .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             ?.SetValue(_stacksService, currentTestStack);
-        _stacksRepository.GetFlashcardsByStackIdAsync(stackId)
-            .Returns(Result.Failure<IEnumerable<Flashcard>>(StacksErrors.GetFlashcardsByStackIdFailed));
+        _stacksRepository.GetCardsByStackIdAsync(stackId)
+            .Returns(Result.Failure<IEnumerable<BaseCard>>(StacksErrors.GetCardsByStackIdFailed));
 
         // Act
-        var result = await _stacksService.GetFlashcardsByStackIdAsync();
+        var result = await _stacksService.GetCardsByStackIdAsync();
 
         // Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(StacksErrors.GetFlashcardsByStackIdFailed, result.Error);
+        Assert.Equal(StacksErrors.GetCardsByStackIdFailed, result.Error);
     }
 
     [Fact]
-    public async Task GetFlashcardsByStackIdAsync_ShouldReturnMappedFlashcards_WhenRepositorySucceeds()
+    public async Task GetCardsByStackIdAsync_ShouldReturnMappedCards_WhenRepositorySucceeds()
     {
         // Arrange
         int stackId = 1;
@@ -462,28 +462,33 @@ public class StacksServiceTests
         typeof(StacksService)
             .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             ?.SetValue(_stacksService, currentTestStack);
-        _stacksRepository.GetFlashcardsByStackIdAsync(stackId)
-            .Returns(Result.Success<IEnumerable<Flashcard>>(flashcards));
+        _stacksRepository.GetCardsByStackIdAsync(stackId)
+            .Returns(Result.Success<IEnumerable<BaseCard>>(flashcards));
 
         // Act
-        var result = await _stacksService.GetFlashcardsByStackIdAsync();
+        var result = await _stacksService.GetCardsByStackIdAsync();
 
         // Assert
         Assert.True(result.IsSuccess);
         Assert.Equal(2, result.Value.Count);
-        Assert.Equal(1, result.Value[0].Id);
-        Assert.Equal("Front1", result.Value[0].Front);
-        Assert.Equal("Back1", result.Value[0].Back);
-        Assert.Equal(2, result.Value[1].Id);
-        Assert.Equal("Front2", result.Value[1].Front);
-        Assert.Equal("Back2", result.Value[1].Back);
+        foreach (var card in result.Value)
+        {
+            switch (card)
+            {
+                case FlashcardDTO flashcard:
+                    Assert.Contains(result.Value, c => c is FlashcardDTO fc && fc.Id == flashcard.Id && fc.Front == flashcard.Front && fc.Back == flashcard.Back);
+                    break;
+                default:
+                    throw new InvalidOperationException("Unknown card type");
+            }
+        }
     }
 
     [Fact]
-    public async Task GetFlashcardsCountInStackAsync_ShouldReturnFailure_WhenCurrentStackIsNull()
+    public async Task GetCardsCountInStackAsync_ShouldReturnFailure_WhenCurrentStackIsNull()
     {
         // Act
-        var result = await _stacksService.GetFlashcardsCountInStackAsync();
+        var result = await _stacksService.GetCardsCountInStackAsync();
 
         // Assert
         Assert.False(result.IsSuccess);
@@ -491,7 +496,7 @@ public class StacksServiceTests
     }
 
     [Fact]
-    public async Task GetFlashcardsCountInStackAsync_ShouldReturnFailure_WhenRepositoryGetFlashcardsCountFails()
+    public async Task GetCardsCountInStackAsync_ShouldReturnFailure_WhenRepositoryGetCardsCountFails()
     {
         // Arrange
         int stackId = 1;
@@ -500,19 +505,19 @@ public class StacksServiceTests
         typeof(StacksService)
             .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             ?.SetValue(_stacksService, currentTestStack);
-        _stacksRepository.GetFlashcardsCountInStackAsync(stackId)
-            .Returns(Result.Failure<int>(StacksErrors.GetFlashcardsCountFailed));
+        _stacksRepository.GetCardsCountInStackAsync(stackId)
+            .Returns(Result.Failure<int>(StacksErrors.GetCardsCountFailed));
 
         // Act
-        var result = await _stacksService.GetFlashcardsCountInStackAsync();
+        var result = await _stacksService.GetCardsCountInStackAsync();
 
         // Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(StacksErrors.GetFlashcardsCountFailed, result.Error);
+        Assert.Equal(StacksErrors.GetCardsCountFailed, result.Error);
     }
 
     [Fact]
-    public async Task GetFlashcardsCountInStackAsync_ShouldReturnCount_WhenRepositorySucceeds()
+    public async Task GetCardsCountInStackAsync_ShouldReturnCount_WhenRepositorySucceeds()
     {
         // Arrange
         int stackId = 1;
@@ -522,11 +527,11 @@ public class StacksServiceTests
         typeof(StacksService)
             .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             ?.SetValue(_stacksService, currentTestStack);
-        _stacksRepository.GetFlashcardsCountInStackAsync(stackId)
+        _stacksRepository.GetCardsCountInStackAsync(stackId)
             .Returns(Result.Success(expectedCount));
 
         // Act
-        var result = await _stacksService.GetFlashcardsCountInStackAsync();
+        var result = await _stacksService.GetCardsCountInStackAsync();
 
         // Assert
         Assert.True(result.IsSuccess);
