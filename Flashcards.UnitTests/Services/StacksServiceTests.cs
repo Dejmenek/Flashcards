@@ -3,6 +3,7 @@ using Flashcards.Models;
 using Flashcards.Services;
 using Flashcards.Services.Interfaces;
 using Flashcards.Utils;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using System.Reflection;
 
@@ -13,13 +14,17 @@ public class StacksServiceTests
     private readonly IUserInteractionService _userInteractionService;
     private readonly IStacksRepository _stacksRepository;
     private readonly ICardsRepository _cardsRepository;
+    private readonly ILogger<StacksService> _logger;
 
     public StacksServiceTests()
     {
         _userInteractionService = Substitute.For<IUserInteractionService>();
         _stacksRepository = Substitute.For<IStacksRepository>();
         _cardsRepository = Substitute.For<ICardsRepository>();
-        _stacksService = new StacksService(_stacksRepository, _userInteractionService, _cardsRepository);
+        _logger = Substitute.For<ILogger<StacksService>>();
+        _stacksService = new StacksService(
+            _stacksRepository, _userInteractionService, _cardsRepository, _logger
+        );
     }
 
     private Stack CreateTestStack(int id = 1, string name = "Test Stack") =>

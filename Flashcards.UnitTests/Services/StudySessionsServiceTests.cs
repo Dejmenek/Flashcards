@@ -3,6 +3,7 @@ using Flashcards.Models;
 using Flashcards.Services;
 using Flashcards.Services.Interfaces;
 using Flashcards.Utils;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 
 namespace Flashcards.UnitTests.Services;
@@ -12,13 +13,17 @@ public class StudySessionsServiceTests
     private readonly IUserInteractionService _userInteractionService;
     private readonly IStudySessionsRepository _studySessionsRepository;
     private readonly IConsoleService _consoleService;
+    private readonly ILogger<StudySessionsService> _logger;
 
     public StudySessionsServiceTests()
     {
         _userInteractionService = Substitute.For<IUserInteractionService>();
         _studySessionsRepository = Substitute.For<IStudySessionsRepository>();
         _consoleService = Substitute.For<IConsoleService>();
-        _studySessionsService = new StudySessionsService(_studySessionsRepository, _userInteractionService, _consoleService);
+        _logger = Substitute.For<ILogger<StudySessionsService>>();
+        _studySessionsService = new StudySessionsService(
+            _studySessionsRepository, _userInteractionService, _consoleService, _logger
+        );
     }
 
     public static IEnumerable<object[]> StartStudySessionTestData =>
