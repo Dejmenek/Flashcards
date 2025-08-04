@@ -1,10 +1,21 @@
 DROP TABLE IF EXISTS StudySessions;
 DROP TABLE IF EXISTS Cards;
 DROP TABLE IF EXISTS Stacks;
+DROP TABLE IF EXISTS Logs;
 
 CREATE TABLE Stacks (
     Id INT IDENTITY(1, 1) PRIMARY KEY,
     Name NVARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE Logs (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Message NVARCHAR(MAX),
+    MessageTemplate NVARCHAR(MAX),
+    Level NVARCHAR(128),
+    TimeStamp DATETIMEOFFSET(7),
+    Exception NVARCHAR(MAX),
+    Properties XML
 );
 
 CREATE TABLE Cards (

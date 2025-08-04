@@ -8,6 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NSubstitute;
+using Serilog;
+using Serilog.Sinks.MSSqlServer;
 using Testcontainers.MsSql;
 
 namespace Flashcards.IntegrationTests;
@@ -31,21 +33,31 @@ public class TestClassFixture : IAsyncLifetime
         var defaultConnectionString = $"Server=localhost,{mappedPort};Database=Flashcards;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;";
         var masterConnectionString = $"Server=localhost,{mappedPort};Database=master;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;";
 
+        var config = new ConfigurationBuilder()
+            .SetBasePath(AppContext.BaseDirectory)
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                { "ConnectionStrings:Default", defaultConnectionString },
+                { "ConnectionStrings:Master", masterConnectionString }
+            })
+            .AddEnvironmentVariables()
+            .Build();
+
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo
+            .MSSqlServer(
+                connectionString: masterConnectionString,
+                new MSSqlServerSinkOptions
+                {
+                    TableName = "Logs"
+                }
+            ).CreateLogger();
 
         TestHost = Host.CreateDefaultBuilder()
-            .ConfigureHostConfiguration(hostConfig =>
-            {
-                hostConfig.SetBasePath(AppContext.BaseDirectory);
-                hostConfig.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-                hostConfig.AddEnvironmentVariables();
-            })
             .ConfigureAppConfiguration((context, configBuilder) =>
             {
-                configBuilder.AddInMemoryCollection(new Dictionary<string, string?>
-                {
-                    { "ConnectionStrings:Default", defaultConnectionString },
-                    { "ConnectionStrings:Master", masterConnectionString }
-                });
+                configBuilder.AddConfiguration(config);
             })
             .ConfigureServices((hostContext, services) =>
             {
@@ -57,6 +69,11 @@ public class TestClassFixture : IAsyncLifetime
 
                 var userInteractionSubstitute = Substitute.For<IUserInteractionService>();
                 var consoleServiceSubstitute = Substitute.For<IConsoleService>();
+
+                services.AddLogging(builder =>
+                {
+                    builder.AddSerilog(Log.Logger);
+                });
 
                 services.AddSingleton(userInteractionSubstitute);
                 services.AddSingleton(consoleServiceSubstitute);
@@ -73,8 +90,6 @@ public class TestClassFixture : IAsyncLifetime
             })
             .Build();
 
-        using var scope = TestHost.Services.CreateScope();
-        var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
         var context = new DataContext(config);
         await context.Init();
     }

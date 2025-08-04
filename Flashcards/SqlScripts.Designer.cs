@@ -111,22 +111,25 @@ namespace Flashcards {
         ///   Looks up a localized string similar to DROP TABLE IF EXISTS StudySessions;
         ///DROP TABLE IF EXISTS Cards;
         ///DROP TABLE IF EXISTS Stacks;
+        ///DROP TABLE IF EXISTS Logs;
         ///
         ///CREATE TABLE Stacks (
         ///    Id INT IDENTITY(1, 1) PRIMARY KEY,
         ///    Name NVARCHAR(50) NOT NULL UNIQUE
         ///);
         ///
+        ///CREATE TABLE Logs (
+        ///    Id INT IDENTITY(1,1) PRIMARY KEY,
+        ///    Message NVARCHAR(MAX),
+        ///    MessageTemplate NVARCHAR(MAX),
+        ///    Level NVARCHAR(128),
+        ///    TimeStamp DATETIMEOFFSET(7),
+        ///    Exception NVARCHAR(MAX),
+        ///    Properties XML
+        ///);
+        ///
         ///CREATE TABLE Cards (
-        ///    Id INT IDENTITY(1, 1) PRIMARY KEY,
-        ///    StackId INT,
-        ///    Front NVARCHAR(50) NULL,
-        ///    Back NVARCHAR(50) NULL,
-        ///    Question NVARCHAR(max) NULL,
-        ///    Choices NVARCHAR(max) NULL,
-        ///    ClozeText NVARCHAR(max) NULL,
-        ///    FillInText NVARCHAR(max) NULL,
-        ///    Answer NVARCHAR(max) NULL [rest of string was truncated]&quot;;.
+        ///    Id INT IDENT [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string CreateTables {
             get {
