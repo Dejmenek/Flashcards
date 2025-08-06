@@ -51,6 +51,38 @@ public class CardsRepository : ICardsRepository
         }
     }
 
+    public async Task<Result> AddMultipleChoiceCardAsync(int stackId, string question, List<string> choices, List<string> answers)
+    {
+        _logger.LogInformation("Adding multiple choice card to stack {StackId}.", stackId);
+        try
+        {
+            using (var connection = new SqlConnection(_defaultConnectionString))
+            {
+                string sql = SqlScripts.AddMultipleChoiceCard;
+                await connection.ExecuteAsync(sql, new
+                {
+                    StackId = stackId,
+                    Question = question,
+                    Choices = string.Join(";", choices),
+                    Answer = string.Join(";", answers),
+                    CardType = CardType.MultipleChoice.ToString()
+                });
+                _logger.LogInformation("Successfully added multiple choice card to stack {StackId}.", stackId);
+                return Result.Success();
+            }
+        }
+        catch (SqlException ex)
+        {
+            _logger.LogError(ex, "SQL error while adding multiple choice card to stack {StackId}.", stackId);
+            return Result.Failure(CardsErrors.AddFailed);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error while adding multiple choice card to stack {StackId}.", stackId);
+            return Result.Failure(CardsErrors.AddFailed);
+        }
+    }
+
     public async Task<Result> DeleteCardAsync(int cardId)
     {
         _logger.LogInformation("Deleting card {CardId}.", cardId);

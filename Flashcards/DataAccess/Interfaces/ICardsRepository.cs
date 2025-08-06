@@ -6,6 +6,7 @@ namespace Flashcards.DataAccess.Interfaces;
 public interface ICardsRepository
 {
     Task<Result> AddFlashcardAsync(int stackId, string front, string back);
+    Task<Result> AddMultipleChoiceCardAsync(int stackId, string question, List<string> choices, List<string> answers);
     Task<Result> DeleteCardAsync(int cardId);
     Task<Result> UpdateFlashcardAsync(int flashcardId, string front, string back);
     Task<Result<IEnumerable<BaseCard>>> GetAllCardsAsync();
