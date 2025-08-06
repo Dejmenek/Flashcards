@@ -121,6 +121,9 @@
   <data name="AddFlashcard" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>SqlScripts\AddFlashcard.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
   </data>
+  <data name="AddMultipleChoiceCard" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>SqlScripts\AddMultipleChoiceCard.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+  </data>
   <data name="AddStack" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>SqlScripts\AddStack.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
   </data>
@@ -183,5 +186,11 @@
   </data>
   <data name="UpdateFlashcardInStack" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>SqlScripts\UpdateFlashcardInStack.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+  </data>
+  <data name="UpdateMultipleChoiceCard" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>SqlScripts\UpdateMultipleChoiceCard.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+  </data>
+  <data name="UpdateMultipleChoiceCardInStack" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>SqlScripts\UpdateMultipleChoiceCardInStack.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
   </data>
 </root>

@@ -72,6 +72,17 @@ namespace Flashcards {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to INSERT INTO Cards (StackId, Question, Choices, Answer, CardType)
+        ///VALUES
+        ///(@StackId, @Question, @Choices, @Answer, @CardType).
+        /// </summary>
+        internal static string AddMultipleChoiceCard {
+            get {
+                return ResourceManager.GetString("AddMultipleChoiceCard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to INSERT INTO Stacks (Name)
         ///VALUES
         ///(@Name).
@@ -353,6 +364,28 @@ namespace Flashcards {
         internal static string UpdateFlashcardInStack {
             get {
                 return ResourceManager.GetString("UpdateFlashcardInStack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UPDATE Cards
+        ///SET Question = @Question, Choices = @Choices, Answer = @Answer
+        ///WHERE Id = @Id.
+        /// </summary>
+        internal static string UpdateMultipleChoiceCard {
+            get {
+                return ResourceManager.GetString("UpdateMultipleChoiceCard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UPDATE Cards
+        ///SET Question = @Question, Choices = @Choices, Answer = @Answer
+        ///WHERE Id = @Id AND StackId = @StackId.
+        /// </summary>
+        internal static string UpdateMultipleChoiceCardInStack {
+            get {
+                return ResourceManager.GetString("UpdateMultipleChoiceCardInStack", resourceCulture);
             }
         }
     }
