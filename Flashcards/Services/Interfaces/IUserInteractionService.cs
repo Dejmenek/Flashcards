@@ -8,6 +8,10 @@ public interface IUserInteractionService
     int GetId();
     string GetFlashcardFront();
     string GetFlashcardBack();
+    string GetMultipleChoiceQuestion();
+    List<string> GetMultipleChoiceChoices(int numberOfChoices);
+    int GetNumberOfChoices();
+    List<string> GetMultipleChoiceAnswers(List<string> choices);
     string GetStackName();
     string GetAnswer();
     string GetYear();
