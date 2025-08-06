@@ -28,10 +28,10 @@ public static class DataVisualizer
         {
             string details = card switch
             {
-                FlashcardDTO f => $"[green]Front:[/] {f.Front}\n[blue]Back:[/] {f.Back}",
-                ClozeCardDTO c => $"[green]Cloze:[/] {c.ClozeText}",
-                FillInCardDTO fi => $"[green]FillIn:[/] {fi.FillInText}\n[blue]Answers:[/] {string.Join(", ", fi.Answer)}",
-                MultipleChoiceCardDTO mc => $"[green]Question:[/] {mc.Question}\n[blue]Choices:[/] {string.Join(", ", mc.Choices)}\n[magenta]Answer:[/] {mc.Answer}",
+                FlashcardDTO f => $"[green]Front:[/] {Markup.Escape(f.Front)}\n[blue]Back:[/] {Markup.Escape(f.Back)}",
+                ClozeCardDTO c => $"[green]Cloze:[/] {Markup.Escape(c.ClozeText)}",
+                FillInCardDTO fi => $"[green]FillIn:[/] {Markup.Escape(fi.FillInText)}\n[blue]Answers:[/] {Markup.Escape(string.Join(", ", fi.Answer))}",
+                MultipleChoiceCardDTO mc => $"[green]Question:[/] {Markup.Escape(mc.Question)}\n[blue]Choices:[/] {Markup.Escape(string.Join(", ", mc.Choices))}\n[magenta]Answer:[/] {Markup.Escape(string.Join(", ", mc.Answer))}",
                 _ => "[red]Unknown card type[/]"
             };
 
