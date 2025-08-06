@@ -23,14 +23,14 @@ public class ClozeCard : BaseCard
 public class FillInCard : BaseCard
 {
     public string? FillInText { get; set; }
-    public List<string>? Answer { get; set; }
+    public string? Answer { get; set; }
     public FillInCard() => CardType = CardType.FillIn;
 }
 
 public class MultipleChoiceCard : BaseCard
 {
     public string? Question { get; set; }
-    public List<string>? Choices { get; set; }
+    public string? Choices { get; set; }
     public string? Answer { get; set; }
     public MultipleChoiceCard() => CardType = CardType.MultipleChoice;
 }
@@ -62,7 +62,7 @@ public record class MultipleChoiceCardDTO : BaseCardDTO
 {
     public string Question { get; init; } = string.Empty;
     public List<string> Choices { get; init; } = new();
-    public string Answer { get; init; } = string.Empty;
+    public List<string> Answer { get; init; } = new();
 }
 
 public enum CardType
