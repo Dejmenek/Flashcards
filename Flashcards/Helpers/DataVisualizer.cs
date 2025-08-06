@@ -162,4 +162,14 @@ public static class DataVisualizer
 
         AnsiConsole.Write(table);
     }
+
+    public static void ShowMultipleChoiceCard(string question)
+    {
+        var questionPanel = new Panel(question)
+            .Header("Question")
+            .Border(BoxBorder.Rounded)
+            .Padding(2, 2, 2, 2);
+
+        AnsiConsole.Write(new Align(questionPanel, HorizontalAlignment.Center));
+    }
 }
