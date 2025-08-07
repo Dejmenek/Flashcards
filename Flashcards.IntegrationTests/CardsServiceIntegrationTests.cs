@@ -47,6 +47,40 @@ public class CardsServiceIntegrationTests : BaseIntegrationTest, IAsyncLifetime
     }
 
     [Fact]
+    public async Task AddCardAsync_ShouldPersistMultipleChoiceCard()
+    {
+        // Arrange
+        string question = "What is the capital of France?";
+        var choices = new List<string> { "London", "Berlin", "Paris", "Madrid" };
+        var answers = new List<string> { "Paris" };
+
+        var stacksResult = await _stacksRepository.GetAllStacksAsync();
+        var stackDtos = stacksResult.Value.Select(Mapper.ToStackDTO).ToList();
+        _userInteractionService.GetStack(Arg.Any<List<StackDTO>>()).Returns(stackDtos.First().Name);
+        _userInteractionService.GetCardType().Returns(CardType.MultipleChoice);
+        _userInteractionService.GetMultipleChoiceQuestion().Returns(question);
+        _userInteractionService.GetNumberOfChoices().Returns(choices.Count);
+        _userInteractionService.GetMultipleChoiceChoices(choices.Count).Returns(choices);
+        _userInteractionService.GetMultipleChoiceAnswers(Arg.Any<List<string>>()).Returns(answers);
+
+        // Act
+        var addResult = await _cardsService.AddCardAsync();
+
+        // Assert
+        Assert.True(addResult.IsSuccess);
+
+        var allResult = await _cardsRepository.GetAllCardsAsync();
+        Assert.True(allResult.IsSuccess);
+        Assert.Contains(allResult.Value,
+            c => c is MultipleChoiceCard mc
+                && mc.Question == question
+                && mc.Choices == string.Join(";", choices)
+                && mc.Answer == string.Join(";", answers)
+                && mc.CardType == CardType.MultipleChoice
+        );
+    }
+
+    [Fact]
     public async Task UpdateCardAsync_ShouldUpdateFlashcard()
     {
         // Arrange
@@ -69,6 +103,41 @@ public class CardsServiceIntegrationTests : BaseIntegrationTest, IAsyncLifetime
         var updatedFlashcard = (await _cardsRepository.GetAllCardsAsync()).Value.OfType<Flashcard>().First(f => f.Id == flashcard.Id);
         Assert.Equal(updatedFront, updatedFlashcard.Front);
         Assert.Equal(updatedBack, updatedFlashcard.Back);
+    }
+
+    [Fact]
+    public async Task UpdateCardAsync_ShouldUpdateMultipleChoiceCard()
+    {
+        // Arrange
+        var allMultipleChoiceCards = (await _cardsRepository.GetAllCardsAsync()).Value.OfType<MultipleChoiceCard>().ToList();
+        var multipleChoiceCard = allMultipleChoiceCards
+            .First(mc => mc.Question == "Jakie jest najwiêksze miasto w Polsce?" && mc.StackId == 3);
+        var multipleChoiceCardDTO = Mapper.ToMultipleChoiceCardDTO(multipleChoiceCard);
+
+        string updatedQuestion = "Updated question: What is the capital of France?";
+        var updatedChoices = new List<string> { "London", "Berlin", "Paris", "Madrid" };
+        var updatedAnswers = new List<string> { "Paris" };
+
+        _userInteractionService.GetCard(Arg.Any<List<BaseCardDTO>>()).Returns(multipleChoiceCardDTO);
+        _userInteractionService.GetMultipleChoiceQuestion().Returns(updatedQuestion);
+        _userInteractionService.GetNumberOfChoices().Returns(updatedChoices.Count);
+        _userInteractionService.GetMultipleChoiceChoices(updatedChoices.Count).Returns(updatedChoices);
+        _userInteractionService.GetMultipleChoiceAnswers(Arg.Any<List<string>>()).Returns(updatedAnswers);
+
+        // Act
+        var updateResult = await _cardsService.UpdateCardAsync();
+
+
+        // Assert
+        Assert.True(updateResult.IsSuccess);
+
+        var updatedMultipleChoiceCard = (await _cardsRepository.GetAllCardsAsync()).Value.OfType<MultipleChoiceCard>()
+            .First(mc => mc.Id == multipleChoiceCard.Id);
+
+        Assert.Equal(updatedQuestion, updatedMultipleChoiceCard.Question);
+        Assert.Equal(string.Join(";", updatedChoices), updatedMultipleChoiceCard.Choices);
+        Assert.Equal(string.Join(";", updatedAnswers), updatedMultipleChoiceCard.Answer);
+        Assert.Equal(CardType.MultipleChoice, updatedMultipleChoiceCard.CardType);
     }
 
     [Fact]
