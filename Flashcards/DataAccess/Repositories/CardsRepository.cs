@@ -51,6 +51,38 @@ public class CardsRepository : ICardsRepository
         }
     }
 
+    public async Task<Result> AddMultipleChoiceCardAsync(int stackId, string question, List<string> choices, List<string> answers)
+    {
+        _logger.LogInformation("Adding multiple choice card to stack {StackId}.", stackId);
+        try
+        {
+            using (var connection = new SqlConnection(_defaultConnectionString))
+            {
+                string sql = SqlScripts.AddMultipleChoiceCard;
+                await connection.ExecuteAsync(sql, new
+                {
+                    StackId = stackId,
+                    Question = question,
+                    Choices = string.Join(";", choices),
+                    Answer = string.Join(";", answers),
+                    CardType = CardType.MultipleChoice.ToString()
+                });
+                _logger.LogInformation("Successfully added multiple choice card to stack {StackId}.", stackId);
+                return Result.Success();
+            }
+        }
+        catch (SqlException ex)
+        {
+            _logger.LogError(ex, "SQL error while adding multiple choice card to stack {StackId}.", stackId);
+            return Result.Failure(CardsErrors.AddFailed);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error while adding multiple choice card to stack {StackId}.", stackId);
+            return Result.Failure(CardsErrors.AddFailed);
+        }
+    }
+
     public async Task<Result> DeleteCardAsync(int cardId)
     {
         _logger.LogInformation("Deleting card {CardId}.", cardId);
@@ -134,9 +166,9 @@ public class CardsRepository : ICardsRepository
         }
     }
 
-    public async Task<Result> UpdateFlashcardAsync(int flashcardId, string front, string back)
+    public async Task<Result> UpdateFlashcardAsync(int cardId, string front, string back)
     {
-        _logger.LogInformation("Updating flashcard {FlashcardId}.", flashcardId);
+        _logger.LogInformation("Updating flashcard {CardId}.", cardId);
         try
         {
             using (var connection = new SqlConnection(_defaultConnectionString))
@@ -147,20 +179,52 @@ public class CardsRepository : ICardsRepository
                 {
                     Front = front,
                     Back = back,
-                    Id = flashcardId
+                    Id = cardId
                 });
             }
-            _logger.LogInformation("Successfully updated flashcard {FlashcardId}.", flashcardId);
+            _logger.LogInformation("Successfully updated flashcard {CardId}.", cardId);
             return Result.Success();
         }
         catch (SqlException ex)
         {
-            _logger.LogError(ex, "SQL error while updating flashcard {FlashcardId}.", flashcardId);
+            _logger.LogError(ex, "SQL error while updating flashcard {CardId}.", cardId);
             return Result.Failure(CardsErrors.UpdateFailed);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected error while updating flashcard {FlashcardId}.", flashcardId);
+            _logger.LogError(ex, "Unexpected error while updating flashcard {CardId}.", cardId);
+            return Result.Failure(CardsErrors.UpdateFailed);
+        }
+    }
+
+    public async Task<Result> UpdateMultipleChoiceCardAsync(int cardId, string question, List<string> choices, List<string> answers)
+    {
+        _logger.LogInformation("Updating multiple choice card {CardId}.", cardId);
+        try
+        {
+            using (var connection = new SqlConnection(_defaultConnectionString))
+            {
+                string sql = SqlScripts.UpdateMultipleChoiceCard;
+
+                await connection.ExecuteAsync(sql, new
+                {
+                    Question = question,
+                    Choices = string.Join(";", choices),
+                    Answer = string.Join(";", answers),
+                    Id = cardId
+                });
+            }
+            _logger.LogInformation("Successfully updated multiple choice card {CardId}.", cardId);
+            return Result.Success();
+        }
+        catch (SqlException ex)
+        {
+            _logger.LogError(ex, "SQL error while updating multiple choice card {CardId}.", cardId);
+            return Result.Failure(CardsErrors.UpdateFailed);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error while updating multiple choice card {CardId}.", cardId);
             return Result.Failure(CardsErrors.UpdateFailed);
         }
     }

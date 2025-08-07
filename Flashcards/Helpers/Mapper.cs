@@ -44,7 +44,7 @@ public static class Mapper
             Id = fillInCard.Id,
             CardType = fillInCard.CardType,
             FillInText = fillInCard.FillInText ?? string.Empty,
-            Answer = fillInCard.Answer ?? new List<string>(),
+            Answer = fillInCard.Answer != null ? fillInCard.Answer.Split(';').ToList() : new()
         };
     }
 
@@ -55,8 +55,8 @@ public static class Mapper
             Id = multipleChoiceCard.Id,
             CardType = multipleChoiceCard.CardType,
             Question = multipleChoiceCard.Question ?? string.Empty,
-            Choices = multipleChoiceCard.Choices ?? new List<string>(),
-            Answer = multipleChoiceCard.Answer ?? string.Empty,
+            Choices = multipleChoiceCard.Choices != null ? multipleChoiceCard.Choices.Split(';').ToList() : new(),
+            Answer = multipleChoiceCard.Answer != null ? multipleChoiceCard.Answer.Split(';').ToList() : new(),
         };
     }
 

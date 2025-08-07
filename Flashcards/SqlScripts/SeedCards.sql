@@ -8,3 +8,8 @@
 	(3, 'Dzień dobry', 'Good morning', 'Flashcard'),
 	(3, 'Do widzenia', 'Goodbye', 'Flashcard'),
 	(3, 'Proszę', 'Please', 'Flashcard');
+
+	INSERT INTO Cards (StackId, Question, Choices, Answer, CardType) VALUES
+	(3, 'Jakie jest największe miasto w Polsce?', 'Kraków;Warszawa;Gdańsk;Wrocław', 'Warszawa', 'MultipleChoice'),
+	(3, 'Które z tych są polskimi rzekami?', 'Wisła;Odra;Ren;Dunaj;Warta', 'Wisła;Odra;Warta', 'MultipleChoice'),
+	(3, 'Ile województw ma Polska?', 'Czternaście;Piętnaście;Szesnaście;Siedemnaście', 'Szesnaście', 'MultipleChoice');

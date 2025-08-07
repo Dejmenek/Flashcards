@@ -73,6 +73,7 @@ public class StacksService : IStacksService
         ICardStrategy strategy = chosenCardType switch
         {
             CardType.Flashcard => new FlashcardStrategy(_cardsRepository, _userInteractionService),
+            CardType.MultipleChoice => new MultipleChoiceCardStrategy(_cardsRepository, _userInteractionService),
             _ => throw new ArgumentOutOfRangeException(nameof(chosenCardType), "Invalid card type selected.")
         };
 
@@ -157,6 +158,7 @@ public class StacksService : IStacksService
         ICardStrategy strategy = chosenCard.CardType switch
         {
             CardType.Flashcard => new FlashcardStrategy(_cardsRepository, _userInteractionService, _stacksRepository),
+            CardType.MultipleChoice => new MultipleChoiceCardStrategy(_cardsRepository, _userInteractionService, _stacksRepository),
             _ => throw new ArgumentOutOfRangeException(nameof(chosenCard.CardType), "Invalid card type selected.")
         };
 
@@ -192,6 +194,9 @@ public class StacksService : IStacksService
             {
                 case Flashcard flashcard:
                     cardDtos.Add(Mapper.ToFlashcardDTO(flashcard));
+                    break;
+                case MultipleChoiceCard multipleChoiceCard:
+                    cardDtos.Add(Mapper.ToMultipleChoiceCardDTO(multipleChoiceCard));
                     break;
                 default:
                     _logger.LogWarning("Unknown card type encountered in GetCardsByStackIdAsync.");

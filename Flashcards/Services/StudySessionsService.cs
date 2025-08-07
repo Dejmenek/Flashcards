@@ -53,6 +53,22 @@ public class StudySessionsService : IStudySessionsService
                         _logger.LogInformation("Incorrect answer for card ID {CardId}.", flashcard.Id);
                     }
                     break;
+                case MultipleChoiceCardDTO multipleChoiceCard:
+                    DataVisualizer.ShowMultipleChoiceCard(multipleChoiceCard.Question);
+                    List<string> userAnswers = _userInteractionService.GetMultipleChoiceAnswers(multipleChoiceCard.Choices);
+                    if (IsCorrectMultipleChoiceCardAnswer(userAnswers, multipleChoiceCard.Answer))
+                    {
+                        AnsiConsole.MarkupLine("Your answer is correct!");
+                        Score++;
+                        _logger.LogInformation("Correct answer for card ID {CardId}.", multipleChoiceCard.Id);
+                    }
+                    else
+                    {
+                        AnsiConsole.MarkupLine("Your answer was wrong.");
+                        AnsiConsole.MarkupLine($"The correct answer was {string.Join(',', multipleChoiceCard.Answer)}.");
+                        _logger.LogInformation("Incorrect answer for card ID {CardId}.", multipleChoiceCard.Id);
+                    }
+                    break;
             }
 
             _userInteractionService.GetUserInputToContinue();
@@ -65,17 +81,17 @@ public class StudySessionsService : IStudySessionsService
         _consoleService.Clear();
     }
 
-    public async Task<Result> RunStudySessionAsync(List<BaseCardDTO> studySessionFlashcards, int stackId)
+    public async Task<Result> RunStudySessionAsync(List<BaseCardDTO> studySessionCards, int stackId)
     {
         _logger.LogInformation("Running study session for stack {StackId}.", stackId);
 
-        if (studySessionFlashcards is [])
+        if (studySessionCards is [])
         {
             _logger.LogWarning("No cards found for study session.");
             return Result.Failure(CardsErrors.CardsNotFound);
         }
 
-        StartStudySessionAsync(studySessionFlashcards);
+        StartStudySessionAsync(studySessionCards);
         var endResult = await EndStudySessionAsync(stackId);
         if (endResult.IsFailure)
         {
@@ -194,5 +210,16 @@ public class StudySessionsService : IStudySessionsService
 
         _logger.LogInformation("Monthly average score report for year {Year} retrieved successfully.", year);
         return Result.Success(reportResult.Value);
+    }
+
+    private bool IsCorrectMultipleChoiceCardAnswer(List<string> userAnswers, List<string> correctAnswers)
+    {
+        if (userAnswers.Count != correctAnswers.Count)
+            return false;
+
+        var userAnswersSet = new HashSet<string>(userAnswers);
+        var correctAnswersSet = new HashSet<string>(correctAnswers);
+
+        return userAnswersSet.SetEquals(correctAnswersSet);
     }
 }

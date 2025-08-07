@@ -26,58 +26,33 @@ public class StudySessionsServiceTests
         );
     }
 
-    public static IEnumerable<object[]> StartStudySessionTestData =>
-        new List<object[]>
-        {
-            new object[]
-            {
-                new List<BaseCardDTO>
-                {
-                    new FlashcardDTO { Front = "Dog", Back = "Pies" },
-                    new FlashcardDTO { Front = "Cat", Back = "Kot" }
-                },
-                new List<string> { "Pies", "Kot" },
-                2
-            },
-            new object[]
-            {
-                new List<BaseCardDTO>
-                {
-                    new FlashcardDTO { Front = "Front3", Back = "Back3" }
-                },
-                new List<string> { "Back3" },
-                1
-            },
-            new object[]
-            {
-                new List<BaseCardDTO>(),
-                new List<string>(),
-                0
-            },
-            new object[]
-            {
-                new List<BaseCardDTO>
-                {
-                    new FlashcardDTO { Front = "Front4", Back = "Back4" },
-                },
-                new List<string> { "WrongAnswer" },
-                0
-            }
-        };
-
-    [Theory]
-    [MemberData(nameof(StartStudySessionTestData))]
-    public void StartStudySessionAsync_ShouldCalculateCorrectScore_WhenAnswersProvided(List<BaseCardDTO> cards, List<string> userAnswers, int expectedScore)
+    [Fact]
+    public void StartStudySessionAsync_ShouldCalculateCorrectScore_WhenMixedCardTypes()
     {
         // Arrange
-        int i = 0;
-        _userInteractionService.GetAnswer().Returns(_ => userAnswers[i++]);
+        var flashcard = new FlashcardDTO { Id = 1, Front = "Hello", Back = "Hola" };
+        var multipleChoiceCard = new MultipleChoiceCardDTO
+        {
+            Id = 2,
+            Question = "Which is a fruit?",
+            Choices = new List<string> { "Apple", "Car", "Book" },
+            Answer = new List<string> { "Apple" },
+            CardType = CardType.MultipleChoice
+        };
+        var cards = new List<BaseCardDTO> { flashcard, multipleChoiceCard };
+
+        int answerCallCount = 0;
+        _userInteractionService.GetAnswer().Returns(_ => answerCallCount++ == 0 ? "Hola" : "");
+        _userInteractionService.GetMultipleChoiceAnswers(Arg.Any<List<string>>())
+            .Returns(new List<string> { "Apple" });
 
         // Act
         _studySessionsService.StartStudySessionAsync(cards);
 
         // Assert
-        Assert.Equal(expectedScore, _studySessionsService.Score);
+        Assert.Equal(2, _studySessionsService.Score);
+        _userInteractionService.Received(1).GetAnswer();
+        _userInteractionService.Received(1).GetMultipleChoiceAnswers(multipleChoiceCard.Choices);
     }
 
     [Fact]
@@ -187,6 +162,29 @@ public class StudySessionsServiceTests
         Assert.Equal(2, result.Value.Count);
         Assert.Equal(1, result.Value[0].Id);
         Assert.Equal(2, result.Value[1].Id);
+    }
+
+    [Fact]
+    public void StartStudySessionAsync_ShouldResetScore_WhenCalledMultipleTimes()
+    {
+        // Arrange
+        var flashcard1 = new FlashcardDTO { Id = 1, Front = "Hello", Back = "Hola" };
+        var flashcard2 = new FlashcardDTO { Id = 2, Front = "Goodbye", Back = "Adiós" };
+        var cards1 = new List<BaseCardDTO> { flashcard1 };
+        var cards2 = new List<BaseCardDTO> { flashcard2 };
+
+        _userInteractionService.GetAnswer().Returns("Hola", "Adiós");
+
+        // Act
+        _studySessionsService.StartStudySessionAsync(cards1);
+        var scoreAfterFirst = _studySessionsService.Score;
+
+        _studySessionsService.StartStudySessionAsync(cards2);
+        var scoreAfterSecond = _studySessionsService.Score;
+
+        // Assert
+        Assert.Equal(1, scoreAfterFirst);
+        Assert.Equal(1, scoreAfterSecond);
     }
 
     [Fact]
@@ -372,5 +370,30 @@ public class StudySessionsServiceTests
 
         // Assert
         Assert.True(result.IsSuccess);
+    }
+
+    [Theory]
+    [InlineData(new string[] { "A", "B" }, new string[] { "A", "B" }, true)]
+    [InlineData(new string[] { "B", "A" }, new string[] { "A", "B" }, true)]
+    [InlineData(new string[] { "A" }, new string[] { "A", "B" }, false)]
+    [InlineData(new string[] { "A", "B", "C" }, new string[] { "A", "B" }, false)]
+    [InlineData(new string[] { "A", "C" }, new string[] { "A", "B" }, false)]
+    [InlineData(new string[] { }, new string[] { }, true)]
+    [InlineData(new string[] { "A" }, new string[] { }, false)]
+    public void IsCorrectMultipleChoiceCardAnswer_ShouldReturnCorrectResult_WhenComparingAnswers(string[] userAnswers, string[] correctAnswers, bool expected)
+    {
+        // Arrange
+        var userAnswersList = userAnswers.ToList();
+        var correctAnswersList = correctAnswers.ToList();
+
+        // Use reflection to access the private method
+        var method = typeof(StudySessionsService).GetMethod("IsCorrectMultipleChoiceCardAnswer",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+        // Act
+        var result = (bool)method!.Invoke(_studySessionsService, new object[] { userAnswersList, correctAnswersList });
+
+        // Assert
+        Assert.Equal(expected, result);
     }
 }

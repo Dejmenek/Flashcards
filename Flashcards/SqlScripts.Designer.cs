@@ -72,6 +72,17 @@ namespace Flashcards {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to INSERT INTO Cards (StackId, Question, Choices, Answer, CardType)
+        ///VALUES
+        ///(@StackId, @Question, @Choices, @Answer, @CardType).
+        /// </summary>
+        internal static string AddMultipleChoiceCard {
+            get {
+                return ResourceManager.GetString("AddMultipleChoiceCard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to INSERT INTO Stacks (Name)
         ///VALUES
         ///(@Name).
@@ -296,7 +307,9 @@ namespace Flashcards {
         ///	(2, &apos;Danke&apos;, &apos;Thank you&apos;, &apos;Flashcard&apos;),
         ///	(3, &apos;Dzień dobry&apos;, &apos;Good morning&apos;, &apos;Flashcard&apos;),
         ///	(3, &apos;Do widzenia&apos;, &apos;Goodbye&apos;, &apos;Flashcard&apos;),
-        ///	(3, &apos;Proszę&apos;, &apos;Please&apos;, &apos;Flashcard&apos;);.
+        ///	(3, &apos;Proszę&apos;, &apos;Please&apos;, &apos;Flashcard&apos;);
+        ///
+        ///	INSERT INTO Cards (StackId, Question, Choice [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string SeedCards {
             get {
@@ -353,6 +366,28 @@ namespace Flashcards {
         internal static string UpdateFlashcardInStack {
             get {
                 return ResourceManager.GetString("UpdateFlashcardInStack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UPDATE Cards
+        ///SET Question = @Question, Choices = @Choices, Answer = @Answer
+        ///WHERE Id = @Id.
+        /// </summary>
+        internal static string UpdateMultipleChoiceCard {
+            get {
+                return ResourceManager.GetString("UpdateMultipleChoiceCard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UPDATE Cards
+        ///SET Question = @Question, Choices = @Choices, Answer = @Answer
+        ///WHERE Id = @Id AND StackId = @StackId.
+        /// </summary>
+        internal static string UpdateMultipleChoiceCardInStack {
+            get {
+                return ResourceManager.GetString("UpdateMultipleChoiceCardInStack", resourceCulture);
             }
         }
     }

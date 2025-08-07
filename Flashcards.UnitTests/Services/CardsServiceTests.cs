@@ -286,4 +286,85 @@ public class CardsServiceTests
         // Assert
         Assert.True(result.IsSuccess);
     }
+
+    [Fact]
+    public async Task AddCardAsync_ShouldReturnFailure_WhenRepositoryAddMultipleChoiceCardFails()
+    {
+        // Arrange
+        var stacks = new List<Stack> { new Stack { Id = 1, Name = "Test Stack" } };
+        _stacksRepository.GetAllStacksAsync().Returns(Result.Success<IEnumerable<Stack>>(stacks));
+        _userInteractionService.GetStack(Arg.Any<List<StackDTO>>()).Returns("Test Stack");
+        _userInteractionService.GetCardType().Returns(CardType.MultipleChoice);
+
+        _userInteractionService.GetMultipleChoiceQuestion().Returns("Question?");
+        _userInteractionService.GetNumberOfChoices().Returns(2);
+        _userInteractionService.GetMultipleChoiceChoices(2).Returns(new List<string> { "A", "B" });
+        _userInteractionService.GetMultipleChoiceAnswers(Arg.Any<List<string>>()).Returns(new List<string> { "A" });
+
+        _cardsRepository.AddMultipleChoiceCardAsync(1, "Question?", Arg.Any<List<string>>(), Arg.Any<List<string>>())
+            .Returns(Result.Failure(CardsErrors.AddFailed));
+
+        // Act
+        var result = await _cardsService.AddCardAsync();
+
+        // Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(CardsErrors.AddFailed, result.Error);
+    }
+
+    [Fact]
+    public async Task AddCardAsync_ShouldThrowArgumentOutOfRangeException_WhenInvalidCardTypeSelected()
+    {
+        // Arrange
+        var stacks = new List<Stack> { new Stack { Id = 1, Name = "Test Stack" } };
+        _stacksRepository.GetAllStacksAsync().Returns(Result.Success<IEnumerable<Stack>>(stacks));
+        _userInteractionService.GetStack(Arg.Any<List<StackDTO>>()).Returns("Test Stack");
+        _userInteractionService.GetCardType().Returns((CardType)999);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => _cardsService.AddCardAsync());
+    }
+
+    [Fact]
+    public async Task UpdateCardAsync_ShouldReturnFailure_WhenRepositoryUpdateMultipleChoiceCardFails()
+    {
+        // Arrange
+        var cards = new List<BaseCard>
+        {
+            new MultipleChoiceCard
+            {
+                Id = 1,
+                StackId = 1,
+                Question = "Q",
+                Choices = "A;B",
+                Answer = "A",
+                CardType = CardType.MultipleChoice
+            }
+        };
+        var userSelectedCard = new MultipleChoiceCardDTO
+        {
+            Id = 1,
+            Question = "Q",
+            Choices = new List<string> { "A", "B" },
+            Answer = new List<string> { "A" },
+            CardType = CardType.MultipleChoice
+        };
+
+        _cardsRepository.GetAllCardsAsync().Returns(Result.Success<IEnumerable<BaseCard>>(cards));
+        _userInteractionService.GetCard(Arg.Any<List<BaseCardDTO>>()).Returns(userSelectedCard);
+        _userInteractionService.GetMultipleChoiceQuestion().Returns("Updated Q");
+        _userInteractionService.GetNumberOfChoices().Returns(2);
+        _userInteractionService.GetMultipleChoiceChoices(2).Returns(new List<string> { "A", "B" });
+        _userInteractionService.GetMultipleChoiceAnswers(Arg.Any<List<string>>()).Returns(new List<string> { "B" });
+
+        _cardsRepository.UpdateMultipleChoiceCardAsync(1, "Updated Q", Arg.Any<List<string>>(), Arg.Any<List<string>>())
+            .Returns(Result.Failure(CardsErrors.UpdateFailed));
+
+        // Act
+        var result = await _cardsService.UpdateCardAsync();
+
+        // Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(CardsErrors.UpdateFailed, result.Error);
+    }
 }

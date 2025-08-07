@@ -124,4 +124,48 @@ public class UserInteractionService : IUserInteractionService
         AnsiConsole.MarkupLine("Press Enter to continue...");
         Console.ReadLine();
     }
+
+    public string GetMultipleChoiceQuestion()
+    {
+        return AnsiConsole.Prompt(
+             new TextPrompt<string>("Enter the question for the multiple choice card:")
+             );
+    }
+
+    public List<string> GetMultipleChoiceChoices(int numberOfChoices)
+    {
+        var choices = new List<string>();
+
+        for (int i = 0; i < numberOfChoices; i++)
+        {
+            string choice = AnsiConsole.Prompt(
+                new TextPrompt<string>($"Enter choice {i + 1}:")
+            );
+            choices.Add(choice);
+        }
+
+        return choices;
+    }
+
+    public int GetNumberOfChoices()
+    {
+        return AnsiConsole.Prompt(
+            new TextPrompt<int>("Enter the number of choices for the multiple choice card:")
+                .ValidationErrorMessage("[red]That is not a valid number of choices[/]")
+                .Validate(Validation.IsPositiveNumber)
+        );
+    }
+
+    public List<string> GetMultipleChoiceAnswers(List<string> choices)
+    {
+        return AnsiConsole.Prompt(
+            new MultiSelectionPrompt<string>()
+                .Title("Select the correct answers:")
+                .MoreChoicesText("[grey](Move up and down to reveal more choices)[/]")
+                .InstructionsText("[grey](Press [blue]space[/] to toggle a choice, [green]enter[/] to accept)[/]")
+                .PageSize(10)
+                .AddChoices(choices)
+                .UseConverter(choice => choice)
+        );
+    }
 }

@@ -36,6 +36,19 @@ public class StacksServiceTests
     private FlashcardDTO CreateTestFlashcardDTO(int id = 1, string front = "Front", string back = "Back") =>
         new() { Id = id, Front = front, Back = back };
 
+    private MultipleChoiceCard CreateTestMultipleChoiceCard(int id = 1, int stackId = 1, string question = "Question?", string choices = "A;B;C", string answer = "A") =>
+    new() { Id = id, StackId = stackId, Question = question, Choices = choices, Answer = answer };
+
+    private MultipleChoiceCardDTO CreateTestMultipleChoiceCardDTO(int id = 1, string question = "Question?", List<string>? choices = null, List<string>? answer = null) =>
+        new()
+        {
+            Id = id,
+            Question = question,
+            Choices = choices ?? new List<string> { "A", "B", "C" },
+            Answer = answer ?? new List<string> { "A" },
+            CardType = CardType.MultipleChoice
+        };
+
     [Fact]
     public async Task AddStackAsync_ShouldReturnFailure_WhenStackWithNameExistsFails()
     {
@@ -126,6 +139,34 @@ public class StacksServiceTests
     }
 
     [Fact]
+    public async Task AddCardToStackAsync_ShouldReturnFailure_WhenAddMultipleChoiceCardFails()
+    {
+        // Arrange
+        int stackId = 1;
+        string stackName = "Test Stack";
+        var currentTestStack = CreateTestStack(stackId, stackName);
+        typeof(StacksService)
+            .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+            ?.SetValue(_stacksService, currentTestStack);
+
+        _userInteractionService.GetCardType().Returns(CardType.MultipleChoice);
+        _userInteractionService.GetMultipleChoiceQuestion().Returns("Question?");
+        _userInteractionService.GetNumberOfChoices().Returns(2);
+        _userInteractionService.GetMultipleChoiceChoices(2).Returns(new List<string> { "Choice A", "Choice B" });
+        _userInteractionService.GetMultipleChoiceAnswers(Arg.Any<List<string>>()).Returns(new List<string> { "Choice A" });
+
+        _cardsRepository.AddMultipleChoiceCardAsync(stackId, "Question?", Arg.Any<List<string>>(), Arg.Any<List<string>>())
+            .Returns(Result.Failure(CardsErrors.AddFailed));
+
+        // Act
+        var result = await _stacksService.AddCardToStackAsync();
+
+        // Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(CardsErrors.AddFailed, result.Error);
+    }
+
+    [Fact]
     public async Task AddCardToStackAsync_ShouldReturnSuccess_WhenAddFlashcardSucceeds()
     {
         // Arrange
@@ -143,6 +184,33 @@ public class StacksServiceTests
         _userInteractionService.GetFlashcardBack().Returns(back);
 
         _cardsRepository.AddFlashcardAsync(stackId, front, back)
+            .Returns(Result.Success());
+
+        // Act
+        var result = await _stacksService.AddCardToStackAsync();
+
+        // Assert
+        Assert.True(result.IsSuccess);
+    }
+
+    [Fact]
+    public async Task AddCardToStackAsync_ShouldReturnSuccess_WhenAddMultipleChoiceCardSucceeds()
+    {
+        // Arrange
+        int stackId = 1;
+        string stackName = "Test Stack";
+        var currentTestStack = CreateTestStack(stackId, stackName);
+        typeof(StacksService)
+            .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+            ?.SetValue(_stacksService, currentTestStack);
+
+        _userInteractionService.GetCardType().Returns(CardType.MultipleChoice);
+        _userInteractionService.GetMultipleChoiceQuestion().Returns("Question?");
+        _userInteractionService.GetNumberOfChoices().Returns(2);
+        _userInteractionService.GetMultipleChoiceChoices(2).Returns(new List<string> { "Choice A", "Choice B" });
+        _userInteractionService.GetMultipleChoiceAnswers(Arg.Any<List<string>>()).Returns(new List<string> { "Choice A" });
+
+        _cardsRepository.AddMultipleChoiceCardAsync(stackId, "Question?", Arg.Any<List<string>>(), Arg.Any<List<string>>())
             .Returns(Result.Success());
 
         // Act
@@ -385,6 +453,54 @@ public class StacksServiceTests
     }
 
     [Fact]
+    public async Task UpdateCardInStackAsync_ShouldReturnFailure_WhenUpdateMultipleChoiceCardFails()
+    {
+        // Arrange
+        int stackId = 1;
+        string stackName = "Test Stack";
+        int cardId = 1;
+        var currentTestStack = CreateTestStack(stackId, stackName);
+        var multipleChoiceCard = new MultipleChoiceCard
+        {
+            Id = cardId,
+            StackId = stackId,
+            Question = "Original Question",
+            Choices = "A;B;C",
+            Answer = "A"
+        };
+        var multipleChoiceCardDTO = new MultipleChoiceCardDTO
+        {
+            Id = cardId,
+            Question = "Original Question",
+            Choices = new List<string> { "A", "B", "C" },
+            Answer = new List<string> { "A" },
+            CardType = CardType.MultipleChoice
+        };
+
+        typeof(StacksService)
+            .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+            ?.SetValue(_stacksService, currentTestStack);
+
+        _userInteractionService.GetCard(Arg.Any<List<BaseCardDTO>>()).Returns(multipleChoiceCardDTO);
+        _userInteractionService.GetMultipleChoiceQuestion().Returns("Updated Question");
+        _userInteractionService.GetNumberOfChoices().Returns(3);
+        _userInteractionService.GetMultipleChoiceChoices(3).Returns(new List<string> { "A", "B", "C" });
+        _userInteractionService.GetMultipleChoiceAnswers(Arg.Any<List<string>>()).Returns(new List<string> { "B" });
+
+        _stacksRepository.GetCardsByStackIdAsync(stackId)
+            .Returns(Result.Success<IEnumerable<BaseCard>>(new List<BaseCard> { multipleChoiceCard }));
+        _stacksRepository.UpdateMultipleChoiceCardAsync(cardId, stackId, "Updated Question", Arg.Any<List<string>>(), Arg.Any<List<string>>())
+            .Returns(Result.Failure(StacksErrors.UpdateFailed));
+
+        // Act
+        var result = await _stacksService.UpdateCardInStackAsync();
+
+        // Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(StacksErrors.UpdateFailed, result.Error);
+    }
+
+    [Fact]
     public async Task UpdateCardInStackAsync_ShouldReturnSuccess_WhenUpdateFlashcardSucceeds()
     {
         // Arrange
@@ -417,6 +533,53 @@ public class StacksServiceTests
         // Assert
         Assert.True(result.IsSuccess);
         await _stacksRepository.Received(1).UpdateFlashcardInStackAsync(flashcardId, stackId, newFront, newBack);
+    }
+
+    [Fact]
+    public async Task UpdateCardInStackAsync_ShouldReturnSuccess_WhenUpdateMultipleChoiceCardSucceeds()
+    {
+        // Arrange
+        int stackId = 1;
+        string stackName = "Test Stack";
+        int cardId = 1;
+        var currentTestStack = CreateTestStack(stackId, stackName);
+        var multipleChoiceCard = new MultipleChoiceCard
+        {
+            Id = cardId,
+            StackId = stackId,
+            Question = "Original Question",
+            Choices = "A;B;C",
+            Answer = "A"
+        };
+        var multipleChoiceCardDTO = new MultipleChoiceCardDTO
+        {
+            Id = cardId,
+            Question = "Original Question",
+            Choices = new List<string> { "A", "B", "C" },
+            Answer = new List<string> { "A" },
+            CardType = CardType.MultipleChoice
+        };
+
+        typeof(StacksService)
+            .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+            ?.SetValue(_stacksService, currentTestStack);
+
+        _userInteractionService.GetCard(Arg.Any<List<BaseCardDTO>>()).Returns(multipleChoiceCardDTO);
+        _userInteractionService.GetMultipleChoiceQuestion().Returns("Updated Question");
+        _userInteractionService.GetNumberOfChoices().Returns(3);
+        _userInteractionService.GetMultipleChoiceChoices(3).Returns(new List<string> { "A", "B", "C" });
+        _userInteractionService.GetMultipleChoiceAnswers(Arg.Any<List<string>>()).Returns(new List<string> { "B" });
+
+        _stacksRepository.GetCardsByStackIdAsync(stackId)
+            .Returns(Result.Success<IEnumerable<BaseCard>>(new List<BaseCard> { multipleChoiceCard }));
+        _stacksRepository.UpdateMultipleChoiceCardAsync(cardId, stackId, "Updated Question", Arg.Any<List<string>>(), Arg.Any<List<string>>())
+            .Returns(Result.Success());
+
+        // Act
+        var result = await _stacksService.UpdateCardInStackAsync();
+
+        // Assert
+        Assert.True(result.IsSuccess);
     }
 
     [Fact]
@@ -458,30 +621,35 @@ public class StacksServiceTests
         int stackId = 1;
         string stackName = "Test Stack";
         var currentTestStack = CreateTestStack(stackId, stackName);
-        var flashcards = new List<Flashcard>
+        var cards = new List<BaseCard>
         {
             CreateTestFlashcard(1, stackId, "Front1", "Back1"),
-            CreateTestFlashcard(2, stackId, "Front2", "Back2")
+            CreateTestFlashcard(2, stackId, "Front2", "Back2"),
+            CreateTestMultipleChoiceCard(3, stackId, "Question?", "A;B;C", "A"),
+            CreateTestMultipleChoiceCard(4, stackId, "Another Question?", "D;E;F", "D")
         };
 
         typeof(StacksService)
             .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             ?.SetValue(_stacksService, currentTestStack);
         _stacksRepository.GetCardsByStackIdAsync(stackId)
-            .Returns(Result.Success<IEnumerable<BaseCard>>(flashcards));
+            .Returns(Result.Success<IEnumerable<BaseCard>>(cards));
 
         // Act
         var result = await _stacksService.GetCardsByStackIdAsync();
 
         // Assert
         Assert.True(result.IsSuccess);
-        Assert.Equal(2, result.Value.Count);
+        Assert.Equal(cards.Count, result.Value.Count);
         foreach (var card in result.Value)
         {
             switch (card)
             {
                 case FlashcardDTO flashcard:
                     Assert.Contains(result.Value, c => c is FlashcardDTO fc && fc.Id == flashcard.Id && fc.Front == flashcard.Front && fc.Back == flashcard.Back);
+                    break;
+                case MultipleChoiceCardDTO multipleChoiceCard:
+                    Assert.Contains(result.Value, c => c is MultipleChoiceCardDTO mcc && mcc.Id == multipleChoiceCard.Id && mcc.Question == multipleChoiceCard.Question && mcc.Choices.SequenceEqual(multipleChoiceCard.Choices) && mcc.Answer.SequenceEqual(multipleChoiceCard.Answer));
                     break;
                 default:
                     throw new InvalidOperationException("Unknown card type");

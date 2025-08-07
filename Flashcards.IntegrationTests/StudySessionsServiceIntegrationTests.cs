@@ -33,6 +33,8 @@ public class StudySessionsServiceIntegrationTests : BaseIntegrationTest, IAsyncL
         var cardDTOs = cards.Select(Mapper.ToCardDTO).ToList();
 
         _userInteractionService.GetAnswer().Returns("Good morning", "Goodbye", "Please");
+        _userInteractionService.GetMultipleChoiceAnswers(Arg.Any<List<string>>())
+            .Returns(["Warszawa"], ["Wisła", "Odra", "Warta"], ["Szesnaście"]);
 
         // Act
         var result = await _studySessionsService.RunStudySessionAsync(cardDTOs, stackId);
