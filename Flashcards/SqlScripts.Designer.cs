@@ -307,7 +307,9 @@ namespace Flashcards {
         ///	(2, &apos;Danke&apos;, &apos;Thank you&apos;, &apos;Flashcard&apos;),
         ///	(3, &apos;Dzień dobry&apos;, &apos;Good morning&apos;, &apos;Flashcard&apos;),
         ///	(3, &apos;Do widzenia&apos;, &apos;Goodbye&apos;, &apos;Flashcard&apos;),
-        ///	(3, &apos;Proszę&apos;, &apos;Please&apos;, &apos;Flashcard&apos;);.
+        ///	(3, &apos;Proszę&apos;, &apos;Please&apos;, &apos;Flashcard&apos;);
+        ///
+        ///	INSERT INTO Cards (StackId, Question, Choice [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string SeedCards {
             get {
