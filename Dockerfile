@@ -1,9 +1,14 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
-# Copy the project file and restore dependencies
+# Copy the solution and props files
 COPY Flashcards.sln ./
+COPY Directory.Packages.props ./
+
+# Copy project files
 COPY Flashcards/Flashcards.csproj Flashcards/
+
+# Restore dependencies
 RUN dotnet restore
 
 # Copy the rest of the application code
