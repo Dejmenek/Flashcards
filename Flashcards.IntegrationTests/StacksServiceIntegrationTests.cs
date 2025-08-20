@@ -1,12 +1,15 @@
 ﻿
+using System.Reflection;
+
 using Flashcards.DataAccess.Interfaces;
 using Flashcards.Helpers;
 using Flashcards.Models;
 using Flashcards.Services;
 using Flashcards.Services.Interfaces;
+
 using Microsoft.Extensions.DependencyInjection;
+
 using NSubstitute;
-using System.Reflection;
 
 namespace Flashcards.IntegrationTests;
 public class StacksServiceIntegrationTests : BaseIntegrationTest, IAsyncLifetime

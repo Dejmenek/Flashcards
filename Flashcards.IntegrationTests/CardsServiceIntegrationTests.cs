@@ -2,7 +2,9 @@ using Flashcards.DataAccess.Interfaces;
 using Flashcards.Helpers;
 using Flashcards.Models;
 using Flashcards.Services.Interfaces;
+
 using Microsoft.Extensions.DependencyInjection;
+
 using NSubstitute;
 
 namespace Flashcards.IntegrationTests;
