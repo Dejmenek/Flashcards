@@ -9,14 +9,14 @@ public interface IStacksRepository
     Task<Result> DeleteStackAsync(int stackId);
     Task<Result> UpdateFlashcardInStackAsync(int flashcardId, int stackId, string front, string back);
     Task<Result> UpdateMultipleChoiceCardAsync(
-        int flashcardId,
+        int multipleChoiceCardId,
         int stackId,
         string question,
         List<string> choices,
-        List<string> answer
+        List<string> answers
     );
     Task<Result<int>> GetCardsCountInStackAsync(int stackId);
-    Task<Result> DeleteCardFromStackAsync(int flashcardId, int stackId);
+    Task<Result> DeleteCardFromStackAsync(int cardId, int stackId);
     Task<Result<IEnumerable<BaseCard>>> GetCardsByStackIdAsync(int stackId);
     Task<Result> AddStackAsync(string name);
     Task<Result<IEnumerable<Stack>>> GetAllStacksAsync();

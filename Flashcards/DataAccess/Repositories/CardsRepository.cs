@@ -130,7 +130,7 @@ public class CardsRepository : ICardsRepository
                     var multipleChoiceCardParser = reader.GetRowParser<MultipleChoiceCard>();
 
                     var cards = new List<BaseCard>();
-                    while (reader.Read())
+                    while (await reader.ReadAsync())
                     {
                         var discriminator = reader.GetString(reader.GetOrdinal("CardType"));
 
@@ -168,9 +168,9 @@ public class CardsRepository : ICardsRepository
         }
     }
 
-    public async Task<Result> UpdateFlashcardAsync(int cardId, string front, string back)
+    public async Task<Result> UpdateFlashcardAsync(int flashcardId, string front, string back)
     {
-        _logger.LogInformation("Updating flashcard {CardId}.", cardId);
+        _logger.LogInformation("Updating flashcard {CardId}.", flashcardId);
         try
         {
             using (var connection = new SqlConnection(_defaultConnectionString))
@@ -181,27 +181,27 @@ public class CardsRepository : ICardsRepository
                 {
                     Front = front,
                     Back = back,
-                    Id = cardId
+                    Id = flashcardId
                 });
             }
-            _logger.LogInformation("Successfully updated flashcard {CardId}.", cardId);
+            _logger.LogInformation("Successfully updated flashcard {CardId}.", flashcardId);
             return Result.Success();
         }
         catch (SqlException ex)
         {
-            _logger.LogError(ex, "SQL error while updating flashcard {CardId}.", cardId);
+            _logger.LogError(ex, "SQL error while updating flashcard {CardId}.", flashcardId);
             return Result.Failure(CardsErrors.UpdateFailed);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected error while updating flashcard {CardId}.", cardId);
+            _logger.LogError(ex, "Unexpected error while updating flashcard {CardId}.", flashcardId);
             return Result.Failure(CardsErrors.UpdateFailed);
         }
     }
 
-    public async Task<Result> UpdateMultipleChoiceCardAsync(int cardId, string question, List<string> choices, List<string> answers)
+    public async Task<Result> UpdateMultipleChoiceCardAsync(int multipleChoiceCardId, string question, List<string> choices, List<string> answers)
     {
-        _logger.LogInformation("Updating multiple choice card {CardId}.", cardId);
+        _logger.LogInformation("Updating multiple choice card {CardId}.", multipleChoiceCardId);
         try
         {
             using (var connection = new SqlConnection(_defaultConnectionString))
@@ -213,20 +213,20 @@ public class CardsRepository : ICardsRepository
                     Question = question,
                     Choices = string.Join(";", choices),
                     Answer = string.Join(";", answers),
-                    Id = cardId
+                    Id = multipleChoiceCardId
                 });
             }
-            _logger.LogInformation("Successfully updated multiple choice card {CardId}.", cardId);
+            _logger.LogInformation("Successfully updated multiple choice card {CardId}.", multipleChoiceCardId);
             return Result.Success();
         }
         catch (SqlException ex)
         {
-            _logger.LogError(ex, "SQL error while updating multiple choice card {CardId}.", cardId);
+            _logger.LogError(ex, "SQL error while updating multiple choice card {CardId}.", multipleChoiceCardId);
             return Result.Failure(CardsErrors.UpdateFailed);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected error while updating multiple choice card {CardId}.", cardId);
+            _logger.LogError(ex, "Unexpected error while updating multiple choice card {CardId}.", multipleChoiceCardId);
             return Result.Failure(CardsErrors.UpdateFailed);
         }
     }
