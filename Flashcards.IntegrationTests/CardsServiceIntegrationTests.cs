@@ -32,7 +32,7 @@ public class CardsServiceIntegrationTests : BaseIntegrationTest, IAsyncLifetime
         var flashcardBack = "Integration Back";
         var stacksResult = await _stacksRepository.GetAllStacksAsync();
         var stackDtos = stacksResult.Value.Select(Mapper.ToStackDTO).ToList();
-        _userInteractionService.GetStack(Arg.Any<List<StackDTO>>()).Returns(stackDtos.First().Name);
+        _userInteractionService.GetStack(Arg.Any<List<StackDTO>>()).Returns(stackDtos[0].Name);
         _userInteractionService.GetCardType().Returns(CardType.Flashcard);
         _userInteractionService.GetFlashcardFront().Returns(flashcardFront);
         _userInteractionService.GetFlashcardBack().Returns(flashcardBack);
@@ -58,7 +58,7 @@ public class CardsServiceIntegrationTests : BaseIntegrationTest, IAsyncLifetime
 
         var stacksResult = await _stacksRepository.GetAllStacksAsync();
         var stackDtos = stacksResult.Value.Select(Mapper.ToStackDTO).ToList();
-        _userInteractionService.GetStack(Arg.Any<List<StackDTO>>()).Returns(stackDtos.First().Name);
+        _userInteractionService.GetStack(Arg.Any<List<StackDTO>>()).Returns(stackDtos[0].Name);
         _userInteractionService.GetCardType().Returns(CardType.MultipleChoice);
         _userInteractionService.GetMultipleChoiceQuestion().Returns(question);
         _userInteractionService.GetNumberOfChoices().Returns(choices.Count);
