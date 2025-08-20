@@ -214,7 +214,7 @@ public class StudySessionsService : IStudySessionsService
         return Result.Success(reportResult.Value);
     }
 
-    private bool IsCorrectMultipleChoiceCardAnswer(List<string> userAnswers, List<string> correctAnswers)
+    private static bool IsCorrectMultipleChoiceCardAnswer(List<string> userAnswers, List<string> correctAnswers)
     {
         if (userAnswers.Count != correctAnswers.Count)
             return false;

@@ -4,7 +4,7 @@ using Spectre.Console;
 
 namespace Flashcards;
 
-public class Validation
+public static class Validation
 {
     public static ValidationResult IsPositiveNumber(int userNumber)
     {
