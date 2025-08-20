@@ -16,7 +16,7 @@ public interface IUserInteractionService
     string GetAnswer();
     string GetYear();
     CardType GetCardType();
-    BaseCardDTO GetCard(List<BaseCardDTO> flashcards);
+    BaseCardDTO GetCard(List<BaseCardDTO> cards);
     string GetStack(List<StackDTO> stacks);
     MenuOptions GetMenuOption();
     ManageStackOptions GetManageStackOption(string currentStack);
