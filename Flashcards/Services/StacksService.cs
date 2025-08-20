@@ -4,7 +4,9 @@ using Flashcards.Models;
 using Flashcards.Services.CardStrategies;
 using Flashcards.Services.Interfaces;
 using Flashcards.Utils;
+
 using Microsoft.Extensions.Logging;
+
 using Spectre.Console;
 
 namespace Flashcards.Services;
@@ -74,7 +76,7 @@ public class StacksService : IStacksService
         {
             CardType.Flashcard => new FlashcardStrategy(_cardsRepository, _userInteractionService),
             CardType.MultipleChoice => new MultipleChoiceCardStrategy(_cardsRepository, _userInteractionService),
-            _ => throw new ArgumentOutOfRangeException(nameof(chosenCardType), "Invalid card type selected.")
+            _ => throw new InvalidOperationException($"Unsupported card type: {chosenCardType}")
         };
 
         var result = await strategy.AddCardAsync(CurrentStack.Id);
@@ -159,7 +161,7 @@ public class StacksService : IStacksService
         {
             CardType.Flashcard => new FlashcardStrategy(_cardsRepository, _userInteractionService, _stacksRepository),
             CardType.MultipleChoice => new MultipleChoiceCardStrategy(_cardsRepository, _userInteractionService, _stacksRepository),
-            _ => throw new ArgumentOutOfRangeException(nameof(chosenCard.CardType), "Invalid card type selected.")
+            _ => throw new InvalidOperationException($"Unsupported card type: {chosenCard.CardType}")
         };
 
         var result = await strategy.UpdateCardInStackAsync(chosenCard.Id, CurrentStack!.Id);

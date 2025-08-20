@@ -3,7 +3,9 @@ using Flashcards.Helpers;
 using Flashcards.Models;
 using Flashcards.Services.Interfaces;
 using Flashcards.Utils;
+
 using Microsoft.Extensions.Logging;
+
 using Spectre.Console;
 
 namespace Flashcards.Services;
@@ -212,7 +214,7 @@ public class StudySessionsService : IStudySessionsService
         return Result.Success(reportResult.Value);
     }
 
-    private bool IsCorrectMultipleChoiceCardAnswer(List<string> userAnswers, List<string> correctAnswers)
+    private static bool IsCorrectMultipleChoiceCardAnswer(List<string> userAnswers, List<string> correctAnswers)
     {
         if (userAnswers.Count != correctAnswers.Count)
             return false;

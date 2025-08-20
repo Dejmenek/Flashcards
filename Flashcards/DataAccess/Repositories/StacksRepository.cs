@@ -1,7 +1,9 @@
 ﻿using Dapper;
+
 using Flashcards.DataAccess.Interfaces;
 using Flashcards.Models;
 using Flashcards.Utils;
+
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -123,52 +125,52 @@ public class StacksRepository : IStacksRepository
         }
     }
 
-    public async Task<Result> UpdateFlashcardInStackAsync(int cardId, int stackId, string front, string back)
+    public async Task<Result> UpdateFlashcardInStackAsync(int flashcardId, int stackId, string front, string back)
     {
-        _logger.LogInformation("Updating flashcard {CardId} in stack {StackId}.", cardId, stackId);
+        _logger.LogInformation("Updating flashcard {CardId} in stack {StackId}.", flashcardId, stackId);
         try
         {
             using (var connection = new SqlConnection(_defaultConnectionString))
             {
                 string sql = SqlScripts.UpdateFlashcardInStack;
-                await connection.ExecuteAsync(sql, new { Front = front, Back = back, Id = cardId, StackId = stackId });
+                await connection.ExecuteAsync(sql, new { Front = front, Back = back, Id = flashcardId, StackId = stackId });
             }
-            _logger.LogInformation("Successfully updated flashcard {CardId} in stack {StackId}.", cardId, stackId);
+            _logger.LogInformation("Successfully updated flashcard {CardId} in stack {StackId}.", flashcardId, stackId);
             return Result.Success();
         }
         catch (SqlException ex)
         {
-            _logger.LogError(ex, "SQL error while updating flashcard {CardId} in stack {StackId}.", cardId, stackId);
+            _logger.LogError(ex, "SQL error while updating flashcard {CardId} in stack {StackId}.", flashcardId, stackId);
             return Result.Failure(StacksErrors.UpdateFailed);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected error while updating flashcard {CardId} in stack {StackId}.", cardId, stackId);
+            _logger.LogError(ex, "Unexpected error while updating flashcard {CardId} in stack {StackId}.", flashcardId, stackId);
             return Result.Failure(StacksErrors.UpdateFailed);
         }
     }
 
-    public async Task<Result> DeleteStackAsync(int id)
+    public async Task<Result> DeleteStackAsync(int stackId)
     {
-        _logger.LogInformation("Deleting stack {StackId}.", id);
+        _logger.LogInformation("Deleting stack {StackId}.", stackId);
         try
         {
             using (var connection = new SqlConnection(_defaultConnectionString))
             {
                 string sql = SqlScripts.DeleteStack;
-                await connection.ExecuteAsync(sql, new { Id = id });
+                await connection.ExecuteAsync(sql, new { Id = stackId });
             }
-            _logger.LogInformation("Successfully deleted stack {StackId}.", id);
+            _logger.LogInformation("Successfully deleted stack {StackId}.", stackId);
             return Result.Success();
         }
         catch (SqlException ex)
         {
-            _logger.LogError(ex, "SQL error while deleting stack {StackId}.", id);
+            _logger.LogError(ex, "SQL error while deleting stack {StackId}.", stackId);
             return Result.Failure(StacksErrors.DeleteStackFailed);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected error while deleting stack {StackId}.", id);
+            _logger.LogError(ex, "Unexpected error while deleting stack {StackId}.", stackId);
             return Result.Failure(StacksErrors.DeleteStackFailed);
         }
     }
@@ -275,11 +277,11 @@ public class StacksRepository : IStacksRepository
 
     public async Task<Result> UpdateMultipleChoiceCardAsync
         (
-        int cardId,
+        int multipleChoiceCardId,
         int stackId, string question, List<string> choices, List<string> answers
         )
     {
-        _logger.LogInformation("Updating multiple choice card {CardId} in stack {StackId}.", cardId, stackId);
+        _logger.LogInformation("Updating multiple choice card {CardId} in stack {StackId}.", multipleChoiceCardId, stackId);
         try
         {
             using (var connection = new SqlConnection(_defaultConnectionString))
@@ -290,21 +292,21 @@ public class StacksRepository : IStacksRepository
                     Question = question,
                     Choices = string.Join(";", choices),
                     Answer = string.Join(";", answers),
-                    Id = cardId,
+                    Id = multipleChoiceCardId,
                     StackId = stackId
                 });
             }
-            _logger.LogInformation("Successfully updated multiple choice card {CardId} in stack {StackId}.", cardId, stackId);
+            _logger.LogInformation("Successfully updated multiple choice card {CardId} in stack {StackId}.", multipleChoiceCardId, stackId);
             return Result.Success();
         }
         catch (SqlException ex)
         {
-            _logger.LogError(ex, "SQL error while updating multiple choice card {CardId} in stack {StackId}.", cardId, stackId);
+            _logger.LogError(ex, "SQL error while updating multiple choice card {CardId} in stack {StackId}.", multipleChoiceCardId, stackId);
             return Result.Failure(StacksErrors.UpdateFailed);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected error while updating multiple choice card {CardId} in stack {StackId}.", cardId, stackId);
+            _logger.LogError(ex, "Unexpected error while updating multiple choice card {CardId} in stack {StackId}.", multipleChoiceCardId, stackId);
             return Result.Failure(StacksErrors.UpdateFailed);
         }
     }

@@ -3,6 +3,7 @@ using Flashcards.Enums;
 using Flashcards.Helpers;
 using Flashcards.Services.Interfaces;
 using Flashcards.Utils;
+
 using Spectre.Console;
 
 namespace Flashcards;
@@ -325,7 +326,6 @@ public class Menu
             case ErrorType.Conflict:
                 AnsiConsole.MarkupLine($"[red]Conflict: {error.Description}[/]");
                 break;
-            case ErrorType.Failure:
             default:
                 AnsiConsole.MarkupLine($"[red]Error: {error.Description}[/]");
                 break;

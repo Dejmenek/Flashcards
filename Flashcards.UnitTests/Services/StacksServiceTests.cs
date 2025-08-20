@@ -1,11 +1,14 @@
-﻿using Flashcards.DataAccess.Interfaces;
+﻿using System.Reflection;
+
+using Flashcards.DataAccess.Interfaces;
 using Flashcards.Models;
 using Flashcards.Services;
 using Flashcards.Services.Interfaces;
 using Flashcards.Utils;
+
 using Microsoft.Extensions.Logging;
+
 using NSubstitute;
-using System.Reflection;
 
 namespace Flashcards.UnitTests.Services;
 public class StacksServiceTests
@@ -38,16 +41,6 @@ public class StacksServiceTests
 
     private MultipleChoiceCard CreateTestMultipleChoiceCard(int id = 1, int stackId = 1, string question = "Question?", string choices = "A;B;C", string answer = "A") =>
     new() { Id = id, StackId = stackId, Question = question, Choices = choices, Answer = answer };
-
-    private MultipleChoiceCardDTO CreateTestMultipleChoiceCardDTO(int id = 1, string question = "Question?", List<string>? choices = null, List<string>? answer = null) =>
-        new()
-        {
-            Id = id,
-            Question = question,
-            Choices = choices ?? new List<string> { "A", "B", "C" },
-            Answer = answer ?? new List<string> { "A" },
-            CardType = CardType.MultipleChoice
-        };
 
     [Fact]
     public async Task AddStackAsync_ShouldReturnFailure_WhenStackWithNameExistsFails()

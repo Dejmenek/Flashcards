@@ -1,9 +1,10 @@
-﻿using Spectre.Console;
-using System.Globalization;
+﻿using System.Globalization;
+
+using Spectre.Console;
 
 namespace Flashcards;
 
-public class Validation
+public static class Validation
 {
     public static ValidationResult IsPositiveNumber(int userNumber)
     {
