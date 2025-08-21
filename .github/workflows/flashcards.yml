@@ -10,7 +10,7 @@ on:
 
 env:
   DOTNET_CORE_VERSION: 9.0.x
-  WORKING_DIRECTORY: Flashcards
+  SOLUTION_PATH: Flashcards.sln
   CONFIGURATION: Release
 
 jobs:
@@ -23,10 +23,10 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
     - name: Install dependencies
-      run: dotnet restore ${{ env.WORKING_DIRECTORY }}
+      run: dotnet restore ${{ env.SOLUTION_PATH }}
     - name: Format
       run: dotnet format --verify-no-changes --verbosity diagnostic
     - name: Build
-      run: dotnet build ${{ env.WORKING_DIRECTORY }} --configuration ${{ env.CONFIGURATION }} --no-restore
+      run: dotnet build ${{ env.SOLUTION_PATH }} --configuration ${{ env.CONFIGURATION }} --no-restore
     - name: Test
-      run: dotnet test Flashcards.sln --configuration ${{ env.CONFIGURATION }} --no-build
+      run: dotnet test ${{ env.SOLUTION_PATH }} --configuration ${{ env.CONFIGURATION }} --no-build
