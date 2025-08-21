@@ -9,9 +9,9 @@ public interface IStacksService
     Task<Result> DeleteStackAsync();
     Task<Result> DeleteCardFromStackAsync();
     Task<Result> UpdateCardInStackAsync();
-    Task<Result<List<BaseCardDTO>>> GetCardsByStackIdAsync();
+    Task<Result<List<BaseCardDto>>> GetCardsByStackIdAsync();
     Task<Result<int>> GetCardsCountInStackAsync();
-    Task<Result<List<StackDTO>>> GetAllStacksAsync();
+    Task<Result<List<StackDto>>> GetAllStacksAsync();
     Task<Result> GetStackAsync();
     Stack GetCurrentStack();
 }

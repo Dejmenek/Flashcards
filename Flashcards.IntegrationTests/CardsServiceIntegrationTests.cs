@@ -32,7 +32,7 @@ public class CardsServiceIntegrationTests : BaseIntegrationTest, IAsyncLifetime
         var flashcardBack = "Integration Back";
         var stacksResult = await _stacksRepository.GetAllStacksAsync();
         var stackDtos = stacksResult.Value.Select(Mapper.ToStackDTO).ToList();
-        _userInteractionService.GetStack(Arg.Any<List<StackDTO>>()).Returns(stackDtos[0].Name);
+        _userInteractionService.GetStack(Arg.Any<List<StackDto>>()).Returns(stackDtos[0].Name);
         _userInteractionService.GetCardType().Returns(CardType.Flashcard);
         _userInteractionService.GetFlashcardFront().Returns(flashcardFront);
         _userInteractionService.GetFlashcardBack().Returns(flashcardBack);
@@ -58,7 +58,7 @@ public class CardsServiceIntegrationTests : BaseIntegrationTest, IAsyncLifetime
 
         var stacksResult = await _stacksRepository.GetAllStacksAsync();
         var stackDtos = stacksResult.Value.Select(Mapper.ToStackDTO).ToList();
-        _userInteractionService.GetStack(Arg.Any<List<StackDTO>>()).Returns(stackDtos[0].Name);
+        _userInteractionService.GetStack(Arg.Any<List<StackDto>>()).Returns(stackDtos[0].Name);
         _userInteractionService.GetCardType().Returns(CardType.MultipleChoice);
         _userInteractionService.GetMultipleChoiceQuestion().Returns(question);
         _userInteractionService.GetNumberOfChoices().Returns(choices.Count);
@@ -92,7 +92,7 @@ public class CardsServiceIntegrationTests : BaseIntegrationTest, IAsyncLifetime
         string updatedFront = "Updated Front";
         string updatedBack = "Updated Back";
 
-        _userInteractionService.GetCard(Arg.Any<List<BaseCardDTO>>()).Returns(flashcardDTO);
+        _userInteractionService.GetCard(Arg.Any<List<BaseCardDto>>()).Returns(flashcardDTO);
         _userInteractionService.GetFlashcardFront().Returns(updatedFront);
         _userInteractionService.GetFlashcardBack().Returns(updatedBack);
 
@@ -120,7 +120,7 @@ public class CardsServiceIntegrationTests : BaseIntegrationTest, IAsyncLifetime
         var updatedChoices = new List<string> { "London", "Berlin", "Paris", "Madrid" };
         var updatedAnswers = new List<string> { "Paris" };
 
-        _userInteractionService.GetCard(Arg.Any<List<BaseCardDTO>>()).Returns(multipleChoiceCardDTO);
+        _userInteractionService.GetCard(Arg.Any<List<BaseCardDto>>()).Returns(multipleChoiceCardDTO);
         _userInteractionService.GetMultipleChoiceQuestion().Returns(updatedQuestion);
         _userInteractionService.GetNumberOfChoices().Returns(updatedChoices.Count);
         _userInteractionService.GetMultipleChoiceChoices(updatedChoices.Count).Returns(updatedChoices);
@@ -150,7 +150,7 @@ public class CardsServiceIntegrationTests : BaseIntegrationTest, IAsyncLifetime
         var flashcard = allFlashcards.First(f => f.Front == "Hola" && f.StackId == 1);
         var flashcardDTO = Mapper.ToFlashcardDTO(flashcard);
 
-        _userInteractionService.GetCard(Arg.Any<List<BaseCardDTO>>()).Returns(flashcardDTO);
+        _userInteractionService.GetCard(Arg.Any<List<BaseCardDto>>()).Returns(flashcardDTO);
 
         // Act
         var deleteResult = await _cardsService.DeleteCardAsync();
@@ -172,9 +172,9 @@ public class CardsServiceIntegrationTests : BaseIntegrationTest, IAsyncLifetime
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Value);
 
-        Assert.Contains(result.Value, f => f is FlashcardDTO fc && fc.Front == "Hola" && fc.Back == "Hello");
-        Assert.Contains(result.Value, f => f is FlashcardDTO fc && fc.Front == "Hallo" && fc.Back == "Hello");
-        Assert.Contains(result.Value, f => f is FlashcardDTO fc && fc.Front == "Dzieñ dobry" && fc.Back == "Good morning");
+        Assert.Contains(result.Value, f => f is FlashcardDto fc && fc.Front == "Hola" && fc.Back == "Hello");
+        Assert.Contains(result.Value, f => f is FlashcardDto fc && fc.Front == "Hallo" && fc.Back == "Hello");
+        Assert.Contains(result.Value, f => f is FlashcardDto fc && fc.Front == "Dzieñ dobry" && fc.Back == "Good morning");
     }
 
     public async Task InitializeAsync() => await InitializeDatabaseAsync();

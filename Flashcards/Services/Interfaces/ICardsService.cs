@@ -6,6 +6,6 @@ public interface ICardsService
 {
     Task<Result> AddCardAsync();
     Task<Result> DeleteCardAsync();
-    Task<Result<List<BaseCardDTO>>> GetAllCardsAsync();
+    Task<Result<List<BaseCardDto>>> GetAllCardsAsync();
     Task<Result> UpdateCardAsync();
 }

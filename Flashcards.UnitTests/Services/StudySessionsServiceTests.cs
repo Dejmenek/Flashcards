@@ -32,8 +32,8 @@ public class StudySessionsServiceTests
     public void StartStudySessionAsync_ShouldCalculateCorrectScore_WhenMixedCardTypes()
     {
         // Arrange
-        var flashcard = new FlashcardDTO { Id = 1, Front = "Hello", Back = "Hola" };
-        var multipleChoiceCard = new MultipleChoiceCardDTO
+        var flashcard = new FlashcardDto { Id = 1, Front = "Hello", Back = "Hola" };
+        var multipleChoiceCard = new MultipleChoiceCardDto
         {
             Id = 2,
             Question = "Which is a fruit?",
@@ -41,7 +41,7 @@ public class StudySessionsServiceTests
             Answer = new List<string> { "Apple" },
             CardType = CardType.MultipleChoice
         };
-        var cards = new List<BaseCardDTO> { flashcard, multipleChoiceCard };
+        var cards = new List<BaseCardDto> { flashcard, multipleChoiceCard };
 
         int answerCallCount = 0;
         _userInteractionService.GetAnswer().Returns(_ => answerCallCount++ == 0 ? "Hola" : "");
@@ -61,7 +61,7 @@ public class StudySessionsServiceTests
     public async Task RunStudySessionAsync_ShouldReturnFailure_WhenCardsEmpty()
     {
         // Arrange
-        List<BaseCardDTO> cards = new();
+        List<BaseCardDto> cards = new();
         int stackId = 1;
 
         // Act
@@ -76,9 +76,9 @@ public class StudySessionsServiceTests
     public async Task RunStudySessionAsync_ShouldReturnFailure_WhenEndStudySessionAsyncFails()
     {
         // Arrange
-        List<BaseCardDTO> cards = new()
+        List<BaseCardDto> cards = new()
         {
-            new FlashcardDTO() { Front = "Front1", Back = "Back1" }
+            new FlashcardDto() { Front = "Front1", Back = "Back1" }
         };
         int stackId = 1;
 
@@ -97,9 +97,9 @@ public class StudySessionsServiceTests
     public async Task RunStudySessionAsync_ShouldReturnSuccess_WhenValidCardsProvided()
     {
         // Arrange
-        List<BaseCardDTO> cards = new()
+        List<BaseCardDto> cards = new()
         {
-            new FlashcardDTO() { Front = "Front1", Back = "Back1" }
+            new FlashcardDto() { Front = "Front1", Back = "Back1" }
         };
         int stackId = 1;
 
@@ -170,10 +170,10 @@ public class StudySessionsServiceTests
     public void StartStudySessionAsync_ShouldResetScore_WhenCalledMultipleTimes()
     {
         // Arrange
-        var flashcard1 = new FlashcardDTO { Id = 1, Front = "Hello", Back = "Hola" };
-        var flashcard2 = new FlashcardDTO { Id = 2, Front = "Goodbye", Back = "Adiós" };
-        var cards1 = new List<BaseCardDTO> { flashcard1 };
-        var cards2 = new List<BaseCardDTO> { flashcard2 };
+        var flashcard1 = new FlashcardDto { Id = 1, Front = "Hello", Back = "Hola" };
+        var flashcard2 = new FlashcardDto { Id = 2, Front = "Goodbye", Back = "Adiós" };
+        var cards1 = new List<BaseCardDto> { flashcard1 };
+        var cards2 = new List<BaseCardDto> { flashcard2 };
 
         _userInteractionService.GetAnswer().Returns("Hola", "Adiós");
 
