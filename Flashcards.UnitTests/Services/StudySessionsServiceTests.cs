@@ -390,7 +390,7 @@ public class StudySessionsServiceTests
 
         // Use reflection to access the private method
         var method = typeof(StudySessionsService).GetMethod("IsCorrectMultipleChoiceCardAnswer",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
 
         // Act
         var result = (bool)method!.Invoke(_studySessionsService, new object[] { userAnswersList, correctAnswersList });

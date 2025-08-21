@@ -324,7 +324,7 @@ public class CardsServiceTests
         _userInteractionService.GetCardType().Returns((CardType)999);
 
         // Act & Assert
-        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => _cardsService.AddCardAsync());
+        await Assert.ThrowsAsync<InvalidOperationException>(() => _cardsService.AddCardAsync());
     }
 
     [Fact]
