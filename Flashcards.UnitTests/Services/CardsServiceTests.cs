@@ -315,7 +315,7 @@ public class CardsServiceTests
     }
 
     [Fact]
-    public async Task AddCardAsync_ShouldThrowArgumentOutOfRangeException_WhenInvalidCardTypeSelected()
+    public async Task AddCardAsync_ShouldThrowInvalidOperationException_WhenInvalidCardTypeSelected()
     {
         // Arrange
         var stacks = new List<Stack> { new Stack { Id = 1, Name = "Test Stack" } };
@@ -324,7 +324,7 @@ public class CardsServiceTests
         _userInteractionService.GetCardType().Returns((CardType)999);
 
         // Act & Assert
-        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => _cardsService.AddCardAsync());
+        await Assert.ThrowsAsync<InvalidOperationException>(() => _cardsService.AddCardAsync());
     }
 
     [Fact]
