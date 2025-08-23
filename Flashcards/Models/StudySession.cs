@@ -8,7 +8,7 @@ public class StudySession
     public int Score { get; set; }
 }
 
-public record class StudySessionDTO
+public record class StudySessionDto
 {
     public int Id { get; init; }
     public DateTime Date { get; init; }

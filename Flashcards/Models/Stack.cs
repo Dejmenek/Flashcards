@@ -7,7 +7,7 @@ public class Stack
     public List<Flashcard> Flashcards { get; set; }
 }
 
-public record class StackDTO
+public record class StackDto
 {
     public string Name { get; init; }
 }

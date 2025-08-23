@@ -38,7 +38,7 @@ public class StacksController
         return await _stacksService.UpdateCardInStackAsync();
     }
 
-    public async Task<Result<List<BaseCardDTO>>> GetCardsByStackIdAsync()
+    public async Task<Result<List<BaseCardDto>>> GetCardsByStackIdAsync()
     {
         return await _stacksService.GetCardsByStackIdAsync();
     }
@@ -48,7 +48,7 @@ public class StacksController
         return await _stacksService.GetCardsCountInStackAsync();
     }
 
-    public async Task<Result<List<StackDTO>>> GetAllStacksAsync()
+    public async Task<Result<List<StackDto>>> GetAllStacksAsync()
     {
         return await _stacksService.GetAllStacksAsync();
     }

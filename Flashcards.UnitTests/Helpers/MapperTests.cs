@@ -24,7 +24,7 @@ public class MapperTests
         Assert.Equal(flashcard.Front, result.Front);
         Assert.Equal(flashcard.Back, result.Back);
         Assert.Equal(flashcard.CardType, result.CardType);
-        Assert.Null(typeof(FlashcardDTO).GetProperty("StackId"));
+        Assert.Null(typeof(FlashcardDto).GetProperty("StackId"));
     }
 
     [Fact]
@@ -42,7 +42,7 @@ public class MapperTests
 
         // Assert
         Assert.Equal(stack.Name, result.Name);
-        Assert.Null(typeof(StackDTO).GetProperty("Id"));
+        Assert.Null(typeof(StackDto).GetProperty("Id"));
     }
 
     [Fact]
@@ -64,6 +64,6 @@ public class MapperTests
         Assert.Equal(studySession.Id, result.Id);
         Assert.Equal(studySession.Date, result.Date);
         Assert.Equal(studySession.Score, result.Score);
-        Assert.Null(typeof(StudySessionDTO).GetProperty("StackId"));
+        Assert.Null(typeof(StudySessionDto).GetProperty("StackId"));
     }
 }

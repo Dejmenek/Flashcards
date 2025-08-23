@@ -4,7 +4,7 @@ namespace Flashcards.Helpers;
 
 public static class Mapper
 {
-    public static BaseCardDTO ToCardDTO(BaseCard card)
+    public static BaseCardDto ToCardDTO(BaseCard card)
     {
         return card switch
         {
@@ -16,9 +16,9 @@ public static class Mapper
         };
     }
 
-    public static FlashcardDTO ToFlashcardDTO(Flashcard flashcard)
+    public static FlashcardDto ToFlashcardDTO(Flashcard flashcard)
     {
-        return new FlashcardDTO
+        return new FlashcardDto
         {
             Id = flashcard.Id,
             CardType = flashcard.CardType,
@@ -27,9 +27,9 @@ public static class Mapper
         };
     }
 
-    public static ClozeCardDTO ToClozeCardDTO(ClozeCard clozeCard)
+    public static ClozeCardDto ToClozeCardDTO(ClozeCard clozeCard)
     {
-        return new ClozeCardDTO
+        return new ClozeCardDto
         {
             Id = clozeCard.Id,
             CardType = clozeCard.CardType,
@@ -37,9 +37,9 @@ public static class Mapper
         };
     }
 
-    public static FillInCardDTO ToFillInCardDTO(FillInCard fillInCard)
+    public static FillInCardDto ToFillInCardDTO(FillInCard fillInCard)
     {
-        return new FillInCardDTO
+        return new FillInCardDto
         {
             Id = fillInCard.Id,
             CardType = fillInCard.CardType,
@@ -48,9 +48,9 @@ public static class Mapper
         };
     }
 
-    public static MultipleChoiceCardDTO ToMultipleChoiceCardDTO(MultipleChoiceCard multipleChoiceCard)
+    public static MultipleChoiceCardDto ToMultipleChoiceCardDTO(MultipleChoiceCard multipleChoiceCard)
     {
-        return new MultipleChoiceCardDTO
+        return new MultipleChoiceCardDto
         {
             Id = multipleChoiceCard.Id,
             CardType = multipleChoiceCard.CardType,
@@ -60,17 +60,17 @@ public static class Mapper
         };
     }
 
-    public static StackDTO ToStackDTO(Stack stack)
+    public static StackDto ToStackDTO(Stack stack)
     {
-        return new StackDTO
+        return new StackDto
         {
             Name = stack.Name,
         };
     }
 
-    public static StudySessionDTO ToStudySessionDTO(StudySession studysession)
+    public static StudySessionDto ToStudySessionDTO(StudySession studysession)
     {
-        return new StudySessionDTO
+        return new StudySessionDto
         {
             Id = studysession.Id,
             Date = studysession.Date,

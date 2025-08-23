@@ -124,7 +124,7 @@ public class StacksService : IStacksService
             return Result.Failure(CardsErrors.CardsNotFound);
         }
 
-        BaseCardDTO chosenCard = _userInteractionService.GetCard(cardsResult.Value);
+        BaseCardDto chosenCard = _userInteractionService.GetCard(cardsResult.Value);
         _logger.LogInformation("User selected card ID {CardId} for deletion from stack {StackId}.", chosenCard.Id, CurrentStack!.Id);
 
         var deleteResult = await _stacksRepository.DeleteCardFromStackAsync(chosenCard.Id, CurrentStack!.Id);
@@ -154,7 +154,7 @@ public class StacksService : IStacksService
             return Result.Failure(CardsErrors.CardsNotFound);
         }
 
-        BaseCardDTO chosenCard = _userInteractionService.GetCard(cardsResult.Value);
+        BaseCardDto chosenCard = _userInteractionService.GetCard(cardsResult.Value);
         _logger.LogInformation("User selected card ID {CardId} for update in stack {StackId}.", chosenCard.Id, CurrentStack!.Id);
 
         ICardStrategy strategy = chosenCard.CardType switch
@@ -173,23 +173,23 @@ public class StacksService : IStacksService
         return result;
     }
 
-    public async Task<Result<List<BaseCardDTO>>> GetCardsByStackIdAsync()
+    public async Task<Result<List<BaseCardDto>>> GetCardsByStackIdAsync()
     {
         _logger.LogInformation("Starting GetCardsByStackIdAsync.");
         if (CurrentStack == null)
         {
             _logger.LogWarning("No current stack selected.");
-            return Result.Failure<List<BaseCardDTO>>(StacksErrors.CurrentStackNotFound);
+            return Result.Failure<List<BaseCardDto>>(StacksErrors.CurrentStackNotFound);
         }
 
         var cardsResult = await _stacksRepository.GetCardsByStackIdAsync(CurrentStack.Id);
         if (cardsResult.IsFailure)
         {
             _logger.LogWarning("Failed to retrieve cards for stack {StackId}: {Error}", CurrentStack.Id, cardsResult.Error.Description);
-            return Result.Failure<List<BaseCardDTO>>(cardsResult.Error);
+            return Result.Failure<List<BaseCardDto>>(cardsResult.Error);
         }
 
-        List<BaseCardDTO> cardDtos = new();
+        List<BaseCardDto> cardDtos = new();
         foreach (var card in cardsResult.Value)
         {
             switch (card)
@@ -202,7 +202,7 @@ public class StacksService : IStacksService
                     break;
                 default:
                     _logger.LogWarning("Unknown card type encountered in GetCardsByStackIdAsync.");
-                    return Result.Failure<List<BaseCardDTO>>(CardsErrors.GetAllFailed);
+                    return Result.Failure<List<BaseCardDto>>(CardsErrors.GetAllFailed);
             }
         }
 
@@ -230,17 +230,17 @@ public class StacksService : IStacksService
         return Result.Success(countResult.Value);
     }
 
-    public async Task<Result<List<StackDTO>>> GetAllStacksAsync()
+    public async Task<Result<List<StackDto>>> GetAllStacksAsync()
     {
         _logger.LogInformation("Starting GetAllStacksAsync.");
         var stacksResult = await _stacksRepository.GetAllStacksAsync();
         if (stacksResult.IsFailure)
         {
             _logger.LogWarning("Failed to retrieve stacks: {Error}", stacksResult.Error.Description);
-            return Result.Failure<List<StackDTO>>(stacksResult.Error);
+            return Result.Failure<List<StackDto>>(stacksResult.Error);
         }
 
-        List<StackDTO> stackDtos = new();
+        List<StackDto> stackDtos = new();
         foreach (var stack in stacksResult.Value)
         {
             stackDtos.Add(Mapper.ToStackDTO(stack));

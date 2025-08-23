@@ -45,7 +45,7 @@ public class CardsService : ICardsService
             return Result.Failure(StacksErrors.StacksNotFound);
         }
 
-        List<StackDTO> stackDtos = new();
+        List<StackDto> stackDtos = new();
         foreach (var stack in stacksResult.Value)
         {
             stackDtos.Add(Mapper.ToStackDTO(stack));
@@ -89,7 +89,7 @@ public class CardsService : ICardsService
             return Result.Failure(CardsErrors.CardsNotFound);
         }
 
-        BaseCardDTO chosenCard = _userInteractionService.GetCard(cardsResult.Value);
+        BaseCardDto chosenCard = _userInteractionService.GetCard(cardsResult.Value);
         _logger.LogInformation("User selected card ID {CardId} for deletion.", chosenCard.Id);
 
         var deleteResult = await _cardsRepository.DeleteCardAsync(chosenCard.Id);
@@ -101,7 +101,7 @@ public class CardsService : ICardsService
         return deleteResult.IsSuccess ? Result.Success() : Result.Failure(deleteResult.Error);
     }
 
-    public async Task<Result<List<BaseCardDTO>>> GetAllCardsAsync()
+    public async Task<Result<List<BaseCardDto>>> GetAllCardsAsync()
     {
         _logger.LogInformation("Starting GetAllCardsAsync.");
 
@@ -109,10 +109,10 @@ public class CardsService : ICardsService
         if (cardsResult.IsFailure)
         {
             _logger.LogWarning("Failed to retrieve cards: {Error}", cardsResult.Error.Description);
-            return Result.Failure<List<BaseCardDTO>>(cardsResult.Error);
+            return Result.Failure<List<BaseCardDto>>(cardsResult.Error);
         }
 
-        List<BaseCardDTO> cardDtos = new();
+        List<BaseCardDto> cardDtos = new();
         foreach (var card in cardsResult.Value)
         {
             switch (card)
@@ -125,7 +125,7 @@ public class CardsService : ICardsService
                     break;
                 default:
                     _logger.LogWarning("Unknown card type encountered in GetAllCardsAsync.");
-                    return Result.Failure<List<BaseCardDTO>>(CardsErrors.GetAllFailed);
+                    return Result.Failure<List<BaseCardDto>>(CardsErrors.GetAllFailed);
             }
         }
 
@@ -144,7 +144,7 @@ public class CardsService : ICardsService
             return Result.Failure(cardsResult.Error);
         }
 
-        BaseCardDTO chosenCard = _userInteractionService.GetCard(cardsResult.Value);
+        BaseCardDto chosenCard = _userInteractionService.GetCard(cardsResult.Value);
         _logger.LogInformation("User selected card ID {CardId} for update.", chosenCard.Id);
 
         ICardStrategy strategy = chosenCard.CardType switch

@@ -23,7 +23,7 @@ public class CardsController
         return await _cardsService.DeleteCardAsync();
     }
 
-    public async Task<Result<List<BaseCardDTO>>> GetAllCardsAsync()
+    public async Task<Result<List<BaseCardDto>>> GetAllCardsAsync()
     {
         return await _cardsService.GetAllCardsAsync();
     }

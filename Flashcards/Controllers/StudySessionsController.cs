@@ -13,12 +13,12 @@ public class StudySessionsController
         _studySessionsService = studySessionsService;
     }
 
-    public async Task<Result> RunStudySessionAsync(List<BaseCardDTO> studySessionCards, int stackId)
+    public async Task<Result> RunStudySessionAsync(List<BaseCardDto> studySessionCards, int stackId)
     {
         return await _studySessionsService.RunStudySessionAsync(studySessionCards, stackId);
     }
 
-    public async Task<Result<List<StudySessionDTO>>> GetAllStudySessionsAsync()
+    public async Task<Result<List<StudySessionDto>>> GetAllStudySessionsAsync()
     {
         return await _studySessionsService.GetAllStudySessionsAsync();
     }

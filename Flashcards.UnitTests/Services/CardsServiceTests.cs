@@ -64,7 +64,7 @@ public class CardsServiceTests
         var stacks = new List<Stack> { new Stack { Id = 1, Name = "Test Stack" } };
         _stacksRepository.GetAllStacksAsync().Returns(Result.Success<IEnumerable<Stack>>(stacks));
 
-        _userInteractionService.GetStack(Arg.Any<List<StackDTO>>()).Returns("Test Stack");
+        _userInteractionService.GetStack(Arg.Any<List<StackDto>>()).Returns("Test Stack");
         _userInteractionService.GetCardType().Returns(CardType.Flashcard);
         _userInteractionService.GetFlashcardFront().Returns("Front Text");
         _userInteractionService.GetFlashcardBack().Returns("Back Text");
@@ -87,7 +87,7 @@ public class CardsServiceTests
         var stacks = new List<Stack> { new Stack { Id = 1, Name = "Test Stack" } };
         _stacksRepository.GetAllStacksAsync().Returns(Result.Success<IEnumerable<Stack>>(stacks));
 
-        _userInteractionService.GetStack(Arg.Any<List<StackDTO>>()).Returns("Test Stack");
+        _userInteractionService.GetStack(Arg.Any<List<StackDto>>()).Returns("Test Stack");
         _userInteractionService.GetCardType().Returns(CardType.Flashcard);
         _userInteractionService.GetFlashcardFront().Returns("Front Text");
         _userInteractionService.GetFlashcardBack().Returns("Back Text");
@@ -136,10 +136,10 @@ public class CardsServiceTests
     {
         // Arrange
         var cards = new List<BaseCard> { new Flashcard { Id = 1, StackId = 1, Front = "Front Text", Back = "Back Text" } };
-        var userSelectedCard = new FlashcardDTO { Id = 1, Front = "Front Text", Back = "Back Text" };
+        var userSelectedCard = new FlashcardDto { Id = 1, Front = "Front Text", Back = "Back Text" };
         _cardsRepository.GetAllCardsAsync()
             .Returns(Result.Success<IEnumerable<BaseCard>>(cards));
-        _userInteractionService.GetCard(Arg.Any<List<BaseCardDTO>>())
+        _userInteractionService.GetCard(Arg.Any<List<BaseCardDto>>())
             .Returns(userSelectedCard);
         _cardsRepository.DeleteCardAsync(1)
             .Returns(Result.Failure(CardsErrors.DeleteFailed));
@@ -157,10 +157,10 @@ public class CardsServiceTests
     {
         // Arrange
         var cards = new List<BaseCard> { new Flashcard { Id = 1, StackId = 1, Front = "Front Text", Back = "Back Text" } };
-        var userSelectedCard = new FlashcardDTO { Id = 1, Front = "Front Text", Back = "Back Text" };
+        var userSelectedCard = new FlashcardDto { Id = 1, Front = "Front Text", Back = "Back Text" };
         _cardsRepository.GetAllCardsAsync()
             .Returns(Result.Success<IEnumerable<BaseCard>>(cards));
-        _userInteractionService.GetCard(Arg.Any<List<BaseCardDTO>>())
+        _userInteractionService.GetCard(Arg.Any<List<BaseCardDto>>())
             .Returns(userSelectedCard);
         _cardsRepository.DeleteCardAsync(1).Returns(Result.Success());
 
@@ -198,10 +198,10 @@ public class CardsServiceTests
 
         _cardsRepository.GetAllCardsAsync()
             .Returns(Result.Success<IEnumerable<BaseCard>>(cards));
-        var expectedCards = new List<BaseCardDTO>
+        var expectedCards = new List<BaseCardDto>
         {
-            new FlashcardDTO { Id = 1, Front = "Front Text 1", Back = "Back Text 1" },
-            new FlashcardDTO { Id = 2, Front = "Front Text 2", Back = "Back Text 2" }
+            new FlashcardDto { Id = 1, Front = "Front Text 1", Back = "Back Text 1" },
+            new FlashcardDto { Id = 2, Front = "Front Text 2", Back = "Back Text 2" }
         };
 
         // Act
@@ -214,8 +214,8 @@ public class CardsServiceTests
         {
             switch (card)
             {
-                case FlashcardDTO flashcard:
-                    Assert.Contains(result.Value, c => c is FlashcardDTO fc && fc.Id == flashcard.Id && fc.Front == flashcard.Front && fc.Back == flashcard.Back);
+                case FlashcardDto flashcard:
+                    Assert.Contains(result.Value, c => c is FlashcardDto fc && fc.Id == flashcard.Id && fc.Front == flashcard.Front && fc.Back == flashcard.Back);
                     break;
                 default:
                     throw new InvalidOperationException("Unknown card type");
@@ -243,12 +243,12 @@ public class CardsServiceTests
     {
         // Arrange
         var cards = new List<BaseCard> { new Flashcard { Id = 1, StackId = 1, Front = "Front Text", Back = "Back Text" } };
-        var userSelectedCard = new FlashcardDTO { Id = 1, Front = "Front Text", Back = "Back Text" };
+        var userSelectedCard = new FlashcardDto { Id = 1, Front = "Front Text", Back = "Back Text" };
 
         _cardsRepository.GetAllCardsAsync()
             .Returns(Result.Success<IEnumerable<BaseCard>>(cards));
 
-        _userInteractionService.GetCard(Arg.Any<List<BaseCardDTO>>())
+        _userInteractionService.GetCard(Arg.Any<List<BaseCardDto>>())
             .Returns(userSelectedCard);
         _userInteractionService.GetFlashcardFront().Returns("Updated Front");
         _userInteractionService.GetFlashcardBack().Returns("Updated Back");
@@ -269,12 +269,12 @@ public class CardsServiceTests
     {
         // Arrange
         var cards = new List<Flashcard> { new Flashcard { Id = 1, StackId = 1, Front = "Front Text", Back = "Back Text" } };
-        var userSelectedCard = new FlashcardDTO { Id = 1, Front = "Front Text", Back = "Back Text" };
+        var userSelectedCard = new FlashcardDto { Id = 1, Front = "Front Text", Back = "Back Text" };
 
         _cardsRepository.GetAllCardsAsync()
             .Returns(Result.Success<IEnumerable<BaseCard>>(cards));
 
-        _userInteractionService.GetCard(Arg.Any<List<BaseCardDTO>>())
+        _userInteractionService.GetCard(Arg.Any<List<BaseCardDto>>())
             .Returns(userSelectedCard);
         _userInteractionService.GetFlashcardFront().Returns("Updated Front");
         _userInteractionService.GetFlashcardBack().Returns("Updated Back");
@@ -295,7 +295,7 @@ public class CardsServiceTests
         // Arrange
         var stacks = new List<Stack> { new Stack { Id = 1, Name = "Test Stack" } };
         _stacksRepository.GetAllStacksAsync().Returns(Result.Success<IEnumerable<Stack>>(stacks));
-        _userInteractionService.GetStack(Arg.Any<List<StackDTO>>()).Returns("Test Stack");
+        _userInteractionService.GetStack(Arg.Any<List<StackDto>>()).Returns("Test Stack");
         _userInteractionService.GetCardType().Returns(CardType.MultipleChoice);
 
         _userInteractionService.GetMultipleChoiceQuestion().Returns("Question?");
@@ -315,16 +315,16 @@ public class CardsServiceTests
     }
 
     [Fact]
-    public async Task AddCardAsync_ShouldThrowArgumentOutOfRangeException_WhenInvalidCardTypeSelected()
+    public async Task AddCardAsync_ShouldThrowInvalidOperationException_WhenInvalidCardTypeSelected()
     {
         // Arrange
         var stacks = new List<Stack> { new Stack { Id = 1, Name = "Test Stack" } };
         _stacksRepository.GetAllStacksAsync().Returns(Result.Success<IEnumerable<Stack>>(stacks));
-        _userInteractionService.GetStack(Arg.Any<List<StackDTO>>()).Returns("Test Stack");
+        _userInteractionService.GetStack(Arg.Any<List<StackDto>>()).Returns("Test Stack");
         _userInteractionService.GetCardType().Returns((CardType)999);
 
         // Act & Assert
-        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => _cardsService.AddCardAsync());
+        await Assert.ThrowsAsync<InvalidOperationException>(() => _cardsService.AddCardAsync());
     }
 
     [Fact]
@@ -343,7 +343,7 @@ public class CardsServiceTests
                 CardType = CardType.MultipleChoice
             }
         };
-        var userSelectedCard = new MultipleChoiceCardDTO
+        var userSelectedCard = new MultipleChoiceCardDto
         {
             Id = 1,
             Question = "Q",
@@ -353,7 +353,7 @@ public class CardsServiceTests
         };
 
         _cardsRepository.GetAllCardsAsync().Returns(Result.Success<IEnumerable<BaseCard>>(cards));
-        _userInteractionService.GetCard(Arg.Any<List<BaseCardDTO>>()).Returns(userSelectedCard);
+        _userInteractionService.GetCard(Arg.Any<List<BaseCardDto>>()).Returns(userSelectedCard);
         _userInteractionService.GetMultipleChoiceQuestion().Returns("Updated Q");
         _userInteractionService.GetNumberOfChoices().Returns(2);
         _userInteractionService.GetMultipleChoiceChoices(2).Returns(new List<string> { "A", "B" });

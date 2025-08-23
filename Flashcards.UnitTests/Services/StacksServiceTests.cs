@@ -36,7 +36,7 @@ public class StacksServiceTests
     private Flashcard CreateTestFlashcard(int id = 1, int stackId = 1, string front = "Front", string back = "Back") =>
         new() { Id = id, StackId = stackId, Front = front, Back = back };
 
-    private FlashcardDTO CreateTestFlashcardDTO(int id = 1, string front = "Front", string back = "Back") =>
+    private FlashcardDto CreateTestFlashcardDTO(int id = 1, string front = "Front", string back = "Back") =>
         new() { Id = id, Front = front, Back = back };
 
     private MultipleChoiceCard CreateTestMultipleChoiceCard(int id = 1, int stackId = 1, string question = "Question?", string choices = "A;B;C", string answer = "A") =>
@@ -319,13 +319,13 @@ public class StacksServiceTests
         string back = "Back";
         var currentTestStack = CreateTestStack(stackId, stackName);
         var flashcards = new List<Flashcard> { CreateTestFlashcard(flashcardId, stackId, front, back) };
-        var flashcardsDTO = new List<FlashcardDTO> { CreateTestFlashcardDTO(flashcardId, front, back) };
+        var flashcardsDTO = new List<FlashcardDto> { CreateTestFlashcardDTO(flashcardId, front, back) };
 
         typeof(StacksService)
             .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             ?.SetValue(_stacksService, currentTestStack);
 
-        _userInteractionService.GetCard(Arg.Any<List<BaseCardDTO>>()).Returns(flashcardsDTO[0]);
+        _userInteractionService.GetCard(Arg.Any<List<BaseCardDto>>()).Returns(flashcardsDTO[0]);
         _stacksRepository.GetCardsByStackIdAsync(stackId).Returns(Result.Success<IEnumerable<BaseCard>>(flashcards));
         _stacksRepository.DeleteCardFromStackAsync(flashcardId, stackId).Returns(Result.Failure(StacksErrors.DeleteCardFailed));
 
@@ -349,13 +349,13 @@ public class StacksServiceTests
         string back = "Back";
         var currentTestStack = CreateTestStack(stackId, stackName);
         var flashcards = new List<Flashcard> { CreateTestFlashcard(flashcardId, stackId, front, back) };
-        var flashcardsDTO = new List<FlashcardDTO> { CreateTestFlashcardDTO(flashcardId, front, back) };
+        var flashcardsDTO = new List<FlashcardDto> { CreateTestFlashcardDTO(flashcardId, front, back) };
 
         typeof(StacksService)
             .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             ?.SetValue(_stacksService, currentTestStack);
 
-        _userInteractionService.GetCard(Arg.Any<List<BaseCardDTO>>()).Returns(flashcardsDTO[0]);
+        _userInteractionService.GetCard(Arg.Any<List<BaseCardDto>>()).Returns(flashcardsDTO[0]);
         _stacksRepository.GetCardsByStackIdAsync(stackId).Returns(Result.Success<IEnumerable<BaseCard>>(flashcards));
         _stacksRepository.DeleteCardFromStackAsync(flashcardId, stackId).Returns(Result.Success());
 
@@ -422,13 +422,13 @@ public class StacksServiceTests
         string newBack = "New Back";
         var currentTestStack = CreateTestStack(stackId, stackName);
         var flashcards = new List<Flashcard> { CreateTestFlashcard(flashcardId, stackId, originalFront, originalBack) };
-        var flashcardsDTO = new List<FlashcardDTO> { CreateTestFlashcardDTO(flashcardId, originalFront, originalBack) };
+        var flashcardsDTO = new List<FlashcardDto> { CreateTestFlashcardDTO(flashcardId, originalFront, originalBack) };
 
         typeof(StacksService)
             .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             ?.SetValue(_stacksService, currentTestStack);
 
-        _userInteractionService.GetCard(Arg.Any<List<BaseCardDTO>>()).Returns(flashcardsDTO[0]);
+        _userInteractionService.GetCard(Arg.Any<List<BaseCardDto>>()).Returns(flashcardsDTO[0]);
         _userInteractionService.GetCardType().Returns(CardType.Flashcard);
         _userInteractionService.GetFlashcardFront().Returns(newFront);
         _userInteractionService.GetFlashcardBack().Returns(newBack);
@@ -461,7 +461,7 @@ public class StacksServiceTests
             Choices = "A;B;C",
             Answer = "A"
         };
-        var multipleChoiceCardDTO = new MultipleChoiceCardDTO
+        var multipleChoiceCardDTO = new MultipleChoiceCardDto
         {
             Id = cardId,
             Question = "Original Question",
@@ -474,7 +474,7 @@ public class StacksServiceTests
             .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             ?.SetValue(_stacksService, currentTestStack);
 
-        _userInteractionService.GetCard(Arg.Any<List<BaseCardDTO>>()).Returns(multipleChoiceCardDTO);
+        _userInteractionService.GetCard(Arg.Any<List<BaseCardDto>>()).Returns(multipleChoiceCardDTO);
         _userInteractionService.GetMultipleChoiceQuestion().Returns("Updated Question");
         _userInteractionService.GetNumberOfChoices().Returns(3);
         _userInteractionService.GetMultipleChoiceChoices(3).Returns(new List<string> { "A", "B", "C" });
@@ -506,14 +506,14 @@ public class StacksServiceTests
         string newBack = "New Back";
         var currentTestStack = CreateTestStack(stackId, stackName);
         var flashcards = new List<Flashcard> { CreateTestFlashcard(flashcardId, stackId, originalFront, originalBack) };
-        var flashcardsDTO = new List<FlashcardDTO> { CreateTestFlashcardDTO(flashcardId, originalFront, originalBack) };
+        var flashcardsDTO = new List<FlashcardDto> { CreateTestFlashcardDTO(flashcardId, originalFront, originalBack) };
 
         typeof(StacksService)
             .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             ?.SetValue(_stacksService, currentTestStack);
 
         _userInteractionService.GetCardType().Returns(CardType.Flashcard);
-        _userInteractionService.GetCard(Arg.Any<List<BaseCardDTO>>()).Returns(flashcardsDTO[0]);
+        _userInteractionService.GetCard(Arg.Any<List<BaseCardDto>>()).Returns(flashcardsDTO[0]);
         _userInteractionService.GetFlashcardFront().Returns(newFront);
         _userInteractionService.GetFlashcardBack().Returns(newBack);
         _stacksRepository.GetCardsByStackIdAsync(stackId).Returns(Result.Success<IEnumerable<BaseCard>>(flashcards));
@@ -544,7 +544,7 @@ public class StacksServiceTests
             Choices = "A;B;C",
             Answer = "A"
         };
-        var multipleChoiceCardDTO = new MultipleChoiceCardDTO
+        var multipleChoiceCardDTO = new MultipleChoiceCardDto
         {
             Id = cardId,
             Question = "Original Question",
@@ -557,7 +557,7 @@ public class StacksServiceTests
             .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             ?.SetValue(_stacksService, currentTestStack);
 
-        _userInteractionService.GetCard(Arg.Any<List<BaseCardDTO>>()).Returns(multipleChoiceCardDTO);
+        _userInteractionService.GetCard(Arg.Any<List<BaseCardDto>>()).Returns(multipleChoiceCardDTO);
         _userInteractionService.GetMultipleChoiceQuestion().Returns("Updated Question");
         _userInteractionService.GetNumberOfChoices().Returns(3);
         _userInteractionService.GetMultipleChoiceChoices(3).Returns(new List<string> { "A", "B", "C" });
@@ -638,11 +638,11 @@ public class StacksServiceTests
         {
             switch (card)
             {
-                case FlashcardDTO flashcard:
-                    Assert.Contains(result.Value, c => c is FlashcardDTO fc && fc.Id == flashcard.Id && fc.Front == flashcard.Front && fc.Back == flashcard.Back);
+                case FlashcardDto flashcard:
+                    Assert.Contains(result.Value, c => c is FlashcardDto fc && fc.Id == flashcard.Id && fc.Front == flashcard.Front && fc.Back == flashcard.Back);
                     break;
-                case MultipleChoiceCardDTO multipleChoiceCard:
-                    Assert.Contains(result.Value, c => c is MultipleChoiceCardDTO mcc && mcc.Id == multipleChoiceCard.Id && mcc.Question == multipleChoiceCard.Question && mcc.Choices.SequenceEqual(multipleChoiceCard.Choices) && mcc.Answer.SequenceEqual(multipleChoiceCard.Answer));
+                case MultipleChoiceCardDto multipleChoiceCard:
+                    Assert.Contains(result.Value, c => c is MultipleChoiceCardDto mcc && mcc.Id == multipleChoiceCard.Id && mcc.Question == multipleChoiceCard.Question && mcc.Choices.SequenceEqual(multipleChoiceCard.Choices) && mcc.Answer.SequenceEqual(multipleChoiceCard.Answer));
                     break;
                 default:
                     throw new InvalidOperationException("Unknown card type");
@@ -779,7 +779,7 @@ public class StacksServiceTests
         var stacks = new List<Stack> { CreateTestStack(1, stackName) };
         _stacksRepository.GetAllStacksAsync()
             .Returns(Result.Success<IEnumerable<Stack>>(stacks));
-        _userInteractionService.GetStack(Arg.Any<List<StackDTO>>()).Returns(stackName);
+        _userInteractionService.GetStack(Arg.Any<List<StackDto>>()).Returns(stackName);
         _stacksRepository.GetStackAsync(stackName)
             .Returns(Result.Failure<Stack>(StacksErrors.GetStackFailed));
 
@@ -800,7 +800,7 @@ public class StacksServiceTests
         var stacks = new List<Stack> { stack };
         _stacksRepository.GetAllStacksAsync()
             .Returns(Result.Success<IEnumerable<Stack>>(stacks));
-        _userInteractionService.GetStack(Arg.Any<List<StackDTO>>()).Returns(stackName);
+        _userInteractionService.GetStack(Arg.Any<List<StackDto>>()).Returns(stackName);
         _stacksRepository.GetStackAsync(stackName)
             .Returns(Result.Success(stack));
 

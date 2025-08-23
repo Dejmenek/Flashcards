@@ -64,19 +64,19 @@ public class UserInteractionService : IUserInteractionService
             );
     }
 
-    public BaseCardDTO GetCard(List<BaseCardDTO> cards)
+    public BaseCardDto GetCard(List<BaseCardDto> cards)
     {
         return AnsiConsole.Prompt(
-            new SelectionPrompt<BaseCardDTO>()
+            new SelectionPrompt<BaseCardDto>()
                 .Title("Choose your card")
                 .UseConverter(card =>
                 {
                     return card switch
                     {
-                        FlashcardDTO flashcard => $"Flashcard: {flashcard.Front}",
-                        ClozeCardDTO clozeCard => $"Cloze Card: {clozeCard.ClozeText}",
-                        FillInCardDTO fillInCard => $"Fill-in Card: {fillInCard.FillInText}",
-                        MultipleChoiceCardDTO multipleChoiceCard => $"Multiple Choice Card: {multipleChoiceCard.Question}",
+                        FlashcardDto flashcard => $"Flashcard: {flashcard.Front}",
+                        ClozeCardDto clozeCard => $"Cloze Card: {clozeCard.ClozeText}",
+                        FillInCardDto fillInCard => $"Fill-in Card: {fillInCard.FillInText}",
+                        MultipleChoiceCardDto multipleChoiceCard => $"Multiple Choice Card: {multipleChoiceCard.Question}",
                         _ => throw new InvalidOperationException("Unknown card type")
                     };
                 })
@@ -84,7 +84,7 @@ public class UserInteractionService : IUserInteractionService
             );
     }
 
-    public string GetStack(List<StackDTO> stacks)
+    public string GetStack(List<StackDto> stacks)
     {
         return AnsiConsole.Prompt(
             new SelectionPrompt<string>()

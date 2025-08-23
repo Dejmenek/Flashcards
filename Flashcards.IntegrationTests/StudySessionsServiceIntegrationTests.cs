@@ -36,7 +36,11 @@ public class StudySessionsServiceIntegrationTests : BaseIntegrationTest, IAsyncL
 
         _userInteractionService.GetAnswer().Returns("Good morning", "Goodbye", "Please");
         _userInteractionService.GetMultipleChoiceAnswers(Arg.Any<List<string>>())
-            .Returns(["Warszawa"], ["Wisła", "Odra", "Warta"], ["Szesnaście"]);
+            .Returns(
+                new List<string> { "Warszawa" },
+                new List<string> { "Wisła", "Odra", "Warta" },
+                new List<string> { "Szesnaście" }
+            );
 
         // Act
         var result = await _studySessionsService.RunStudySessionAsync(cardDTOs, stackId);
