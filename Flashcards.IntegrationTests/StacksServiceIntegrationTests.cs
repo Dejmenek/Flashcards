@@ -174,7 +174,7 @@ public class StacksServiceIntegrationTests : BaseIntegrationTest, IAsyncLifetime
             .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             ?.SetValue(_stacksService, currentStack);
 
-        _userInteractionService.GetCard(Arg.Any<List<BaseCardDTO>>()).Returns(Mapper.ToFlashcardDTO(flashcardToDelete));
+        _userInteractionService.GetCard(Arg.Any<List<BaseCardDto>>()).Returns(Mapper.ToFlashcardDTO(flashcardToDelete));
 
         // Act
         var result = await _stacksService.DeleteCardFromStackAsync();
@@ -206,7 +206,7 @@ public class StacksServiceIntegrationTests : BaseIntegrationTest, IAsyncLifetime
             .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             ?.SetValue(_stacksService, currentStack);
 
-        _userInteractionService.GetCard(Arg.Any<List<BaseCardDTO>>()).Returns(flashcardDTO);
+        _userInteractionService.GetCard(Arg.Any<List<BaseCardDto>>()).Returns(flashcardDTO);
         _userInteractionService.GetFlashcardFront().Returns(updatedFront);
         _userInteractionService.GetFlashcardBack().Returns(updatedBack);
 
@@ -253,7 +253,7 @@ public class StacksServiceIntegrationTests : BaseIntegrationTest, IAsyncLifetime
             .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             ?.SetValue(_stacksService, currentStack);
 
-        _userInteractionService.GetCard(Arg.Any<List<BaseCardDTO>>()).Returns(multipleChoiceCardDTO);
+        _userInteractionService.GetCard(Arg.Any<List<BaseCardDto>>()).Returns(multipleChoiceCardDTO);
         _userInteractionService.GetMultipleChoiceQuestion().Returns(updatedQuestion);
         _userInteractionService.GetNumberOfChoices().Returns(4);
         _userInteractionService.GetMultipleChoiceChoices(4).Returns(updatedChoices);
@@ -346,7 +346,7 @@ public class StacksServiceIntegrationTests : BaseIntegrationTest, IAsyncLifetime
             Name = "Polish",
         };
 
-        _userInteractionService.GetStack(Arg.Any<List<StackDTO>>())
+        _userInteractionService.GetStack(Arg.Any<List<StackDto>>())
             .Returns(stack.Name);
 
         // Act

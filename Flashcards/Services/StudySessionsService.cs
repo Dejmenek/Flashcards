@@ -30,15 +30,15 @@ public class StudySessionsService : IStudySessionsService
         _logger = logger;
     }
 
-    public void StartStudySessionAsync(List<BaseCardDTO> cards)
+    public void StartStudySessionAsync(List<BaseCardDto> cards)
     {
         _logger.LogInformation("Starting study session with {Count} cards.", cards.Count);
         Score = 0;
-        foreach (BaseCardDTO card in cards)
+        foreach (BaseCardDto card in cards)
         {
             switch (card)
             {
-                case FlashcardDTO flashcard:
+                case FlashcardDto flashcard:
                     DataVisualizer.ShowFlashcardFront(flashcard);
                     string userAnswer = _userInteractionService.GetAnswer();
 
@@ -55,7 +55,7 @@ public class StudySessionsService : IStudySessionsService
                         _logger.LogInformation("Incorrect answer for card ID {CardId}.", flashcard.Id);
                     }
                     break;
-                case MultipleChoiceCardDTO multipleChoiceCard:
+                case MultipleChoiceCardDto multipleChoiceCard:
                     DataVisualizer.ShowMultipleChoiceCard(multipleChoiceCard.Question);
                     List<string> userAnswers = _userInteractionService.GetMultipleChoiceAnswers(multipleChoiceCard.Choices);
                     if (IsCorrectMultipleChoiceCardAnswer(userAnswers, multipleChoiceCard.Answer))
@@ -83,7 +83,7 @@ public class StudySessionsService : IStudySessionsService
         _consoleService.Clear();
     }
 
-    public async Task<Result> RunStudySessionAsync(List<BaseCardDTO> studySessionCards, int stackId)
+    public async Task<Result> RunStudySessionAsync(List<BaseCardDto> studySessionCards, int stackId)
     {
         _logger.LogInformation("Running study session for stack {StackId}.", stackId);
 
@@ -126,29 +126,29 @@ public class StudySessionsService : IStudySessionsService
         return Result.Success();
     }
 
-    public async Task<Result<List<StudySessionDTO>>> GetAllStudySessionsAsync()
+    public async Task<Result<List<StudySessionDto>>> GetAllStudySessionsAsync()
     {
         _logger.LogInformation("Retrieving all study sessions.");
         var hasSessionResult = await _studySessionsRepository.HasStudySessionAsync();
         if (hasSessionResult.IsFailure)
         {
             _logger.LogWarning("Failed to check for study sessions: {Error}", hasSessionResult.Error.Description);
-            return Result.Failure<List<StudySessionDTO>>(hasSessionResult.Error);
+            return Result.Failure<List<StudySessionDto>>(hasSessionResult.Error);
         }
         if (!hasSessionResult.Value)
         {
             _logger.LogInformation("No study sessions found.");
-            return Result.Success(new List<StudySessionDTO>());
+            return Result.Success(new List<StudySessionDto>());
         }
 
         var studySessionsResult = await _studySessionsRepository.GetAllStudySessionsAsync();
         if (studySessionsResult.IsFailure)
         {
             _logger.LogWarning("Failed to retrieve study sessions: {Error}", studySessionsResult.Error.Description);
-            return Result.Failure<List<StudySessionDTO>>(studySessionsResult.Error);
+            return Result.Failure<List<StudySessionDto>>(studySessionsResult.Error);
         }
 
-        List<StudySessionDTO> studySessionDtos = new();
+        List<StudySessionDto> studySessionDtos = new();
         foreach (var studySession in studySessionsResult.Value)
         {
             studySessionDtos.Add(Mapper.ToStudySessionDTO(studySession));

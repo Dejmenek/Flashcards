@@ -11,7 +11,7 @@ public static class DataVisualizer
         "July", "August", "September", "October", "November", "December"
     };
 
-    public static void ShowCards(List<BaseCardDTO> cards)
+    public static void ShowCards(List<BaseCardDto> cards)
     {
         if (cards is [] || cards.Count == 0)
         {
@@ -29,10 +29,10 @@ public static class DataVisualizer
         {
             string details = card switch
             {
-                FlashcardDTO f => $"[green]Front:[/] {Markup.Escape(f.Front)}\n[blue]Back:[/] {Markup.Escape(f.Back)}",
-                ClozeCardDTO c => $"[green]Cloze:[/] {Markup.Escape(c.ClozeText)}",
-                FillInCardDTO fi => $"[green]FillIn:[/] {Markup.Escape(fi.FillInText)}\n[blue]Answers:[/] {Markup.Escape(string.Join(", ", fi.Answer))}",
-                MultipleChoiceCardDTO mc => $"[green]Question:[/] {Markup.Escape(mc.Question)}\n[blue]Choices:[/] {Markup.Escape(string.Join(", ", mc.Choices))}\n[magenta]Answer:[/] {Markup.Escape(string.Join(", ", mc.Answer))}",
+                FlashcardDto f => $"[green]Front:[/] {Markup.Escape(f.Front)}\n[blue]Back:[/] {Markup.Escape(f.Back)}",
+                ClozeCardDto c => $"[green]Cloze:[/] {Markup.Escape(c.ClozeText)}",
+                FillInCardDto fi => $"[green]FillIn:[/] {Markup.Escape(fi.FillInText)}\n[blue]Answers:[/] {Markup.Escape(string.Join(", ", fi.Answer))}",
+                MultipleChoiceCardDto mc => $"[green]Question:[/] {Markup.Escape(mc.Question)}\n[blue]Choices:[/] {Markup.Escape(string.Join(", ", mc.Choices))}\n[magenta]Answer:[/] {Markup.Escape(string.Join(", ", mc.Answer))}",
                 _ => "[red]Unknown card type[/]"
             };
 
@@ -47,7 +47,7 @@ public static class DataVisualizer
         AnsiConsole.Write(table);
     }
 
-    public static void ShowStacks(List<StackDTO> stacks)
+    public static void ShowStacks(List<StackDto> stacks)
     {
         if (stacks is [])
         {
@@ -58,7 +58,7 @@ public static class DataVisualizer
 
         table.AddColumn("Name");
 
-        foreach (StackDTO stack in stacks)
+        foreach (StackDto stack in stacks)
         {
             table.AddRow(stack.Name);
         }
@@ -66,7 +66,7 @@ public static class DataVisualizer
         AnsiConsole.Write(table);
     }
 
-    public static void ShowStudySessions(List<StudySessionDTO> studySessions)
+    public static void ShowStudySessions(List<StudySessionDto> studySessions)
     {
         if (studySessions is [])
         {
@@ -81,7 +81,7 @@ public static class DataVisualizer
         table.AddColumn("Date");
         table.AddColumn("Score");
 
-        foreach (StudySessionDTO studySession in studySessions)
+        foreach (StudySessionDto studySession in studySessions)
         {
             table.AddRow(index.ToString(), studySession.Date.ToString(), studySession.Score.ToString());
             index++;
@@ -154,7 +154,7 @@ public static class DataVisualizer
         AnsiConsole.Write(table);
     }
 
-    public static void ShowFlashcardFront(FlashcardDTO flashcard)
+    public static void ShowFlashcardFront(FlashcardDto flashcard)
     {
         var table = new Table();
 

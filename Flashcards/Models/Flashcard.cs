@@ -35,30 +35,30 @@ public class MultipleChoiceCard : BaseCard
     public MultipleChoiceCard() => CardType = CardType.MultipleChoice;
 }
 
-public abstract record class BaseCardDTO
+public abstract record class BaseCardDto
 {
     public int Id { get; init; }
     public CardType CardType { get; init; }
 }
 
-public record class FlashcardDTO : BaseCardDTO
+public record class FlashcardDto : BaseCardDto
 {
     public string Front { get; init; } = string.Empty;
     public string Back { get; init; } = string.Empty;
 }
 
-public record class ClozeCardDTO : BaseCardDTO
+public record class ClozeCardDto : BaseCardDto
 {
     public string ClozeText { get; init; } = string.Empty;
 }
 
-public record class FillInCardDTO : BaseCardDTO
+public record class FillInCardDto : BaseCardDto
 {
     public string FillInText { get; init; } = string.Empty;
     public List<string> Answer { get; init; } = new();
 }
 
-public record class MultipleChoiceCardDTO : BaseCardDTO
+public record class MultipleChoiceCardDto : BaseCardDto
 {
     public string Question { get; init; } = string.Empty;
     public List<string> Choices { get; init; } = new();
