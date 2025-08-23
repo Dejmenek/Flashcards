@@ -24,34 +24,12 @@ public class TestClassFixture : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        _dbContainer = new MsSqlBuilder()
-            .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
-            .WithPortBinding(1433, true)
-            .WithPassword("YourStrong!Passw0rd")
-            .Build();
-
-        await _dbContainer.StartAsync();
-
-        var mappedPort = _dbContainer.GetMappedPublicPort(1433);
-
-        var defaultConnectionString = $"Server=localhost,{mappedPort};Database=Flashcards;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;";
-        var masterConnectionString = $"Server=localhost,{mappedPort};Database=master;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;";
-
-        var config = new ConfigurationBuilder()
-            .SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                { "ConnectionStrings:Default", defaultConnectionString },
-                { "ConnectionStrings:Master", masterConnectionString }
-            })
-            .AddEnvironmentVariables()
-            .Build();
+        var config = await SetupDatabaseAndConfigurationAsync();
 
         Log.Logger = new LoggerConfiguration()
             .WriteTo
             .MSSqlServer(
-                connectionString: masterConnectionString,
+                connectionString: config.GetConnectionString("Master"),
                 new MSSqlServerSinkOptions
                 {
                     TableName = "Logs"
@@ -97,6 +75,61 @@ public class TestClassFixture : IAsyncLifetime
         var context = new DataContext(config);
         await context.Init();
     }
+
+    private async Task<IConfiguration> SetupDatabaseAndConfigurationAsync()
+    {
+        var isCI = Environment.GetEnvironmentVariable("CI") is not null;
+        var password = Environment.GetEnvironmentVariable("MSSQL_SA_PASSWORD") ?? "YourStrong!Passw0rd";
+
+        return isCI
+            ? CreateCIConfiguration(password)
+            : await CreateLocalConfigurationAsync(password);
+    }
+
+    private static IConfiguration CreateCIConfiguration(string password)
+    {
+        var (defaultConn, masterConn) = CreateConnectionStrings("sqlserver", 1433, password);
+
+        return new ConfigurationBuilder()
+            .SetBasePath(AppContext.BaseDirectory)
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                { "ConnectionStrings:Default", defaultConn },
+                { "ConnectionStrings:Master", masterConn }
+            })
+            .AddEnvironmentVariables()
+            .Build();
+    }
+
+    private async Task<IConfiguration> CreateLocalConfigurationAsync(string password)
+    {
+        _dbContainer = new MsSqlBuilder()
+            .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
+            .WithPortBinding(1433, true)
+            .WithPassword(password)
+            .Build();
+
+        await _dbContainer.StartAsync();
+        var port = _dbContainer.GetMappedPublicPort(1433);
+        var (defaultConn, masterConn) = CreateConnectionStrings("localhost", port, password);
+
+        return new ConfigurationBuilder()
+            .SetBasePath(AppContext.BaseDirectory)
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                { "ConnectionStrings:Default", defaultConn },
+                { "ConnectionStrings:Master", masterConn }
+            })
+            .AddEnvironmentVariables()
+            .Build();
+    }
+
+    private static (string Default, string Master) CreateConnectionStrings(string server, int port, string password)
+        => ($"Server={server},{port};Database=Flashcards;User Id=sa;Password={password};TrustServerCertificate=True;",
+            $"Server={server},{port};Database=master;User Id=sa;Password={password};TrustServerCertificate=True;");
+
 
     public async Task DisposeAsync()
     {
