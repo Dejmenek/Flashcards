@@ -113,7 +113,7 @@ public class CardsServiceIntegrationTests : BaseIntegrationTest, IAsyncLifetime
         // Arrange
         var allMultipleChoiceCards = (await _cardsRepository.GetAllCardsAsync()).Value.OfType<MultipleChoiceCard>().ToList();
         var multipleChoiceCard = allMultipleChoiceCards
-            .First(mc => mc.Question == "Jakie jest najwiêksze miasto w Polsce?" && mc.StackId == 3);
+            .First(mc => mc.Question == "Jakie jest najwiÄ™ksze miasto w Polsce?" && mc.StackId == 3);
         var multipleChoiceCardDTO = Mapper.ToMultipleChoiceCardDTO(multipleChoiceCard);
 
         string updatedQuestion = "Updated question: What is the capital of France?";
@@ -174,7 +174,7 @@ public class CardsServiceIntegrationTests : BaseIntegrationTest, IAsyncLifetime
 
         Assert.Contains(result.Value, f => f is FlashcardDto fc && fc.Front == "Hola" && fc.Back == "Hello");
         Assert.Contains(result.Value, f => f is FlashcardDto fc && fc.Front == "Hallo" && fc.Back == "Hello");
-        Assert.Contains(result.Value, f => f is FlashcardDto fc && fc.Front == "Dzieñ dobry" && fc.Back == "Good morning");
+        Assert.Contains(result.Value, f => f is FlashcardDto fc && fc.Front == "DzieÅ„ dobry" && fc.Back == "Good morning");
     }
 
     public async Task InitializeAsync() => await InitializeDatabaseAsync();
