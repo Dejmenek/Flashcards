@@ -1,4 +1,4 @@
-﻿using Flashcards.Models;
+using Flashcards.Models;
 using Flashcards.Utils;
 
 namespace Flashcards.DataAccess.Interfaces;
@@ -15,6 +15,7 @@ public interface IStacksRepository
         List<string> choices,
         List<string> answers
     );
+    Task<Result> UpdateClozeCardInStackAsync(int clozeCardId, int stackId, string clozeText);
     Task<Result<int>> GetCardsCountInStackAsync(int stackId);
     Task<Result> DeleteCardFromStackAsync(int cardId, int stackId);
     Task<Result<IEnumerable<BaseCard>>> GetCardsByStackIdAsync(int stackId);

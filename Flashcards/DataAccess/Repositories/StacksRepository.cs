@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 
 using Flashcards.DataAccess.Interfaces;
 using Flashcards.Models;
@@ -307,6 +307,38 @@ public class StacksRepository : IStacksRepository
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unexpected error while updating multiple choice card {CardId} in stack {StackId}.", multipleChoiceCardId, stackId);
+            return Result.Failure(StacksErrors.UpdateFailed);
+        }
+    }
+
+    public async Task<Result> UpdateClozeCardInStackAsync(int clozeCardId, int stackId, string clozeText)
+    {
+        _logger.LogInformation("Updating cloze card {CardId} in stack {StackId}.", clozeCardId, stackId);
+        try
+        {
+            using (var connection = new SqlConnection(_defaultConnectionString))
+            {
+                string sql = SqlScripts.UpdateClozeCardInStack;
+
+                await connection.ExecuteAsync(sql, new
+                {
+                    ClozeText = clozeText,
+                    Id = clozeCardId,
+                    StackId = stackId
+                });
+
+                _logger.LogInformation("Successfully updated cloze card {CardId} in stack {StackId}.", clozeCardId, stackId);
+                return Result.Success();
+            }
+        }
+        catch (SqlException ex)
+        {
+            _logger.LogError(ex, "SQL error while updating cloze card {CardId} in stack {StackId}.", clozeCardId, stackId);
+            return Result.Failure(StacksErrors.UpdateFailed);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error while updating cloze card {CardId} in stack {StackId}.", clozeCardId, stackId);
             return Result.Failure(StacksErrors.UpdateFailed);
         }
     }

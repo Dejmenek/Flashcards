@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 
 using Flashcards.DataAccess.Interfaces;
 using Flashcards.Models;
@@ -19,6 +19,38 @@ public class CardsRepository : ICardsRepository
     {
         _defaultConnectionString = config.GetConnectionString("Default")!;
         _logger = logger;
+    }
+
+    public async Task<Result> AddClozeCardAsync(int stackId, string clozeText)
+    {
+        _logger.LogInformation("Adding cloze card to stack {StackId}.", stackId);
+        try
+        {
+            using (var connection = new SqlConnection(_defaultConnectionString))
+            {
+                string sql = SqlScripts.AddClozeCard;
+
+                await connection.ExecuteAsync(sql, new
+                {
+                    StackId = stackId,
+                    ClozeText = clozeText,
+                    CardType = CardType.Cloze.ToString()
+                });
+
+                _logger.LogInformation("Successfully added cloze card to stack {StackId}.", stackId);
+                return Result.Success();
+            }
+        }
+        catch (SqlException ex)
+        {
+            _logger.LogError(ex, "SQL error while adding cloze card to stack {StackId}.", stackId);
+            return Result.Failure(CardsErrors.AddFailed);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error while adding cloze card to stack {StackId}.", stackId);
+            return Result.Failure(CardsErrors.AddFailed);
+        }
     }
 
     public async Task<Result> AddFlashcardAsync(int stackId, string front, string back)
@@ -165,6 +197,37 @@ public class CardsRepository : ICardsRepository
         {
             _logger.LogError(ex, "Unexpected error while retrieving all cards.");
             return Result.Failure<IEnumerable<BaseCard>>(CardsErrors.GetAllFailed);
+        }
+    }
+
+    public async Task<Result> UpdateClozeCardAsync(int clozeCardId, string clozeText)
+    {
+        _logger.LogInformation("Updating cloze card {CardId}.", clozeCardId);
+        try
+        {
+            using (var connection = new SqlConnection(_defaultConnectionString))
+            {
+                string sql = SqlScripts.UpdateClozeCard;
+
+                await connection.ExecuteAsync(sql, new
+                {
+                    ClozeText = clozeText,
+                    Id = clozeCardId
+                });
+
+                _logger.LogInformation("Successfully updated cloze card {CardId}.", clozeCardId);
+                return Result.Success();
+            }
+        }
+        catch (SqlException ex)
+        {
+            _logger.LogError(ex, "SQL error while updating cloze card {CardId}.", clozeCardId);
+            return Result.Failure(CardsErrors.UpdateFailed);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error while updating cloze card {CardId}.", clozeCardId);
+            return Result.Failure(CardsErrors.UpdateFailed);
         }
     }
 

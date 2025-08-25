@@ -1,4 +1,4 @@
-﻿using Flashcards.DataAccess.Interfaces;
+using Flashcards.DataAccess.Interfaces;
 using Flashcards.Helpers;
 using Flashcards.Models;
 using Flashcards.Services.CardStrategies;
@@ -122,6 +122,9 @@ public class CardsService : ICardsService
                     break;
                 case MultipleChoiceCard multipleChoiceCard:
                     cardDtos.Add(Mapper.ToMultipleChoiceCardDTO(multipleChoiceCard));
+                    break;
+                case ClozeCard clozeCard:
+                    cardDtos.Add(Mapper.ToClozeCardDTO(clozeCard));
                     break;
                 default:
                     _logger.LogWarning("Unknown card type encountered in GetAllCardsAsync.");

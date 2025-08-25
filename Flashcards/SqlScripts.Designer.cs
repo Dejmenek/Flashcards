@@ -61,6 +61,17 @@ namespace Flashcards {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to INSERT INTO Cards (StackId, ClozeText, CardType)
+        ///VALUES
+        ///(@StackId, @ClozeText, @CardType).
+        /// </summary>
+        internal static string AddClozeCard {
+            get {
+                return ResourceManager.GetString("AddClozeCard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to INSERT INTO Cards (StackId, Front, Back, CardType)
         ///VALUES
         ///(@StackId, @Front, @Back, @CardType).
@@ -344,6 +355,28 @@ namespace Flashcards {
         internal static string StackExistsWithName {
             get {
                 return ResourceManager.GetString("StackExistsWithName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UPDATE Cards
+        ///SET ClozeText = @ClozeText
+        ///WHERE Id = @Id.
+        /// </summary>
+        internal static string UpdateClozeCard {
+            get {
+                return ResourceManager.GetString("UpdateClozeCard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UPDATE Cards
+        ///SET ClozeText = @ClozeText
+        ///WHERE Id = @Id AND StackId = @StackId.
+        /// </summary>
+        internal static string UpdateClozeCardInStack {
+            get {
+                return ResourceManager.GetString("UpdateClozeCardInStack", resourceCulture);
             }
         }
         
