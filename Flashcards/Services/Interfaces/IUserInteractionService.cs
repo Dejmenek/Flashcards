@@ -1,4 +1,4 @@
-﻿using Flashcards.Enums;
+using Flashcards.Enums;
 using Flashcards.Models;
 
 namespace Flashcards.Services.Interfaces;
@@ -9,6 +9,8 @@ public interface IUserInteractionService
     string GetFlashcardFront();
     string GetFlashcardBack();
     string GetMultipleChoiceQuestion();
+    string GetClozeDeletionText();
+    List<string> GetClozeDeletionWords(string text);
     List<string> GetMultipleChoiceChoices(int numberOfChoices);
     int GetNumberOfChoices();
     List<string> GetMultipleChoiceAnswers(List<string> choices);

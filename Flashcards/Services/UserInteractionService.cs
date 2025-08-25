@@ -1,4 +1,4 @@
-﻿using Flashcards.Enums;
+using Flashcards.Enums;
 using Flashcards.Models;
 using Flashcards.Services.Interfaces;
 
@@ -167,6 +167,26 @@ public class UserInteractionService : IUserInteractionService
                 .PageSize(10)
                 .AddChoices(choices)
                 .UseConverter(choice => choice)
+        );
+    }
+
+    public string GetClozeDeletionText()
+    {
+        return AnsiConsole.Prompt(
+            new TextPrompt<string>("Enter the full text for the cloze deletion card:")
+            );
+    }
+
+    public List<string> GetClozeDeletionWords(string text)
+    {
+        return AnsiConsole.Prompt(
+            new MultiSelectionPrompt<string>()
+                .Title("Select the words to be removed (cloze deletions):")
+                .MoreChoicesText("[grey](Move up and down to reveal more words)[/]")
+                .InstructionsText("[grey](Press [blue]space[/] to toggle a word, [green]enter[/] to accept)[/]")
+                .PageSize(10)
+                .AddChoices(text.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                .UseConverter(word => word)
         );
     }
 }

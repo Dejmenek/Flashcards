@@ -61,6 +61,7 @@ public class CardsService : ICardsService
         {
             CardType.Flashcard => new FlashcardStrategy(_cardsRepository, _userInteractionService),
             CardType.MultipleChoice => new MultipleChoiceCardStrategy(_cardsRepository, _userInteractionService),
+            CardType.Cloze => new ClozeCardStrategy(_cardsRepository, _userInteractionService),
             _ => throw new InvalidOperationException($"Unsupported card type: {chosenCardType}")
         };
 
@@ -154,6 +155,7 @@ public class CardsService : ICardsService
         {
             CardType.Flashcard => new FlashcardStrategy(_cardsRepository, _userInteractionService),
             CardType.MultipleChoice => new MultipleChoiceCardStrategy(_cardsRepository, _userInteractionService),
+            CardType.Cloze => new ClozeCardStrategy(_cardsRepository, _userInteractionService),
             _ => throw new InvalidOperationException($"Unsupported card type: {chosenCard.CardType}")
         };
 

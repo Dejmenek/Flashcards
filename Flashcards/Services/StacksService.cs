@@ -1,4 +1,4 @@
-﻿using Flashcards.DataAccess.Interfaces;
+using Flashcards.DataAccess.Interfaces;
 using Flashcards.Helpers;
 using Flashcards.Models;
 using Flashcards.Services.CardStrategies;
@@ -76,6 +76,7 @@ public class StacksService : IStacksService
         {
             CardType.Flashcard => new FlashcardStrategy(_cardsRepository, _userInteractionService),
             CardType.MultipleChoice => new MultipleChoiceCardStrategy(_cardsRepository, _userInteractionService),
+            CardType.Cloze => new ClozeCardStrategy(_cardsRepository, _userInteractionService),
             _ => throw new InvalidOperationException($"Unsupported card type: {chosenCardType}")
         };
 
@@ -161,6 +162,7 @@ public class StacksService : IStacksService
         {
             CardType.Flashcard => new FlashcardStrategy(_cardsRepository, _userInteractionService, _stacksRepository),
             CardType.MultipleChoice => new MultipleChoiceCardStrategy(_cardsRepository, _userInteractionService, _stacksRepository),
+            CardType.Cloze => new ClozeCardStrategy(_cardsRepository, _userInteractionService, _stacksRepository),
             _ => throw new InvalidOperationException($"Unsupported card type: {chosenCard.CardType}")
         };
 
@@ -199,6 +201,9 @@ public class StacksService : IStacksService
                     break;
                 case MultipleChoiceCard multipleChoiceCard:
                     cardDtos.Add(Mapper.ToMultipleChoiceCardDTO(multipleChoiceCard));
+                    break;
+                case ClozeCard clozeCard:
+                    cardDtos.Add(Mapper.ToClozeCardDTO(clozeCard));
                     break;
                 default:
                     _logger.LogWarning("Unknown card type encountered in GetCardsByStackIdAsync.");
