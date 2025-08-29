@@ -42,7 +42,7 @@ public class UserInteractionService : IUserInteractionService
     public string GetAnswer()
     {
         return AnsiConsole.Prompt(
-            new TextPrompt<string>("Enter your answer to this card")
+            new TextPrompt<string>("Enter your answer: ")
             );
     }
 
