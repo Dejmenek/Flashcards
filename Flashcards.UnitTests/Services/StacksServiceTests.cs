@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 
 using Flashcards.DataAccess.Interfaces;
 using Flashcards.Models;
@@ -41,6 +41,12 @@ public class StacksServiceTests
 
     private MultipleChoiceCard CreateTestMultipleChoiceCard(int id = 1, int stackId = 1, string question = "Question?", string choices = "A;B;C", string answer = "A") =>
     new() { Id = id, StackId = stackId, Question = question, Choices = choices, Answer = answer };
+
+    private ClozeCard CreateTestClozeCard(int id = 1, int stackId = 1, string clozeText = "Cloze text") =>
+        new() { Id = id, StackId = stackId, ClozeText = clozeText };
+
+    private ClozeCardDto CreateTestClozeCardDTO(int id = 1, string clozeText = "Cloze text") =>
+        new() { Id = id, ClozeText = clozeText, CardType = CardType.Cloze };
 
     [Fact]
     public async Task AddStackAsync_ShouldReturnFailure_WhenStackWithNameExistsFails()
@@ -160,6 +166,34 @@ public class StacksServiceTests
     }
 
     [Fact]
+    public async Task AddCardToStackAsync_ShouldReturnFailure_WhenAddClozeCardFails()
+    {
+        // Arrange
+        int stackId = 1;
+        string stackName = "Test Stack";
+        string clozeText = "Cloze text";
+        string formattedClozeText = "Cloze {{c1::text}}";
+        var currentTestStack = CreateTestStack(stackId, stackName);
+        typeof(StacksService)
+            .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+            ?.SetValue(_stacksService, currentTestStack);
+
+        _userInteractionService.GetCardType().Returns(CardType.Cloze);
+        _userInteractionService.GetClozeDeletionText().Returns(clozeText);
+        _userInteractionService.GetClozeDeletionWords(Arg.Is(clozeText)).Returns(new List<string> { "text" });
+
+        _cardsRepository.AddClozeCardAsync(Arg.Is(stackId), Arg.Is(formattedClozeText))
+            .Returns(Result.Failure(CardsErrors.AddFailed));
+
+        // Act
+        var result = await _stacksService.AddCardToStackAsync();
+
+        // Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(CardsErrors.AddFailed, result.Error);
+    }
+
+    [Fact]
     public async Task AddCardToStackAsync_ShouldReturnSuccess_WhenAddFlashcardSucceeds()
     {
         // Arrange
@@ -204,6 +238,33 @@ public class StacksServiceTests
         _userInteractionService.GetMultipleChoiceAnswers(Arg.Any<List<string>>()).Returns(new List<string> { "Choice A" });
 
         _cardsRepository.AddMultipleChoiceCardAsync(stackId, "Question?", Arg.Any<List<string>>(), Arg.Any<List<string>>())
+            .Returns(Result.Success());
+
+        // Act
+        var result = await _stacksService.AddCardToStackAsync();
+
+        // Assert
+        Assert.True(result.IsSuccess);
+    }
+
+    [Fact]
+    public async Task AddCardToStackAsync_ShouldReturnSuccess_WhenAddClozeCardSucceeds()
+    {
+        // Arrange
+        int stackId = 1;
+        string stackName = "Test Stack";
+        string clozeText = "Cloze text";
+        string formattedClozeText = "Cloze {{c1::text}}";
+        var currentTestStack = CreateTestStack(stackId, stackName);
+        typeof(StacksService)
+            .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+            ?.SetValue(_stacksService, currentTestStack);
+
+        _userInteractionService.GetCardType().Returns(CardType.Cloze);
+        _userInteractionService.GetClozeDeletionText().Returns(clozeText);
+        _userInteractionService.GetClozeDeletionWords(Arg.Is(clozeText)).Returns(new List<string> { "text" });
+
+        _cardsRepository.AddClozeCardAsync(Arg.Is(stackId), Arg.Is(formattedClozeText))
             .Returns(Result.Success());
 
         // Act
@@ -494,6 +555,41 @@ public class StacksServiceTests
     }
 
     [Fact]
+    public async Task UpdateCardInStackAsync_ShouldReturnFailure_WhenUpdateClozeCardFails()
+    {
+        // Arrange
+        int stackId = 1;
+        string stackName = "Test Stack";
+        int clozeCardId = 1;
+        string originalText = "Original Cloze";
+        string newText = "Updated cloze";
+        string formattedNewText = "Updated {{c1::cloze}}";
+        var currentTestStack = CreateTestStack(stackId, stackName);
+        var clozeCards = new List<ClozeCard> { CreateTestClozeCard(clozeCardId, stackId, originalText) };
+        var clozeCardsDTO = new List<ClozeCardDto> { CreateTestClozeCardDTO(clozeCardId, originalText) };
+
+        typeof(StacksService)
+            .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+            ?.SetValue(_stacksService, currentTestStack);
+
+        _userInteractionService.GetCard(Arg.Any<List<BaseCardDto>>()).Returns(clozeCardsDTO[0]);
+        _userInteractionService.GetCardType().Returns(CardType.Cloze);
+        _userInteractionService.GetClozeDeletionText().Returns(newText);
+        _userInteractionService.GetClozeDeletionWords(Arg.Is(newText)).Returns(new List<string> { "cloze" });
+        _stacksRepository.GetCardsByStackIdAsync(stackId).Returns(Result.Success<IEnumerable<BaseCard>>(clozeCards));
+        _stacksRepository.UpdateClozeCardInStackAsync(clozeCardId, stackId, Arg.Is(formattedNewText))
+            .Returns(Result.Failure(StacksErrors.UpdateFailed));
+
+        // Act
+        var result = await _stacksService.UpdateCardInStackAsync();
+
+        // Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(StacksErrors.UpdateFailed, result.Error);
+        await _stacksRepository.Received(1).UpdateClozeCardInStackAsync(clozeCardId, stackId, Arg.Is(formattedNewText));
+    }
+
+    [Fact]
     public async Task UpdateCardInStackAsync_ShouldReturnSuccess_WhenUpdateFlashcardSucceeds()
     {
         // Arrange
@@ -576,6 +672,40 @@ public class StacksServiceTests
     }
 
     [Fact]
+    public async Task UpdateCardInStackAsync_ShouldReturnSuccess_WhenUpdateClozeCardSucceeds()
+    {
+        // Arrange
+        int stackId = 1;
+        string stackName = "Test Stack";
+        int clozeCardId = 1;
+        string originalText = "Original Cloze";
+        string newText = "Updated cloze";
+        string formattedNewText = "Updated {{c1::cloze}}";
+        var currentTestStack = CreateTestStack(stackId, stackName);
+        var clozeCards = new List<ClozeCard> { CreateTestClozeCard(clozeCardId, stackId, originalText) };
+        var clozeCardsDTO = new List<ClozeCardDto> { CreateTestClozeCardDTO(clozeCardId, originalText) };
+
+        typeof(StacksService)
+            .GetProperty("CurrentStack", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+            ?.SetValue(_stacksService, currentTestStack);
+
+        _userInteractionService.GetCardType().Returns(CardType.Cloze);
+        _userInteractionService.GetCard(Arg.Any<List<BaseCardDto>>()).Returns(clozeCardsDTO[0]);
+        _userInteractionService.GetClozeDeletionText().Returns(newText);
+        _userInteractionService.GetClozeDeletionWords(Arg.Is(newText)).Returns(new List<string> { "cloze" });
+        _stacksRepository.GetCardsByStackIdAsync(stackId).Returns(Result.Success<IEnumerable<BaseCard>>(clozeCards));
+        _stacksRepository.UpdateClozeCardInStackAsync(clozeCardId, stackId, Arg.Is(formattedNewText))
+            .Returns(Result.Success());
+
+        // Act
+        var result = await _stacksService.UpdateCardInStackAsync();
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        await _stacksRepository.Received(1).UpdateClozeCardInStackAsync(clozeCardId, stackId, Arg.Is(formattedNewText));
+    }
+
+    [Fact]
     public async Task GetCardsByStackIdAsync_ShouldReturnFailure_WhenCurrentStackIsNull()
     {
         // Act
@@ -619,7 +749,9 @@ public class StacksServiceTests
             CreateTestFlashcard(1, stackId, "Front1", "Back1"),
             CreateTestFlashcard(2, stackId, "Front2", "Back2"),
             CreateTestMultipleChoiceCard(3, stackId, "Question?", "A;B;C", "A"),
-            CreateTestMultipleChoiceCard(4, stackId, "Another Question?", "D;E;F", "D")
+            CreateTestMultipleChoiceCard(4, stackId, "Another Question?", "D;E;F", "D"),
+            CreateTestClozeCard(5, stackId, "Cloze1"),
+            CreateTestClozeCard(6, stackId, "Cloze2")
         };
 
         typeof(StacksService)
@@ -643,6 +775,9 @@ public class StacksServiceTests
                     break;
                 case MultipleChoiceCardDto multipleChoiceCard:
                     Assert.Contains(result.Value, c => c is MultipleChoiceCardDto mcc && mcc.Id == multipleChoiceCard.Id && mcc.Question == multipleChoiceCard.Question && mcc.Choices.SequenceEqual(multipleChoiceCard.Choices) && mcc.Answer.SequenceEqual(multipleChoiceCard.Answer));
+                    break;
+                case ClozeCardDto clozeCard:
+                    Assert.Contains(result.Value, c => c is ClozeCardDto cc && cc.Id == clozeCard.Id && cc.ClozeText == clozeCard.ClozeText);
                     break;
                 default:
                     throw new InvalidOperationException("Unknown card type");
