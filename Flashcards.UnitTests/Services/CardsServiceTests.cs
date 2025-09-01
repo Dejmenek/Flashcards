@@ -1,4 +1,4 @@
-﻿using Flashcards.DataAccess.Interfaces;
+using Flashcards.DataAccess.Interfaces;
 using Flashcards.Models;
 using Flashcards.Services;
 using Flashcards.Services.Interfaces;
@@ -315,6 +315,29 @@ public class CardsServiceTests
     }
 
     [Fact]
+    public async Task AddCardAsync_ShouldReturnFailure_WhenRepositoryAddClozeCardFails()
+    {
+        // Arrange
+        var stacks = new List<Stack> { new Stack { Id = 1, Name = "Test Stack" } };
+        _stacksRepository.GetAllStacksAsync().Returns(Result.Success<IEnumerable<Stack>>(stacks));
+
+        _userInteractionService.GetStack(Arg.Any<List<StackDto>>()).Returns("Test Stack");
+        _userInteractionService.GetCardType().Returns(CardType.Cloze);
+        _userInteractionService.GetClozeDeletionText().Returns("This is a test.");
+        _userInteractionService.GetClozeDeletionWords(Arg.Is("This is a test.")).Returns(new List<string> { "test" });
+
+        _cardsRepository.AddClozeCardAsync(Arg.Is(1), Arg.Is("This is a {{c1::test}}."))
+            .Returns(Result.Failure(CardsErrors.AddFailed));
+
+        // Act
+        var result = await _cardsService.AddCardAsync();
+
+        // Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(CardsErrors.AddFailed, result.Error);
+    }
+
+    [Fact]
     public async Task AddCardAsync_ShouldThrowInvalidOperationException_WhenInvalidCardTypeSelected()
     {
         // Arrange
@@ -360,6 +383,43 @@ public class CardsServiceTests
         _userInteractionService.GetMultipleChoiceAnswers(Arg.Any<List<string>>()).Returns(new List<string> { "B" });
 
         _cardsRepository.UpdateMultipleChoiceCardAsync(1, "Updated Q", Arg.Any<List<string>>(), Arg.Any<List<string>>())
+            .Returns(Result.Failure(CardsErrors.UpdateFailed));
+
+        // Act
+        var result = await _cardsService.UpdateCardAsync();
+
+        // Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(CardsErrors.UpdateFailed, result.Error);
+    }
+
+    [Fact]
+    public async Task UpdateCardAsync_ShouldReturnFailure_WhenRepositoryUpdateClozeCardFails()
+    {
+        // Arrange
+        var cards = new List<BaseCard>
+        {
+            new ClozeCard
+            {
+                Id = 1,
+                StackId = 1,
+                ClozeText = "This is a {{c1::test}}.",
+                CardType = CardType.Cloze
+            }
+        };
+        var userSelectedCard = new ClozeCardDto
+        {
+            Id = 1,
+            ClozeText = "This is a {{c1::test}}.",
+            CardType = CardType.Cloze
+        };
+
+        _cardsRepository.GetAllCardsAsync().Returns(Result.Success<IEnumerable<BaseCard>>(cards));
+        _userInteractionService.GetCard(Arg.Any<List<BaseCardDto>>()).Returns(userSelectedCard);
+        _userInteractionService.GetClozeDeletionText().Returns("This is a updated.");
+        _userInteractionService.GetClozeDeletionWords(Arg.Is("This is a updated.")).Returns(new List<string> { "updated" });
+
+        _cardsRepository.UpdateClozeCardAsync(Arg.Is(1), Arg.Is("This is a {{c1::updated}}."))
             .Returns(Result.Failure(CardsErrors.UpdateFailed));
 
         // Act
