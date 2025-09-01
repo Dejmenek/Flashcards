@@ -1,8 +1,7 @@
-using System.Text.RegularExpressions;
-
 using Flashcards.DataAccess.Interfaces;
 using Flashcards.Helpers;
 using Flashcards.Models;
+using Flashcards.Services.CardStrategies;
 using Flashcards.Services.Interfaces;
 using Flashcards.Utils;
 
@@ -38,122 +37,17 @@ public class StudySessionsService : IStudySessionsService
         Score = 0;
         foreach (BaseCardDto card in cards)
         {
-            switch (card)
+            IStudyCardStrategy strategy = card.CardType switch
             {
-                case FlashcardDto flashcard:
-                    DataVisualizer.ShowFlashcardFront(flashcard);
-                    string userAnswer = _userInteractionService.GetAnswer();
+                CardType.Flashcard => new FlashcardStudyStrategy(_userInteractionService, _logger),
+                CardType.MultipleChoice => new MultipleChoiceCardStudyStrategy(_userInteractionService, _logger),
+                CardType.Cloze => new ClozeCardStudyStrategy(_userInteractionService, _logger),
+                _ => throw new NotSupportedException($"Card type {card.CardType} is not supported.")
+            };
 
-                    if (userAnswer == flashcard.Back)
-                    {
-                        AnsiConsole.MarkupLine("Your answer is correct!");
-                        Score++;
-                        _logger.LogInformation("Correct answer for card ID {CardId}.", flashcard.Id);
-                    }
-                    else
-                    {
-                        AnsiConsole.MarkupLine("Your answwer was wrong.");
-                        AnsiConsole.MarkupLine($"The correct answer was {flashcard.Back}.");
-                        _logger.LogInformation("Incorrect answer for card ID {CardId}.", flashcard.Id);
-                    }
-                    break;
-                case MultipleChoiceCardDto multipleChoiceCard:
-                    DataVisualizer.ShowMultipleChoiceCard(multipleChoiceCard.Question);
-                    List<string> userAnswers = _userInteractionService.GetMultipleChoiceAnswers(multipleChoiceCard.Choices);
-                    if (IsCorrectMultipleChoiceCardAnswer(userAnswers, multipleChoiceCard.Answer))
-                    {
-                        AnsiConsole.MarkupLine("Your answer is correct!");
-                        Score++;
-                        _logger.LogInformation("Correct answer for card ID {CardId}.", multipleChoiceCard.Id);
-                    }
-                    else
-                    {
-                        AnsiConsole.MarkupLine("Your answer was wrong.");
-                        AnsiConsole.MarkupLine($"The correct answer was {string.Join(',', multipleChoiceCard.Answer)}.");
-                        _logger.LogInformation("Incorrect answer for card ID {CardId}.", multipleChoiceCard.Id);
-                    }
-                    break;
-                case ClozeCardDto clozeCard:
-                    var clozePattern = @"\{\{c\d+::(.*?)\}\}";
-                    var matches = Regex.Matches(clozeCard.ClozeText, clozePattern);
-
-                    string displayText = clozeCard.ClozeText;
-                    foreach (var clozeTag in from Match match in matches
-                                             let clozeTag = match.Value
-                                             select clozeTag)
-                    {
-                        displayText = displayText.Replace(clozeTag, "[bold underline]_____[/]");
-                    }
-
-                    AnsiConsole.MarkupLine("Fill in the blanks for the following sentence:");
-                    AnsiConsole.MarkupLine(displayText);
-
-                    List<string> correctAnswers = new();
-                    List<string> userClozeCardAnswers = new();
-                    int clozeIndex = 1;
-
-                    foreach (Match match in matches)
-                    {
-                        string hiddenText = match.Groups[1].Value;
-                        correctAnswers.Add(hiddenText);
-
-                        string prompt = $"Fill in the blank for cloze {clozeIndex}: ";
-                        AnsiConsole.MarkupLine(prompt);
-                        string userClozeCardAnswer = _userInteractionService.GetAnswer();
-                        userClozeCardAnswers.Add(userClozeCardAnswer);
-                        clozeIndex++;
-                    }
-
-                    string userFilledText = clozeCard.ClozeText;
-                    clozeIndex = 0;
-                    foreach (var (clozeTag, replacement) in from Match match in matches
-                                                            let clozeTag = match.Value
-                                                            let replacement = $"[bold yellow]{userClozeCardAnswers[clozeIndex]}[/]"
-                                                            select (clozeTag, replacement))
-                    {
-                        userFilledText = userFilledText.Replace(clozeTag, replacement);
-                        clozeIndex++;
-                    }
-
-                    AnsiConsole.MarkupLine("Your completed sentence:");
-                    AnsiConsole.MarkupLine(userFilledText);
-
-                    string correctFilledText = clozeCard.ClozeText;
-                    clozeIndex = 0;
-                    foreach (var (clozeTag, replacement) in from Match match in matches
-                                                            let clozeTag = match.Value
-                                                            let replacement = $"[bold green]{correctAnswers[clozeIndex]}[/]"
-                                                            select (clozeTag, replacement))
-                    {
-                        correctFilledText = correctFilledText.Replace(clozeTag, replacement);
-                        clozeIndex++;
-                    }
-
-                    AnsiConsole.MarkupLine("Correct sentence:");
-                    AnsiConsole.MarkupLine(correctFilledText);
-
-                    bool allCorrect = true;
-                    for (int i = 0; i < correctAnswers.Count; i++)
-                    {
-                        if (!string.Equals(userClozeCardAnswers[i], correctAnswers[i], StringComparison.OrdinalIgnoreCase))
-                        {
-                            allCorrect = false;
-                            break;
-                        }
-                    }
-
-                    if (allCorrect)
-                    {
-                        AnsiConsole.MarkupLine("Your answers are correct!");
-                        Score++;
-                        _logger.LogInformation("Correct cloze answers for card ID {CardId}.", clozeCard.Id);
-                    }
-                    else
-                    {
-                        AnsiConsole.MarkupLine("Your answers were wrong.");
-                        _logger.LogInformation("Incorrect cloze answers for card ID {CardId}.", clozeCard.Id);
-                    }
-                    break;
+            if (strategy.Study(card))
+            {
+                Score++;
             }
 
             _userInteractionService.GetUserInputToContinue();
@@ -295,16 +189,5 @@ public class StudySessionsService : IStudySessionsService
 
         _logger.LogInformation("Monthly average score report for year {Year} retrieved successfully.", year);
         return Result.Success(reportResult.Value);
-    }
-
-    private static bool IsCorrectMultipleChoiceCardAnswer(List<string> userAnswers, List<string> correctAnswers)
-    {
-        if (userAnswers.Count != correctAnswers.Count)
-            return false;
-
-        var userAnswersSet = new HashSet<string>(userAnswers);
-        var correctAnswersSet = new HashSet<string>(correctAnswers);
-
-        return userAnswersSet.SetEquals(correctAnswersSet);
     }
 }
