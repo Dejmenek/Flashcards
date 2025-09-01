@@ -1,4 +1,4 @@
-﻿using Flashcards.DataAccess.Interfaces;
+using Flashcards.DataAccess.Interfaces;
 using Flashcards.Models;
 using Flashcards.Services;
 using Flashcards.Services.Interfaces;
@@ -32,7 +32,7 @@ public class StudySessionsServiceTests
     public void StartStudySessionAsync_ShouldCalculateCorrectScore_WhenMixedCardTypes()
     {
         // Arrange
-        var flashcard = new FlashcardDto { Id = 1, Front = "Hello", Back = "Hola" };
+        var flashcard = new FlashcardDto { Id = 1, Front = "Hello", Back = "Hola", CardType = CardType.Flashcard };
         var multipleChoiceCard = new MultipleChoiceCardDto
         {
             Id = 2,
@@ -41,10 +41,10 @@ public class StudySessionsServiceTests
             Answer = new List<string> { "Apple" },
             CardType = CardType.MultipleChoice
         };
-        var cards = new List<BaseCardDto> { flashcard, multipleChoiceCard };
+        var clozeCard = new ClozeCardDto { Id = 3, ClozeText = "The capital of France is {{c1::Paris}}.", CardType = CardType.Cloze };
+        var cards = new List<BaseCardDto> { flashcard, multipleChoiceCard, clozeCard };
 
-        int answerCallCount = 0;
-        _userInteractionService.GetAnswer().Returns(_ => answerCallCount++ == 0 ? "Hola" : "");
+        _userInteractionService.GetAnswer().Returns("Hola", "Paris");
         _userInteractionService.GetMultipleChoiceAnswers(Arg.Any<List<string>>())
             .Returns(new List<string> { "Apple" });
 
@@ -52,8 +52,8 @@ public class StudySessionsServiceTests
         _studySessionsService.StartStudySessionAsync(cards);
 
         // Assert
-        Assert.Equal(2, _studySessionsService.Score);
-        _userInteractionService.Received(1).GetAnswer();
+        Assert.Equal(3, _studySessionsService.Score);
+        _userInteractionService.Received(2).GetAnswer();
         _userInteractionService.Received(1).GetMultipleChoiceAnswers(multipleChoiceCard.Choices);
     }
 
