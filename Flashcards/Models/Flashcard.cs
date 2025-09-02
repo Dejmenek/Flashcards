@@ -1,10 +1,12 @@
-﻿namespace Flashcards.Models;
+namespace Flashcards.Models;
 
 public abstract class BaseCard
 {
     public int Id { get; set; }
     public int StackId { get; set; }
     public CardType CardType { get; set; }
+    public int Box { get; set; } = 1;
+    public DateTime NextReviewDate { get; set; } = DateTime.Now;
 }
 
 public class Flashcard : BaseCard
@@ -39,6 +41,8 @@ public abstract record class BaseCardDto
 {
     public int Id { get; init; }
     public CardType CardType { get; init; }
+    public int Box { get; init; }
+    public DateTime NextReviewDate { get; init; }
 }
 
 public record class FlashcardDto : BaseCardDto
