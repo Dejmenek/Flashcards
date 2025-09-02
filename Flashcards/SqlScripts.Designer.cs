@@ -309,18 +309,14 @@ namespace Flashcards {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INSERT INTO Cards (StackId, Front, Back, CardType) VALUES
-        ///	(1, &apos;Hola&apos;, &apos;Hello&apos;, &apos;Flashcard&apos;),
-        ///	(1, &apos;¿Cómo estás?&apos;, &apos;How are you?&apos;, &apos;Flashcard&apos;),
-        ///	(1, &apos;Gracias&apos;, &apos;Thank you&apos;, &apos;Flashcard&apos;),
-        ///	(2, &apos;Hallo&apos;, &apos;Hello&apos;, &apos;Flashcard&apos;),
-        ///	(2, &apos;Wie geht es dir?&apos;, &apos;How are you?&apos;, &apos;Flashcard&apos;),
-        ///	(2, &apos;Danke&apos;, &apos;Thank you&apos;, &apos;Flashcard&apos;),
-        ///	(3, &apos;Dzień dobry&apos;, &apos;Good morning&apos;, &apos;Flashcard&apos;),
-        ///	(3, &apos;Do widzenia&apos;, &apos;Goodbye&apos;, &apos;Flashcard&apos;),
-        ///	(3, &apos;Proszę&apos;, &apos;Please&apos;, &apos;Flashcard&apos;);
-        ///
-        ///	INSERT INTO Cards (StackId, Question, Choice [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to -- Flashcards: Assign Box values (1=daily, 2=every 3 days, 3=every 7 days)
+        ///INSERT INTO Cards (StackId, Front, Back, CardType, Box, NextReviewDate) VALUES
+        ///	(1, &apos;Hola&apos;, &apos;Hello&apos;, &apos;Flashcard&apos;, 1, GETDATE()),
+        ///	(1, &apos;¿Cómo estás?&apos;, &apos;How are you?&apos;, &apos;Flashcard&apos;, 1, GETDATE()),
+        ///	(1, &apos;Gracias&apos;, &apos;Thank you&apos;, &apos;Flashcard&apos;, 2, DATEADD(day, 3, GETDATE())),
+        ///	(2, &apos;Hallo&apos;, &apos;Hello&apos;, &apos;Flashcard&apos;, 1, GETDATE()),
+        ///	(2, &apos;Wie geht es dir?&apos;, &apos;How are you?&apos;, &apos;Flashcard&apos;, 2, DATEADD(day, 3, GETDATE())),
+        ///	(2, &apos;Danke&apos;, &apos;Thank you&apos; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string SeedCards {
             get {

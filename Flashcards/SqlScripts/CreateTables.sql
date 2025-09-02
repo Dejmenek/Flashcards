@@ -28,6 +28,8 @@ CREATE TABLE Cards (
     ClozeText NVARCHAR(max) NULL,
     FillInText NVARCHAR(max) NULL,
     Answer NVARCHAR(max) NULL,
+    Box INT NOT NULL DEFAULT 1,
+    NextReviewDate DATE NOT NULL DEFAULT GETDATE(),
     CardType NVARCHAR(30) NOT NULL,
     CHECK (CardType IN ('Flashcard', 'Cloze', 'MultipleChoice', 'FillIn')),
     FOREIGN KEY (StackId) REFERENCES Stacks(Id)
