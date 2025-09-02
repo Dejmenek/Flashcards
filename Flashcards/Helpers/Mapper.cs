@@ -1,4 +1,4 @@
-﻿using Flashcards.Models;
+using Flashcards.Models;
 
 namespace Flashcards.Helpers;
 
@@ -24,6 +24,8 @@ public static class Mapper
             CardType = flashcard.CardType,
             Front = flashcard.Front ?? string.Empty,
             Back = flashcard.Back ?? string.Empty,
+            Box = flashcard.Box,
+            NextReviewDate = flashcard.NextReviewDate
         };
     }
 
@@ -34,6 +36,8 @@ public static class Mapper
             Id = clozeCard.Id,
             CardType = clozeCard.CardType,
             ClozeText = clozeCard.ClozeText ?? string.Empty,
+            Box = clozeCard.Box,
+            NextReviewDate = clozeCard.NextReviewDate
         };
     }
 
@@ -44,7 +48,9 @@ public static class Mapper
             Id = fillInCard.Id,
             CardType = fillInCard.CardType,
             FillInText = fillInCard.FillInText ?? string.Empty,
-            Answer = fillInCard.Answer != null ? fillInCard.Answer.Split(';').ToList() : new()
+            Answer = fillInCard.Answer != null ? fillInCard.Answer.Split(';').ToList() : new(),
+            Box = fillInCard.Box,
+            NextReviewDate = fillInCard.NextReviewDate
         };
     }
 
@@ -57,6 +63,8 @@ public static class Mapper
             Question = multipleChoiceCard.Question ?? string.Empty,
             Choices = multipleChoiceCard.Choices != null ? multipleChoiceCard.Choices.Split(';').ToList() : new(),
             Answer = multipleChoiceCard.Answer != null ? multipleChoiceCard.Answer.Split(';').ToList() : new(),
+            Box = multipleChoiceCard.Box,
+            NextReviewDate = multipleChoiceCard.NextReviewDate
         };
     }
 
