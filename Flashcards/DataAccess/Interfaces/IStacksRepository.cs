@@ -17,6 +17,7 @@ public interface IStacksRepository
     );
     Task<Result> UpdateClozeCardInStackAsync(int clozeCardId, int stackId, string clozeText);
     Task<Result<int>> GetCardsCountInStackAsync(int stackId);
+    Task<Result<IEnumerable<BaseCard>>> GetCardsToStudyByStackIdAsync(int stackId);
     Task<Result> DeleteCardFromStackAsync(int cardId, int stackId);
     Task<Result<IEnumerable<BaseCard>>> GetCardsByStackIdAsync(int stackId);
     Task<Result> AddStackAsync(string name);
