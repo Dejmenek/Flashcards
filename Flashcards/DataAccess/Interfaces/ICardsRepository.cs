@@ -13,4 +13,5 @@ public interface ICardsRepository
     Task<Result> UpdateClozeCardAsync(int clozeCardId, string clozeText);
     Task<Result> UpdateMultipleChoiceCardAsync(int multipleChoiceCardId, string question, List<string> choices, List<string> answers);
     Task<Result<IEnumerable<BaseCard>>> GetAllCardsAsync();
+    Task<Result> UpdateCardProgress(int cardId, int newBox, DateTime nextReviewDate);
 }

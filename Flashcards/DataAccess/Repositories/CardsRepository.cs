@@ -200,6 +200,37 @@ public class CardsRepository : ICardsRepository
         }
     }
 
+    public async Task<Result> UpdateCardProgress(int cardId, int newBox, DateTime nextReviewDate)
+    {
+        _logger.LogInformation("Updating progress for card {CardId}.", cardId);
+        try
+        {
+            using (var connection = new SqlConnection(_defaultConnectionString))
+            {
+                string sql = SqlScripts.UpdateCardProgress;
+                await connection.ExecuteAsync(sql, new
+                {
+                    Box = newBox,
+                    NextReviewDate = nextReviewDate,
+                    Id = cardId
+                });
+            }
+
+            _logger.LogInformation("Successfully updated progress for card {CardId}.", cardId);
+            return Result.Success();
+        }
+        catch (SqlException ex)
+        {
+            _logger.LogError(ex, "SQL error while updating progress for card {CardId}.", cardId);
+            return Result.Failure(CardsErrors.UpdateCardProgressFailed);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error while updating progress for card {CardId}.", cardId);
+            return Result.Failure(CardsErrors.UpdateCardProgressFailed);
+        }
+    }
+
     public async Task<Result> UpdateClozeCardAsync(int clozeCardId, string clozeText)
     {
         _logger.LogInformation("Updating cloze card {CardId}.", clozeCardId);

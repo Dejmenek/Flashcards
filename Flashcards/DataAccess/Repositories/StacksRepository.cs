@@ -342,4 +342,58 @@ public class StacksRepository : IStacksRepository
             return Result.Failure(StacksErrors.UpdateFailed);
         }
     }
+
+    public async Task<Result<IEnumerable<BaseCard>>> GetCardsToStudyByStackIdAsync(int stackId)
+    {
+        try
+        {
+            using (var connection = new SqlConnection(_defaultConnectionString))
+            {
+                string sql = SqlScripts.GetCardsToStudyByStackId;
+                using (var reader = await connection.ExecuteReaderAsync(sql, new { StackId = stackId }))
+                {
+                    var flashcardParser = reader.GetRowParser<Flashcard>();
+                    var clozeCardParser = reader.GetRowParser<ClozeCard>();
+                    var fillInCardParser = reader.GetRowParser<FillInCard>();
+                    var multipleChoiceCardParser = reader.GetRowParser<MultipleChoiceCard>();
+
+                    var cards = new List<BaseCard>();
+
+                    while (await reader.ReadAsync())
+                    {
+                        var discriminator = reader.GetString(reader.GetOrdinal("CardType"));
+                        if (!Enum.TryParse(discriminator, out CardType cardType))
+                        {
+                            _logger.LogWarning("Unknown card type discriminator: {Discriminator}", discriminator);
+                            return Result.Failure<IEnumerable<BaseCard>>(CardsErrors.GetAllFailed);
+                        }
+
+                        BaseCard card = cardType switch
+                        {
+                            CardType.Flashcard => flashcardParser(reader),
+                            CardType.Cloze => clozeCardParser(reader),
+                            CardType.FillIn => fillInCardParser(reader),
+                            CardType.MultipleChoice => multipleChoiceCardParser(reader),
+                            _ => throw new InvalidOperationException("Unknown card type")
+                        };
+
+                        cards.Add(card);
+                    }
+
+                    _logger.LogInformation("Successfully retrieved {Count} cards to study for stack {StackId}.", cards.Count, stackId);
+                    return Result.Success(cards.AsEnumerable());
+                }
+            }
+        }
+        catch (SqlException ex)
+        {
+            _logger.LogError(ex, "SQL error while retrieving cards to study for stack {StackId}.", stackId);
+            return Result.Failure<IEnumerable<BaseCard>>(CardsErrors.GetAllFailed);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error while retrieving cards to study for stack {StackId}.", stackId);
+            return Result.Failure<IEnumerable<BaseCard>>(CardsErrors.GetAllFailed);
+        }
+    }
 }
