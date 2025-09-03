@@ -157,6 +157,9 @@
   <data name="GetCardsCountInStack" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>SqlScripts\GetCardsCountInStack.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
   </data>
+  <data name="GetCardsToStudyByStackId" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>SqlScripts\GetCardsToStudyByStackId.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+  </data>
   <data name="GetMonthlyStudySessionAverageScoreReport" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>SqlScripts\GetMonthlyStudySessionAverageScoreReport.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
   </data>
@@ -183,6 +186,9 @@
   </data>
   <data name="StackExistsWithName" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>SqlScripts\StackExistsWithName.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+  </data>
+  <data name="UpdateCardProgress" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>SqlScripts\UpdateCardProgress.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
   </data>
   <data name="UpdateClozeCard" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>SqlScripts\UpdateClozeCard.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>

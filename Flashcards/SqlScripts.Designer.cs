@@ -220,6 +220,16 @@ namespace Flashcards {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to SELECT * FROM Cards
+        ///WHERE StackId = @StackId AND NextReviewDate &lt;= GETDATE();.
+        /// </summary>
+        internal static string GetCardsToStudyByStackId {
+            get {
+                return ResourceManager.GetString("GetCardsToStudyByStackId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to SELECT
         ///    Name AS StackName,
         ///    ISNULL([January], 0) AS JanuaryAverageScore,
@@ -351,6 +361,17 @@ namespace Flashcards {
         internal static string StackExistsWithName {
             get {
                 return ResourceManager.GetString("StackExistsWithName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UPDATE Cards
+        ///SET Box = @Box, NextReviewDate = @NextReviewDate
+        ///WHERE Id = @Id;.
+        /// </summary>
+        internal static string UpdateCardProgress {
+            get {
+                return ResourceManager.GetString("UpdateCardProgress", resourceCulture);
             }
         }
         
