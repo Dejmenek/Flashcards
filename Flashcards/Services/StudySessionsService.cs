@@ -14,6 +14,7 @@ namespace Flashcards.Services;
 public class StudySessionsService : IStudySessionsService
 {
     private readonly IStudySessionsRepository _studySessionsRepository;
+    private readonly ICardsRepository _cardsRepository;
     private readonly IUserInteractionService _userInteractionService;
     private readonly IConsoleService _consoleService;
     private readonly ILogger<StudySessionsService> _logger;
@@ -21,19 +22,22 @@ public class StudySessionsService : IStudySessionsService
 
     public StudySessionsService(
         IStudySessionsRepository studySessionsRepository,
+        ICardsRepository cardsRepository,
         IUserInteractionService userInteractionService,
         IConsoleService consoleService,
         ILogger<StudySessionsService> logger)
     {
         _studySessionsRepository = studySessionsRepository;
+        _cardsRepository = cardsRepository;
         _userInteractionService = userInteractionService;
         _consoleService = consoleService;
         _logger = logger;
     }
 
-    public void StartStudySessionAsync(List<BaseCardDto> cards)
+    public async Task<Result> StartStudySessionAsync(List<BaseCardDto> cards)
     {
         _logger.LogInformation("Starting study session with {Count} cards.", cards.Count);
+        var updatedCards = new List<CardProgressUpdateDto>();
         Score = 0;
         foreach (BaseCardDto card in cards)
         {
@@ -45,19 +49,38 @@ public class StudySessionsService : IStudySessionsService
                 _ => throw new NotSupportedException($"Card type {card.CardType} is not supported.")
             };
 
-            if (strategy.Study(card))
+            bool isCorrect = strategy.Study(card);
+            int newBox = GetNextBox(isCorrect, card.Box);
+            DateTime newReviewDate = GetNextReviewDate(isCorrect, newBox);
+
+            var updatedCard = new CardProgressUpdateDto
             {
-                Score++;
-            }
+                CardId = card.Id,
+                Box = newBox,
+                NextReviewDate = newReviewDate
+            };
+            updatedCards.Add(updatedCard);
+
+            if (isCorrect) Score++;
 
             _userInteractionService.GetUserInputToContinue();
             _consoleService.Clear();
+        }
+
+        var result = await _cardsRepository.UpdateCardsProgressBulkAsync(updatedCards);
+
+        if (result.IsFailure)
+        {
+            _logger.LogWarning("Failed to update card progress: {Error}", result.Error.Description);
+            return Result.Failure(result.Error);
         }
 
         AnsiConsole.MarkupLine($"You got {Score} out of {cards.Count}");
         _logger.LogInformation("Study session completed. Score: {Score}/{Total}", Score, cards.Count);
         _userInteractionService.GetUserInputToContinue();
         _consoleService.Clear();
+
+        return Result.Success();
     }
 
     public async Task<Result> RunStudySessionAsync(List<BaseCardDto> studySessionCards, int stackId)
@@ -70,7 +93,14 @@ public class StudySessionsService : IStudySessionsService
             return Result.Failure(CardsErrors.CardsNotFound);
         }
 
-        StartStudySessionAsync(studySessionCards);
+        var studyResult = await StartStudySessionAsync(studySessionCards);
+
+        if (studyResult.IsFailure)
+        {
+            _logger.LogWarning("Study session failed: {Error}", studyResult.Error.Description);
+            return Result.Failure(studyResult.Error);
+        }
+
         var endResult = await EndStudySessionAsync(stackId);
         if (endResult.IsFailure)
         {
@@ -189,5 +219,21 @@ public class StudySessionsService : IStudySessionsService
 
         _logger.LogInformation("Monthly average score report for year {Year} retrieved successfully.", year);
         return Result.Success(reportResult.Value);
+    }
+
+    private static int GetNextBox(bool isCorrectAnswer, int currentBox)
+    {
+        return isCorrectAnswer ? Math.Min(currentBox + 1, 3) : 1;
+    }
+
+    private static DateTime GetNextReviewDate(bool isCorrectAnswer, int currentBox)
+    {
+        return isCorrectAnswer ? DateTime.Now.AddDays(currentBox switch
+        {
+            1 => 1,
+            2 => 3,
+            3 => 7,
+            _ => 1
+        }) : DateTime.Now;
     }
 }
