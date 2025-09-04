@@ -136,8 +136,14 @@
   <data name="CreateDatabase" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>SqlScripts\CreateDatabase.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
   </data>
+  <data name="CreateStoredProcedures" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>SqlScripts\CreateStoredProcedures.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+  </data>
   <data name="CreateTables" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>SqlScripts\CreateTables.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+  </data>
+  <data name="CreateTypes" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>SqlScripts\CreateTypes.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
   </data>
   <data name="DeleteCard" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>SqlScripts\DeleteCard.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
@@ -186,9 +192,6 @@
   </data>
   <data name="StackExistsWithName" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>SqlScripts\StackExistsWithName.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
-  </data>
-  <data name="UpdateCardProgress" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>SqlScripts\UpdateCardProgress.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
   </data>
   <data name="UpdateClozeCard" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>SqlScripts\UpdateClozeCard.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
