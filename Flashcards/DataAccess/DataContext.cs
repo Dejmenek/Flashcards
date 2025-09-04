@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
@@ -20,6 +20,8 @@ public class DataContext
     {
         await CreateDatabase();
         await CreateTables();
+        await CreateTypes();
+        await CreateProcedures();
         await SeedStacks();
         await SeedFlashcards();
     }
@@ -59,6 +61,24 @@ public class DataContext
         {
             string sql = SqlScripts.SeedCards;
 
+            await connection.ExecuteAsync(sql);
+        }
+    }
+
+    private async Task CreateTypes()
+    {
+        using (var connection = new SqlConnection(_defaultConnectionString))
+        {
+            string sql = SqlScripts.CreateTypes;
+            await connection.ExecuteAsync(sql);
+        }
+    }
+
+    private async Task CreateProcedures()
+    {
+        using (var connection = new SqlConnection(_defaultConnectionString))
+        {
+            string sql = SqlScripts.CreateStoredProcedures;
             await connection.ExecuteAsync(sql);
         }
     }

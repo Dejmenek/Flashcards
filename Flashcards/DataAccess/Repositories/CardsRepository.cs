@@ -1,3 +1,5 @@
+using System.Data;
+
 using Dapper;
 
 using Flashcards.DataAccess.Interfaces;
@@ -200,33 +202,45 @@ public class CardsRepository : ICardsRepository
         }
     }
 
-    public async Task<Result> UpdateCardProgress(int cardId, int newBox, DateTime nextReviewDate)
+    public async Task<Result> UpdateCardsProgressBulkAsync(IEnumerable<CardProgressUpdateDto> updates)
     {
-        _logger.LogInformation("Updating progress for card {CardId}.", cardId);
+        _logger.LogInformation("Bulk updating progress for {Count} cards.", updates.Count());
         try
         {
             using (var connection = new SqlConnection(_defaultConnectionString))
             {
-                string sql = SqlScripts.UpdateCardProgress;
-                await connection.ExecuteAsync(sql, new
+                using (var command = new SqlCommand("UpdateCardProgressBulk", connection))
                 {
-                    Box = newBox,
-                    NextReviewDate = nextReviewDate,
-                    Id = cardId
-                });
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    var dt = new DataTable();
+                    dt.Columns.Add("CardId", typeof(int));
+                    dt.Columns.Add("Box", typeof(int));
+                    dt.Columns.Add("NextReviewDate", typeof(DateTime));
+
+                    foreach (var update in updates)
+                    {
+                        dt.Rows.Add(update.CardId, update.Box, update.NextReviewDate);
+                    }
+
+                    var param = command.Parameters.AddWithValue("@CardProgressTVP", dt);
+                    param.SqlDbType = SqlDbType.Structured;
+
+                    await command.ExecuteNonQueryAsync();
+                }
             }
 
-            _logger.LogInformation("Successfully updated progress for card {CardId}.", cardId);
+            _logger.LogInformation("Successfully bulk updated card progress.");
             return Result.Success();
         }
         catch (SqlException ex)
         {
-            _logger.LogError(ex, "SQL error while updating progress for card {CardId}.", cardId);
+            _logger.LogError(ex, "SQL error while bulk updating card progress.");
             return Result.Failure(CardsErrors.UpdateCardProgressFailed);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected error while updating progress for card {CardId}.", cardId);
+            _logger.LogError(ex, "Unexpected error while bulk updating card progress.");
             return Result.Failure(CardsErrors.UpdateCardProgressFailed);
         }
     }
