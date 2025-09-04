@@ -130,7 +130,29 @@ namespace Flashcards {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DROP TABLE IF EXISTS StudySessions;
+        ///   Looks up a localized string similar to CREATE PROCEDURE UpdateCardProgressBulk
+        ///    @CardProgressTVP CardProgressTVP READONLY
+        ///AS
+        ///BEGIN
+        ///    SET NOCOUNT ON;
+        ///
+        ///    UPDATE c
+        ///    SET
+        ///        c.Box = u.Box,
+        ///        c.NextReviewDate = u.NextReviewDate
+        ///    FROM Cards c
+        ///    INNER JOIN @CardProgressTVP u ON c.Id = u.CardId;
+        ///END;.
+        /// </summary>
+        internal static string CreateStoredProcedures {
+            get {
+                return ResourceManager.GetString("CreateStoredProcedures", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DROP PROCEDURE IF EXISTS UpdateCardProgressBulk;
+        ///DROP TABLE IF EXISTS StudySessions;
         ///DROP TABLE IF EXISTS Cards;
         ///DROP TABLE IF EXISTS Stacks;
         ///DROP TABLE IF EXISTS Logs;
@@ -147,15 +169,27 @@ namespace Flashcards {
         ///    Level NVARCHAR(128),
         ///    TimeStamp DATETIMEOFFSET(7),
         ///    Exception NVARCHAR(MAX),
-        ///    Properties XML
-        ///);
-        ///
-        ///CREATE TABLE Cards (
-        ///    Id INT IDENT [rest of string was truncated]&quot;;.
+        ///    Properties [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string CreateTables {
             get {
                 return ResourceManager.GetString("CreateTables", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DROP TYPE IF EXISTS CardProgressTVP;
+        ///
+        ///CREATE TYPE CardProgressTVP AS TABLE
+        ///(
+        ///    CardId INT,
+        ///    Box INT,
+        ///    NextReviewDate DATETIME2
+        ///);.
+        /// </summary>
+        internal static string CreateTypes {
+            get {
+                return ResourceManager.GetString("CreateTypes", resourceCulture);
             }
         }
         
@@ -361,17 +395,6 @@ namespace Flashcards {
         internal static string StackExistsWithName {
             get {
                 return ResourceManager.GetString("StackExistsWithName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to UPDATE Cards
-        ///SET Box = @Box, NextReviewDate = @NextReviewDate
-        ///WHERE Id = @Id;.
-        /// </summary>
-        internal static string UpdateCardProgress {
-            get {
-                return ResourceManager.GetString("UpdateCardProgress", resourceCulture);
             }
         }
         
