@@ -93,6 +93,15 @@ public class UserInteractionService : IUserInteractionService
             );
     }
 
+    public string GetStack(List<StackSummaryDto> stackSummaryDtos)
+    {
+        return AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+                .Title("Choose your stack")
+                .AddChoices(stackSummaryDtos.Select(f => f.Name))
+            );
+    }
+
     public MenuOptions GetMenuOption()
     {
         return AnsiConsole.Prompt(
