@@ -58,9 +58,19 @@ public class StacksController
         return await _stacksService.GetAllStacksAsync();
     }
 
+    public async Task<Result<List<StackSummaryDto>>> GetAllStackSummariesAsync()
+    {
+        return await _stacksService.GetAllStackSummariesAsync();
+    }
+
     public async Task<Result> GetStackAsync()
     {
         return await _stacksService.GetStackAsync();
+    }
+
+    public async Task<Result> GetStackToStudyAsync()
+    {
+        return await _stacksService.GetStackToStudyAsync();
     }
 
     public Stack GetCurrentStack()
