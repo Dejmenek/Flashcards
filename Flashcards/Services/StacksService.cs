@@ -290,4 +290,44 @@ public class StacksService : IStacksService
     {
         return CurrentStack!;
     }
+
+    public async Task<Result<List<BaseCardDto>>> GetCardsToStudyByStackIdAsync()
+    {
+        _logger.LogInformation("Starting GetCardsToStudyByStackIdAsync.");
+        if (CurrentStack == null)
+        {
+            _logger.LogWarning("No current stack selected.");
+            return Result.Failure<List<BaseCardDto>>(StacksErrors.CurrentStackNotFound);
+        }
+
+        var cardsResult = await _stacksRepository.GetCardsToStudyByStackIdAsync(CurrentStack.Id);
+        if (cardsResult.IsFailure)
+        {
+            _logger.LogWarning("Failed to retrieve cards for stack {StackId}: {Error}", CurrentStack.Id, cardsResult.Error.Description);
+            return Result.Failure<List<BaseCardDto>>(cardsResult.Error);
+        }
+
+        List<BaseCardDto> cardDtos = new();
+        foreach (var card in cardsResult.Value)
+        {
+            switch (card)
+            {
+                case Flashcard flashcard:
+                    cardDtos.Add(Mapper.ToFlashcardDTO(flashcard));
+                    break;
+                case MultipleChoiceCard multipleChoiceCard:
+                    cardDtos.Add(Mapper.ToMultipleChoiceCardDTO(multipleChoiceCard));
+                    break;
+                case ClozeCard clozeCard:
+                    cardDtos.Add(Mapper.ToClozeCardDTO(clozeCard));
+                    break;
+                default:
+                    _logger.LogWarning("Unknown card type encountered in GetCardsByStackIdAsync.");
+                    return Result.Failure<List<BaseCardDto>>(CardsErrors.GetAllFailed);
+            }
+        }
+
+        _logger.LogInformation("Retrieved {Count} cards to study for stack {StackId}.", cardDtos.Count, CurrentStack.Id);
+        return Result.Success(cardDtos);
+    }
 }
