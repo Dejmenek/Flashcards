@@ -1,4 +1,4 @@
-﻿namespace Flashcards.Models;
+namespace Flashcards.Models;
 
 public class Stack
 {
@@ -10,4 +10,11 @@ public class Stack
 public record class StackDto
 {
     public string Name { get; init; }
+}
+
+public record class StackSummaryDto
+{
+    public string Name { get; init; }
+    public int TotalCards { get; init; }
+    public int DueCards { get; init; }
 }
