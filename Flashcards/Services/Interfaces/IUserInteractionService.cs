@@ -20,6 +20,7 @@ public interface IUserInteractionService
     CardType GetCardType();
     BaseCardDto GetCard(List<BaseCardDto> cards);
     string GetStack(List<StackDto> stacks);
+    string GetStack(List<StackSummaryDto> stackSummaryDtos);
     MenuOptions GetMenuOption();
     ManageStackOptions GetManageStackOption(string currentStack);
     ManageCardsOptions GetManageCardsOption();

@@ -1,4 +1,4 @@
-﻿using Flashcards.Models;
+using Flashcards.Models;
 
 using Spectre.Console;
 
@@ -61,6 +61,27 @@ public static class DataVisualizer
         foreach (StackDto stack in stacks)
         {
             table.AddRow(stack.Name);
+        }
+
+        AnsiConsole.Write(table);
+    }
+
+    public static void ShowStacksSummary(List<StackSummaryDto> stackSummaries)
+    {
+        if (stackSummaries is [])
+        {
+            AnsiConsole.MarkupLine("No stacks found.");
+            return;
+        }
+        var table = new Table().Title("STACKS SUMMARY");
+
+        table.AddColumn("Name");
+        table.AddColumn("Due Cards");
+        table.AddColumn("Total Cards");
+
+        foreach (StackSummaryDto stackSummary in stackSummaries)
+        {
+            table.AddRow(stackSummary.Name, stackSummary.DueCards.ToString(), stackSummary.TotalCards.ToString());
         }
 
         AnsiConsole.Write(table);

@@ -230,7 +230,10 @@ public class Menu
 
     private async Task StudyAsync()
     {
-        var stackResult = await _stacksController.GetStackAsync();
+        var stackSummaries = await _stacksController.GetAllStackSummariesAsync();
+        DataVisualizer.ShowStacksSummary(stackSummaries.Value);
+
+        var stackResult = await _stacksController.GetStackToStudyAsync();
         if (stackResult.IsFailure)
         {
             ShowError(stackResult.Error);

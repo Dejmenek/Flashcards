@@ -13,6 +13,8 @@ public interface IStacksService
     Task<Result<List<BaseCardDto>>> GetCardsToStudyByStackIdAsync();
     Task<Result<int>> GetCardsCountInStackAsync();
     Task<Result<List<StackDto>>> GetAllStacksAsync();
+    Task<Result<List<StackSummaryDto>>> GetAllStackSummariesAsync();
     Task<Result> GetStackAsync();
+    Task<Result> GetStackToStudyAsync();
     Stack GetCurrentStack();
 }

@@ -224,6 +224,23 @@ namespace Flashcards {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to SELECT
+        ///    s.Name,
+        ///    COUNT(
+        ///        CASE WHEN c.NextReviewDate &lt;= CAST(GETDATE() AS DATE) THEN 1 END
+        ///    ) AS DueCards,
+        ///    COUNT(c.Id) AS TotalCards
+        ///FROM Stacks s
+        ///    JOIN Cards c ON s.Id = c.StackId
+        ///GROUP BY s.Name;.
+        /// </summary>
+        internal static string GetAllStackSummaries {
+            get {
+                return ResourceManager.GetString("GetAllStackSummaries", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to SELECT * FROM Cards.
         /// </summary>
         internal static string GetCards {
