@@ -344,4 +344,35 @@ public class StacksService : IStacksService
         _logger.LogInformation("Retrieved {Count} cards to study for stack {StackId}.", cardDtos.Count, CurrentStack.Id);
         return Result.Success(cardDtos);
     }
+
+    public async Task<Result> GetStackToStudyAsync()
+    {
+        _logger.LogInformation("Starting GetStackToStudyAsync.");
+        var stacksResult = await GetAllStackSummariesAsync();
+        if (stacksResult.IsFailure)
+        {
+            _logger.LogWarning("Failed to retrieve stacks for selection: {Error}", stacksResult.Error.Description);
+            return Result.Failure(stacksResult.Error);
+        }
+
+        if (stacksResult.Value.Count == 0)
+        {
+            _logger.LogWarning("No stacks found for selection.");
+            return Result.Failure(StacksErrors.StacksNotFound);
+        }
+
+        string name = _userInteractionService.GetStack(stacksResult.Value);
+        _logger.LogInformation("User selected stack {StackName}.", name);
+
+        var stackResult = await _stacksRepository.GetStackAsync(name);
+        if (stackResult.IsFailure)
+        {
+            _logger.LogWarning("Failed to retrieve stack {StackName}: {Error}", name, stackResult.Error.Description);
+            return Result.Failure(stackResult.Error);
+        }
+
+        CurrentStack = stackResult.Value;
+        _logger.LogInformation("Current stack set to {StackName} (ID: {StackId}).", CurrentStack.Name, CurrentStack.Id);
+        return Result.Success();
+    }
 }
