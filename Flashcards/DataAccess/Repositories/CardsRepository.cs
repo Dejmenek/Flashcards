@@ -209,6 +209,7 @@ public class CardsRepository : ICardsRepository
         {
             using (var connection = new SqlConnection(_defaultConnectionString))
             {
+                await connection.OpenAsync();
                 using (var command = new SqlCommand("UpdateCardProgressBulk", connection))
                 {
                     command.CommandType = CommandType.StoredProcedure;
