@@ -255,6 +255,20 @@ public class StacksService : IStacksService
         return Result.Success(stackDtos);
     }
 
+    public async Task<Result<List<StackSummaryDto>>> GetAllStackSummariesAsync()
+    {
+        _logger.LogInformation("Starting GetAllStackSummariesAsync.");
+        var stacksResult = await _stacksRepository.GetAllStackSummariesAsync();
+        if (stacksResult.IsFailure)
+        {
+            _logger.LogWarning("Failed to retrieve stack summaries: {Error}", stacksResult.Error.Description);
+            return Result.Failure<List<StackSummaryDto>>(stacksResult.Error);
+        }
+
+        _logger.LogInformation("Retrieved {Count} stack summaries.", stacksResult.Value.Count());
+        return Result.Success(stacksResult.Value.ToList());
+    }
+
     public async Task<Result> GetStackAsync()
     {
         _logger.LogInformation("Starting GetStackAsync.");
