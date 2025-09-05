@@ -396,4 +396,29 @@ public class StacksRepository : IStacksRepository
             return Result.Failure<IEnumerable<BaseCard>>(CardsErrors.GetAllFailed);
         }
     }
+
+    public async Task<Result<IEnumerable<StackSummaryDto>>> GetAllStackSummariesAsync()
+    {
+        _logger.LogInformation("Retrieving all stack summaries.");
+        try
+        {
+            using (var connection = new SqlConnection(_defaultConnectionString))
+            {
+                string sql = SqlScripts.GetAllStackSummaries;
+                var summaries = await connection.QueryAsync<StackSummaryDto>(sql);
+                _logger.LogInformation("Successfully retrieved {Count} stack summaries.", summaries.Count());
+                return Result.Success(summaries);
+            }
+        }
+        catch (SqlException ex)
+        {
+            _logger.LogError(ex, "SQL error while retrieving all stack summaries.");
+            return Result.Failure<IEnumerable<StackSummaryDto>>(StacksErrors.GetStacksFailed);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error while retrieving all stack summaries.");
+            return Result.Failure<IEnumerable<StackSummaryDto>>(StacksErrors.GetStacksFailed);
+        }
+    }
 }
