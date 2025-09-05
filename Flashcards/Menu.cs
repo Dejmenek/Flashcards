@@ -1,4 +1,4 @@
-﻿using Flashcards.Controllers;
+using Flashcards.Controllers;
 using Flashcards.Enums;
 using Flashcards.Helpers;
 using Flashcards.Services.Interfaces;
@@ -239,7 +239,7 @@ public class Menu
             return;
         }
 
-        var cardsResult = await _stacksController.GetCardsByStackIdAsync();
+        var cardsResult = await _stacksController.GetCardsToStudyByStackIdAsync();
         if (cardsResult.IsFailure)
         {
             ShowError(cardsResult.Error);

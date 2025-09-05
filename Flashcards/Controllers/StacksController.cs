@@ -1,4 +1,4 @@
-﻿using Flashcards.Models;
+using Flashcards.Models;
 using Flashcards.Services.Interfaces;
 using Flashcards.Utils;
 
@@ -41,6 +41,11 @@ public class StacksController
     public async Task<Result<List<BaseCardDto>>> GetCardsByStackIdAsync()
     {
         return await _stacksService.GetCardsByStackIdAsync();
+    }
+
+    public async Task<Result<List<BaseCardDto>>> GetCardsToStudyByStackIdAsync()
+    {
+        return await _stacksService.GetCardsToStudyByStackIdAsync();
     }
 
     public async Task<Result<int>> GetCardsCountInStackAsync()
