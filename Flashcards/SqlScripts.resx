@@ -154,6 +154,9 @@
   <data name="DeleteStack" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>SqlScripts\DeleteStack.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
   </data>
+  <data name="GetAllStackSummaries" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>SqlScripts\GetAllStackSummaries.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+  </data>
   <data name="GetCards" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>SqlScripts\GetCards.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
   </data>
