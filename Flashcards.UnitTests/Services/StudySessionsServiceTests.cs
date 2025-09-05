@@ -14,6 +14,7 @@ public class StudySessionsServiceTests
     private readonly StudySessionsService _studySessionsService;
     private readonly IUserInteractionService _userInteractionService;
     private readonly IStudySessionsRepository _studySessionsRepository;
+    private readonly ICardsRepository _cardsRepository;
     private readonly IConsoleService _consoleService;
     private readonly ILogger<StudySessionsService> _logger;
 
@@ -21,15 +22,16 @@ public class StudySessionsServiceTests
     {
         _userInteractionService = Substitute.For<IUserInteractionService>();
         _studySessionsRepository = Substitute.For<IStudySessionsRepository>();
+        _cardsRepository = Substitute.For<ICardsRepository>();
         _consoleService = Substitute.For<IConsoleService>();
         _logger = Substitute.For<ILogger<StudySessionsService>>();
         _studySessionsService = new StudySessionsService(
-            _studySessionsRepository, _userInteractionService, _consoleService, _logger
+            _studySessionsRepository, _cardsRepository, _userInteractionService, _consoleService, _logger
         );
     }
 
     [Fact]
-    public void StartStudySessionAsync_ShouldCalculateCorrectScore_WhenMixedCardTypes()
+    public async Task StartStudySessionAsync_ShouldCalculateCorrectScore_WhenMixedCardTypes()
     {
         // Arrange
         var flashcard = new FlashcardDto { Id = 1, Front = "Hello", Back = "Hola", CardType = CardType.Flashcard };
@@ -44,12 +46,14 @@ public class StudySessionsServiceTests
         var clozeCard = new ClozeCardDto { Id = 3, ClozeText = "The capital of France is {{c1::Paris}}.", CardType = CardType.Cloze };
         var cards = new List<BaseCardDto> { flashcard, multipleChoiceCard, clozeCard };
 
+        _cardsRepository.UpdateCardsProgressBulkAsync(Arg.Any<IEnumerable<CardProgressUpdateDto>>())
+            .Returns(Result.Success());
         _userInteractionService.GetAnswer().Returns("Hola", "Paris");
         _userInteractionService.GetMultipleChoiceAnswers(Arg.Any<List<string>>())
             .Returns(new List<string> { "Apple" });
 
         // Act
-        _studySessionsService.StartStudySessionAsync(cards);
+        await _studySessionsService.StartStudySessionAsync(cards);
 
         // Assert
         Assert.Equal(3, _studySessionsService.Score);
@@ -83,6 +87,8 @@ public class StudySessionsServiceTests
         int stackId = 1;
 
         _userInteractionService.GetAnswer().Returns("Back1");
+        _cardsRepository.UpdateCardsProgressBulkAsync(Arg.Any<IEnumerable<CardProgressUpdateDto>>())
+            .Returns(Result.Success());
         _studySessionsRepository.AddStudySessionAsync(Arg.Any<int>(), Arg.Any<DateTime>(), Arg.Any<int>())
             .Returns(Result.Failure(StudySessionsErrors.AddFailed));
 
@@ -104,6 +110,8 @@ public class StudySessionsServiceTests
         int stackId = 1;
 
         _userInteractionService.GetAnswer().Returns("Back1");
+        _cardsRepository.UpdateCardsProgressBulkAsync(Arg.Any<IEnumerable<CardProgressUpdateDto>>())
+            .Returns(Result.Success());
         _studySessionsRepository.AddStudySessionAsync(Arg.Any<int>(), Arg.Any<DateTime>(), Arg.Any<int>())
             .Returns(Result.Success());
 
@@ -167,7 +175,7 @@ public class StudySessionsServiceTests
     }
 
     [Fact]
-    public void StartStudySessionAsync_ShouldResetScore_WhenCalledMultipleTimes()
+    public async Task StartStudySessionAsync_ShouldResetScore_WhenCalledMultipleTimes()
     {
         // Arrange
         var flashcard1 = new FlashcardDto { Id = 1, Front = "Hello", Back = "Hola" };
@@ -176,12 +184,14 @@ public class StudySessionsServiceTests
         var cards2 = new List<BaseCardDto> { flashcard2 };
 
         _userInteractionService.GetAnswer().Returns("Hola", "Adiós");
+        _cardsRepository.UpdateCardsProgressBulkAsync(Arg.Any<IEnumerable<CardProgressUpdateDto>>())
+            .Returns(Result.Success());
 
         // Act
-        _studySessionsService.StartStudySessionAsync(cards1);
+        await _studySessionsService.StartStudySessionAsync(cards1);
         var scoreAfterFirst = _studySessionsService.Score;
 
-        _studySessionsService.StartStudySessionAsync(cards2);
+        await _studySessionsService.StartStudySessionAsync(cards2);
         var scoreAfterSecond = _studySessionsService.Score;
 
         // Assert
