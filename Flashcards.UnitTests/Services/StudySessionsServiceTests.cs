@@ -479,4 +479,18 @@ public class StudySessionsServiceTests
         Assert.True(result.IsFailure);
         Assert.Equal(CardsErrors.UpdateCardProgressFailed, result.Error);
     }
+
+    [Fact]
+    public async Task GetAllStudySessionsAsync_ShouldReturnFailure_WhenHasStudySessionAsyncFails()
+    {
+        // Arrange
+        _studySessionsRepository.HasStudySessionAsync().Returns(Result.Failure<bool>(StudySessionsErrors.HasStudySessionFailed));
+
+        // Act
+        var result = await _studySessionsService.GetAllStudySessionsAsync();
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal(StudySessionsErrors.HasStudySessionFailed, result.Error);
+    }
 }
