@@ -459,4 +459,24 @@ public class StudySessionsServiceTests
         Assert.True(result.IsFailure);
         Assert.Equal(CardsErrors.UpdateCardProgressFailed, result.Error);
     }
+
+    [Fact]
+    public async Task RunStudySessionAsync_ShouldReturnFailure_WhenStartStudySessionAsyncFails()
+    {
+        // Arrange
+        var flashcard = new FlashcardDto { Id = 1, Front = "Hello", Back = "Hola", CardType = CardType.Flashcard };
+        var cards = new List<BaseCardDto> { flashcard };
+        int stackId = 1;
+
+        _userInteractionService.GetAnswer().Returns("Hola");
+        _cardsRepository.UpdateCardsProgressBulkAsync(Arg.Any<IEnumerable<CardProgressUpdateDto>>())
+            .Returns(Result.Failure(CardsErrors.UpdateCardProgressFailed));
+
+        // Act
+        var result = await _studySessionsService.RunStudySessionAsync(cards, stackId);
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal(CardsErrors.UpdateCardProgressFailed, result.Error);
+    }
 }
