@@ -41,8 +41,8 @@ public abstract record class BaseCardDto
 {
     public int Id { get; init; }
     public CardType CardType { get; init; }
-    public int Box { get; init; }
-    public DateTime NextReviewDate { get; init; }
+    public int Box { get; init; } = 1;
+    public DateTime NextReviewDate { get; init; } = DateTime.Now;
 }
 
 public record class FlashcardDto : BaseCardDto
