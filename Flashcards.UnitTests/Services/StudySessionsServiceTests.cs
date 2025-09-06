@@ -1,3 +1,5 @@
+using System.Reflection;
+
 using Flashcards.DataAccess.Interfaces;
 using Flashcards.Models;
 using Flashcards.Services;
@@ -382,5 +384,26 @@ public class StudySessionsServiceTests
 
         // Assert
         Assert.True(result.IsSuccess);
+    }
+
+    [Theory]
+    [InlineData(1, true, 2)]
+    [InlineData(2, true, 3)]
+    [InlineData(3, true, 3)]
+    [InlineData(1, false, 1)]
+    [InlineData(2, false, 1)]
+    [InlineData(3, false, 1)]
+    public void GetNextBox_ShouldReturnExpectedBox(int currentBox, bool isCorrect, int expectedBox)
+    {
+        // Act
+        var nextBox = InvokeGetNextBox(isCorrect, currentBox);
+
+        // Assert
+        Assert.Equal(expectedBox, nextBox);
+    }
+    private static int InvokeGetNextBox(bool isCorrect, int currentBox)
+    {
+        var method = typeof(StudySessionsService).GetMethod("GetNextBox", BindingFlags.NonPublic | BindingFlags.Static);
+        return (int)method.Invoke(null, new object[] { isCorrect, currentBox });
     }
 }
