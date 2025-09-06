@@ -440,4 +440,23 @@ public class StudySessionsServiceTests
         var method = typeof(StudySessionsService).GetMethod("GetNextReviewDate", BindingFlags.NonPublic | BindingFlags.Static);
         return (DateTime)method.Invoke(null, new object[] { isCorrect, currentBox });
     }
+
+    [Fact]
+    public async Task StartStudySessionAsync_ShouldReturnFailure_WhenUpdateCardsProgressBulkAsyncFails()
+    {
+        // Arrange
+        var flashcard = new FlashcardDto { Id = 1, Front = "Hello", Back = "Hola", CardType = CardType.Flashcard };
+        var cards = new List<BaseCardDto> { flashcard };
+
+        _userInteractionService.GetAnswer().Returns("Hola");
+        _cardsRepository.UpdateCardsProgressBulkAsync(Arg.Any<IEnumerable<CardProgressUpdateDto>>())
+            .Returns(Result.Failure(CardsErrors.UpdateCardProgressFailed));
+
+        // Act
+        var result = await _studySessionsService.StartStudySessionAsync(cards);
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal(CardsErrors.UpdateCardProgressFailed, result.Error);
+    }
 }
