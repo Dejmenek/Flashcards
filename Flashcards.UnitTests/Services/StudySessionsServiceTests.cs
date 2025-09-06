@@ -401,9 +401,43 @@ public class StudySessionsServiceTests
         // Assert
         Assert.Equal(expectedBox, nextBox);
     }
+
+    [Theory]
+    [InlineData(1, true, 1)]
+    [InlineData(2, true, 3)]
+    [InlineData(3, true, 7)]
+    [InlineData(1, false, 0)]
+    [InlineData(2, false, 0)]
+    [InlineData(3, false, 0)]
+    public void GetNextReviewDate_ShouldReturnExpectedDate(int currentBox, bool isCorrect, int expectedDays)
+    {
+        // Arrange
+        var before = DateTime.Now;
+
+        // Act
+        var nextReview = InvokeGetNextReviewDate(isCorrect, currentBox);
+
+        // Assert
+        if (isCorrect)
+        {
+            var delta = (nextReview.Date - before.Date).Days;
+            Assert.Equal(expectedDays, delta);
+        }
+        else
+        {
+            Assert.Equal(before.Date, nextReview.Date);
+        }
+    }
+
     private static int InvokeGetNextBox(bool isCorrect, int currentBox)
     {
         var method = typeof(StudySessionsService).GetMethod("GetNextBox", BindingFlags.NonPublic | BindingFlags.Static);
         return (int)method.Invoke(null, new object[] { isCorrect, currentBox });
+    }
+
+    private static DateTime InvokeGetNextReviewDate(bool isCorrect, int currentBox)
+    {
+        var method = typeof(StudySessionsService).GetMethod("GetNextReviewDate", BindingFlags.NonPublic | BindingFlags.Static);
+        return (DateTime)method.Invoke(null, new object[] { isCorrect, currentBox });
     }
 }
