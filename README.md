@@ -76,18 +76,21 @@ docker compose run --service-ports -it flashcards
 
 ## Examples
 - Main Menu  
-![image](https://github.com/user-attachments/assets/7757b64f-a45c-4001-899d-5753178781a0)
+  <img width="329" height="200" alt="image" src="https://github.com/user-attachments/assets/1175117c-9731-4345-b278-1ca3c9f0a2b7" />
 - Manage Stacks  
-![image](https://github.com/user-attachments/assets/446c9474-fab7-41dd-8e5e-fa1e78e7e0d0)  
-![image](https://github.com/user-attachments/assets/a5be447b-28e6-4663-af36-cbd199ae8ff2)  
+  <img width="329" height="200" alt="image" src="https://github.com/user-attachments/assets/4fb1624a-2194-44a7-9794-7eb3d146bc01" />  
+  <img width="316" height="244" alt="image" src="https://github.com/user-attachments/assets/080f499b-a088-4445-9645-27c94dd891c6" />
 - Manage Flashcards  
-![image](https://github.com/user-attachments/assets/cb7c62ac-3191-4061-870f-fb2a7d9ec245)  
+  <img width="404" height="166" alt="image" src="https://github.com/user-attachments/assets/c8d60603-9869-4d6f-b0e4-df2eca2ff8ee" />
 - Card Types
-  - Basic Card
-  - Multiple Choice
-  - Cloze Deletion
+  - Basic Card  
+    <img width="274" height="148" alt="image" src="https://github.com/user-attachments/assets/984ab1de-c559-4c54-85d0-6c0e5d1bd5f4" />
+  - Multiple Choice  
+    <img width="1277" height="339" alt="image" src="https://github.com/user-attachments/assets/c24557f5-af9b-4f7f-b0c8-b8ba015e36ba" />
+  - Cloze Deletion  
+    <img width="454" height="105" alt="image" src="https://github.com/user-attachments/assets/c76584ea-d214-4fb7-94a6-0acad7c8dfc9" />
 - Study Session  
-![image](https://github.com/user-attachments/assets/459497ca-21bb-45c5-b4cb-4c1dcab611e4)  
+  <video width="320" height="240" controls src="https://github.com/user-attachments/assets/50f1dede-d16a-4f12-9e04-af03460c4055">
 - View Study Sessions  
 ![image](https://github.com/user-attachments/assets/22e3de25-f6e3-4b16-8132-27b183eae03f)  
 - View monthly study session reports per stack:
@@ -108,7 +111,6 @@ I learned how to write Dockerfiles, use Docker Compose for multi-container setup
 
 Implementing GitHub Actions introduced me to automating CI/CD workflows.  
 I learned how to set up automated builds and tests for pull requests.
-
 
 ## Used Resources
 - [SQL Server Tutorial](https://www.sqlservertutorial.net) used to learn some SQL Server syntax
