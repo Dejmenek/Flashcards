@@ -76,6 +76,10 @@ public static class Mapper
         };
     }
 
+    public static List<BaseCardDto> ToCardDTOList(IEnumerable<BaseCard> cards)
+    {
+        return cards.Select(c => ToCardDTO(c)).ToList();
+    }
     public static StudySessionDto ToStudySessionDTO(StudySession studysession)
     {
         return new StudySessionDto

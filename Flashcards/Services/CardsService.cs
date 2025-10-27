@@ -113,25 +113,7 @@ public class CardsService : ICardsService
             return Result.Failure<List<BaseCardDto>>(cardsResult.Error);
         }
 
-        List<BaseCardDto> cardDtos = new();
-        foreach (var card in cardsResult.Value)
-        {
-            switch (card)
-            {
-                case Flashcard flashcard:
-                    cardDtos.Add(Mapper.ToFlashcardDTO(flashcard));
-                    break;
-                case MultipleChoiceCard multipleChoiceCard:
-                    cardDtos.Add(Mapper.ToMultipleChoiceCardDTO(multipleChoiceCard));
-                    break;
-                case ClozeCard clozeCard:
-                    cardDtos.Add(Mapper.ToClozeCardDTO(clozeCard));
-                    break;
-                default:
-                    _logger.LogWarning("Unknown card type encountered in GetAllCardsAsync.");
-                    return Result.Failure<List<BaseCardDto>>(CardsErrors.GetAllFailed);
-            }
-        }
+        List<BaseCardDto> cardDtos = Mapper.ToCardDTOList(cardsResult.Value);
 
         _logger.LogInformation("Retrieved {Count} cards.", cardDtos.Count);
         return Result.Success(cardDtos);
