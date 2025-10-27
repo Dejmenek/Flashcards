@@ -14,17 +14,20 @@ public class CardsService : ICardsService
     private readonly ICardsRepository _cardsRepository;
     private readonly IStacksRepository _stacksRepository;
     private readonly IUserInteractionService _userInteractionService;
+    private readonly ICardStrategyFactory _cardStrategyFactory;
     private readonly ILogger<CardsService> _logger;
 
     public CardsService(
         ICardsRepository cardsRepository,
         IUserInteractionService userInteractionService,
         IStacksRepository stacksRepository,
+        ICardStrategyFactory cardStrategyFactory,
         ILogger<CardsService> logger)
     {
         _cardsRepository = cardsRepository;
         _userInteractionService = userInteractionService;
         _stacksRepository = stacksRepository;
+        _cardStrategyFactory = cardStrategyFactory;
         _logger = logger;
     }
 
@@ -57,13 +60,7 @@ public class CardsService : ICardsService
         CardType chosenCardType = _userInteractionService.GetCardType();
         _logger.LogInformation("User selected stack {StackName} (ID: {StackId}) and card type {CardType}.", chosenStackName, chosenStackId, chosenCardType);
 
-        ICardStrategy strategy = chosenCardType switch
-        {
-            CardType.Flashcard => new FlashcardStrategy(_cardsRepository, _userInteractionService),
-            CardType.MultipleChoice => new MultipleChoiceCardStrategy(_cardsRepository, _userInteractionService),
-            CardType.Cloze => new ClozeCardStrategy(_cardsRepository, _userInteractionService),
-            _ => throw new InvalidOperationException($"Unsupported card type: {chosenCardType}")
-        };
+        ICardStrategy strategy = _cardStrategyFactory.GetCardStrategy(chosenCardType);
 
         var result = await strategy.AddCardAsync(chosenStackId);
         if (result.IsSuccess)
@@ -151,13 +148,7 @@ public class CardsService : ICardsService
         BaseCardDto chosenCard = _userInteractionService.GetCard(cardsResult.Value);
         _logger.LogInformation("User selected card ID {CardId} for update.", chosenCard.Id);
 
-        ICardStrategy strategy = chosenCard.CardType switch
-        {
-            CardType.Flashcard => new FlashcardStrategy(_cardsRepository, _userInteractionService),
-            CardType.MultipleChoice => new MultipleChoiceCardStrategy(_cardsRepository, _userInteractionService),
-            CardType.Cloze => new ClozeCardStrategy(_cardsRepository, _userInteractionService),
-            _ => throw new InvalidOperationException($"Unsupported card type: {chosenCard.CardType}")
-        };
+        ICardStrategy strategy = _cardStrategyFactory.GetCardStrategy(chosenCard.CardType);
 
         var result = await strategy.UpdateCardAsync(chosenCard.Id);
         if (result.IsSuccess)
