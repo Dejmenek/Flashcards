@@ -50,8 +50,8 @@ public class StudySessionsService : IStudySessionsService
             };
 
             bool isCorrect = strategy.Study(card);
-            int newBox = GetNextBox(isCorrect, card.Box);
-            DateTime newReviewDate = GetNextReviewDate(isCorrect, newBox);
+            int newBox = StudySessionsHelper.GetNextBox(isCorrect, card.Box);
+            DateTime newReviewDate = StudySessionsHelper.GetNextReviewDate(isCorrect, newBox);
 
             var updatedCard = new CardProgressUpdateDto
             {
@@ -215,21 +215,5 @@ public class StudySessionsService : IStudySessionsService
 
         _logger.LogInformation("Monthly average score report for year {Year} retrieved successfully.", year);
         return Result.Success(reportResult.Value);
-    }
-
-    private static int GetNextBox(bool isCorrectAnswer, int currentBox)
-    {
-        return isCorrectAnswer ? Math.Min(currentBox + 1, 3) : 1;
-    }
-
-    private static DateTime GetNextReviewDate(bool isCorrectAnswer, int currentBox)
-    {
-        return isCorrectAnswer ? DateTime.Now.AddDays(currentBox switch
-        {
-            1 => 1,
-            2 => 3,
-            3 => 7,
-            _ => 1
-        }) : DateTime.Now;
     }
 }
