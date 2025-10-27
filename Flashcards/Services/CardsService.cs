@@ -45,11 +45,7 @@ public class CardsService : ICardsService
             return Result.Failure(StacksErrors.StacksNotFound);
         }
 
-        List<StackDto> stackDtos = new();
-        foreach (var stack in stacksResult.Value)
-        {
-            stackDtos.Add(Mapper.ToStackDTO(stack));
-        }
+        List<StackDto> stackDtos = Mapper.ToStackDTOList(stacksResult.Value);
 
         string chosenStackName = _userInteractionService.GetStack(stackDtos);
         int chosenStackId = stacksResult.Value.Single(s => s.Name == chosenStackName).Id;

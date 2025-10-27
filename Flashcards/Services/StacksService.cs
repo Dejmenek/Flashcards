@@ -227,11 +227,7 @@ public class StacksService : IStacksService
             return Result.Failure<List<StackDto>>(stacksResult.Error);
         }
 
-        List<StackDto> stackDtos = new();
-        foreach (var stack in stacksResult.Value)
-        {
-            stackDtos.Add(Mapper.ToStackDTO(stack));
-        }
+        List<StackDto> stackDtos = Mapper.ToStackDTOList(stacksResult.Value);
 
         _logger.LogInformation("Retrieved {Count} stacks.", stackDtos.Count);
         return Result.Success(stackDtos);
