@@ -76,6 +76,21 @@ public static class Mapper
         };
     }
 
+    public static List<StackDto> ToStackDTOList(IEnumerable<Stack> stacks)
+    {
+        return stacks.Select(s => ToStackDTO(s)).ToList();
+    }
+
+    public static List<BaseCardDto> ToCardDTOList(IEnumerable<BaseCard> cards)
+    {
+        return cards.Select(c => ToCardDTO(c)).ToList();
+    }
+
+    public static List<StudySessionDto> ToStudySessionDTOList(IEnumerable<StudySession> studySessions)
+    {
+        return studySessions.Select(s => ToStudySessionDTO(s)).ToList();
+    }
+
     public static StudySessionDto ToStudySessionDTO(StudySession studysession)
     {
         return new StudySessionDto
