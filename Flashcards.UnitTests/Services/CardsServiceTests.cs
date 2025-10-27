@@ -1,18 +1,21 @@
 using Flashcards.DataAccess.Interfaces;
 using Flashcards.Models;
 using Flashcards.Services;
+using Flashcards.Services.CardStrategies;
 using Flashcards.Services.Interfaces;
 using Flashcards.Utils;
 
 using Microsoft.Extensions.Logging;
 
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 
 namespace Flashcards.UnitTests.Services;
 public class CardsServiceTests
 {
     private readonly CardsService _cardsService;
     private readonly IUserInteractionService _userInteractionService;
+    private readonly ICardStrategyFactory _cardStrategyFactory;
     private readonly IStacksRepository _stacksRepository;
     private readonly ICardsRepository _cardsRepository;
     private readonly ILogger<CardsService> _logger;
@@ -22,9 +25,10 @@ public class CardsServiceTests
         _userInteractionService = Substitute.For<IUserInteractionService>();
         _stacksRepository = Substitute.For<IStacksRepository>();
         _cardsRepository = Substitute.For<ICardsRepository>();
+        _cardStrategyFactory = Substitute.For<ICardStrategyFactory>();
         _logger = Substitute.For<ILogger<CardsService>>();
         _cardsService = new CardsService(
-            _cardsRepository, _userInteractionService, _stacksRepository, _logger
+            _cardsRepository, _userInteractionService, _stacksRepository, _cardStrategyFactory, _logger
         );
     }
 
@@ -66,6 +70,7 @@ public class CardsServiceTests
 
         _userInteractionService.GetStack(Arg.Any<List<StackDto>>()).Returns("Test Stack");
         _userInteractionService.GetCardType().Returns(CardType.Flashcard);
+        _cardStrategyFactory.GetCardStrategy(CardType.Flashcard).Returns(new FlashcardStrategy(_cardsRepository, _userInteractionService));
         _userInteractionService.GetFlashcardFront().Returns("Front Text");
         _userInteractionService.GetFlashcardBack().Returns("Back Text");
 
@@ -89,6 +94,7 @@ public class CardsServiceTests
 
         _userInteractionService.GetStack(Arg.Any<List<StackDto>>()).Returns("Test Stack");
         _userInteractionService.GetCardType().Returns(CardType.Flashcard);
+        _cardStrategyFactory.GetCardStrategy(CardType.Flashcard).Returns(new FlashcardStrategy(_cardsRepository, _userInteractionService));
         _userInteractionService.GetFlashcardFront().Returns("Front Text");
         _userInteractionService.GetFlashcardBack().Returns("Back Text");
 
@@ -250,6 +256,7 @@ public class CardsServiceTests
 
         _userInteractionService.GetCard(Arg.Any<List<BaseCardDto>>())
             .Returns(userSelectedCard);
+        _cardStrategyFactory.GetCardStrategy(CardType.Flashcard).Returns(new FlashcardStrategy(_cardsRepository, _userInteractionService));
         _userInteractionService.GetFlashcardFront().Returns("Updated Front");
         _userInteractionService.GetFlashcardBack().Returns("Updated Back");
 
@@ -276,6 +283,7 @@ public class CardsServiceTests
 
         _userInteractionService.GetCard(Arg.Any<List<BaseCardDto>>())
             .Returns(userSelectedCard);
+        _cardStrategyFactory.GetCardStrategy(CardType.Flashcard).Returns(new FlashcardStrategy(_cardsRepository, _userInteractionService));
         _userInteractionService.GetFlashcardFront().Returns("Updated Front");
         _userInteractionService.GetFlashcardBack().Returns("Updated Back");
 
@@ -297,6 +305,7 @@ public class CardsServiceTests
         _stacksRepository.GetAllStacksAsync().Returns(Result.Success<IEnumerable<Stack>>(stacks));
         _userInteractionService.GetStack(Arg.Any<List<StackDto>>()).Returns("Test Stack");
         _userInteractionService.GetCardType().Returns(CardType.MultipleChoice);
+        _cardStrategyFactory.GetCardStrategy(CardType.MultipleChoice).Returns(new MultipleChoiceCardStrategy(_cardsRepository, _userInteractionService));
 
         _userInteractionService.GetMultipleChoiceQuestion().Returns("Question?");
         _userInteractionService.GetNumberOfChoices().Returns(2);
@@ -323,6 +332,7 @@ public class CardsServiceTests
 
         _userInteractionService.GetStack(Arg.Any<List<StackDto>>()).Returns("Test Stack");
         _userInteractionService.GetCardType().Returns(CardType.Cloze);
+        _cardStrategyFactory.GetCardStrategy(CardType.Cloze).Returns(new ClozeCardStrategy(_cardsRepository, _userInteractionService));
         _userInteractionService.GetClozeDeletionText().Returns("This is a test.");
         _userInteractionService.GetClozeDeletionWords(Arg.Is("This is a test.")).Returns(new List<string> { "test" });
 
@@ -345,6 +355,7 @@ public class CardsServiceTests
         _stacksRepository.GetAllStacksAsync().Returns(Result.Success<IEnumerable<Stack>>(stacks));
         _userInteractionService.GetStack(Arg.Any<List<StackDto>>()).Returns("Test Stack");
         _userInteractionService.GetCardType().Returns((CardType)999);
+        _cardStrategyFactory.GetCardStrategy((CardType)999).Throws(new InvalidOperationException("Invalid card type"));
 
         // Act & Assert
         await Assert.ThrowsAsync<InvalidOperationException>(() => _cardsService.AddCardAsync());
@@ -377,6 +388,7 @@ public class CardsServiceTests
 
         _cardsRepository.GetAllCardsAsync().Returns(Result.Success<IEnumerable<BaseCard>>(cards));
         _userInteractionService.GetCard(Arg.Any<List<BaseCardDto>>()).Returns(userSelectedCard);
+        _cardStrategyFactory.GetCardStrategy(CardType.MultipleChoice).Returns(new MultipleChoiceCardStrategy(_cardsRepository, _userInteractionService));
         _userInteractionService.GetMultipleChoiceQuestion().Returns("Updated Q");
         _userInteractionService.GetNumberOfChoices().Returns(2);
         _userInteractionService.GetMultipleChoiceChoices(2).Returns(new List<string> { "A", "B" });
@@ -416,6 +428,7 @@ public class CardsServiceTests
 
         _cardsRepository.GetAllCardsAsync().Returns(Result.Success<IEnumerable<BaseCard>>(cards));
         _userInteractionService.GetCard(Arg.Any<List<BaseCardDto>>()).Returns(userSelectedCard);
+        _cardStrategyFactory.GetCardStrategy(CardType.Cloze).Returns(new ClozeCardStrategy(_cardsRepository, _userInteractionService));
         _userInteractionService.GetClozeDeletionText().Returns("This is a updated.");
         _userInteractionService.GetClozeDeletionWords(Arg.Is("This is a updated.")).Returns(new List<string> { "updated" });
 

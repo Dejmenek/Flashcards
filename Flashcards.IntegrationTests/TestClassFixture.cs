@@ -1,8 +1,9 @@
-﻿using Flashcards.Controllers;
+using Flashcards.Controllers;
 using Flashcards.DataAccess;
 using Flashcards.DataAccess.Interfaces;
 using Flashcards.DataAccess.Repositories;
 using Flashcards.Services;
+using Flashcards.Services.CardStrategies;
 using Flashcards.Services.Interfaces;
 
 using Microsoft.Extensions.Configuration;
@@ -86,6 +87,7 @@ public class TestClassFixture : IAsyncLifetime
                 services.AddScoped<IStudySessionsRepository, StudySessionsRepository>();
                 services.AddScoped<IStudySessionsService, StudySessionsService>();
                 services.AddScoped<IStacksService, StacksService>();
+                services.AddScoped<ICardStrategyFactory, CardStrategyFactory>();
                 services.AddSingleton<ICardsService, CardsService>();
                 services.AddSingleton<StacksController>();
                 services.AddSingleton<StudySessionsController>();
