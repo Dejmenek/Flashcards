@@ -155,11 +155,7 @@ public class StudySessionsService : IStudySessionsService
             return Result.Failure<List<StudySessionDto>>(studySessionsResult.Error);
         }
 
-        List<StudySessionDto> studySessionDtos = new();
-        foreach (var studySession in studySessionsResult.Value)
-        {
-            studySessionDtos.Add(Mapper.ToStudySessionDTO(studySession));
-        }
+        List<StudySessionDto> studySessionDtos = Mapper.ToStudySessionDTOList(studySessionsResult.Value);
 
         _logger.LogInformation("Retrieved {Count} study sessions.", studySessionDtos.Count);
         return Result.Success(studySessionDtos);

@@ -80,6 +80,12 @@ public static class Mapper
     {
         return cards.Select(c => ToCardDTO(c)).ToList();
     }
+
+    public static List<StudySessionDto> ToStudySessionDTOList(IEnumerable<StudySession> studySessions)
+    {
+        return studySessions.Select(s => ToStudySessionDTO(s)).ToList();
+    }
+
     public static StudySessionDto ToStudySessionDTO(StudySession studysession)
     {
         return new StudySessionDto
